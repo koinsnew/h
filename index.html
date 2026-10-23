@@ -760,7 +760,6 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                              <div id="briefFields" class="hidden mt-2">
                                  <label class="block text-[11px] font-bold text-gray-500 mb-1">섭외자</label>
                                  <select id="briefBroker" onchange="briefChanged()" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white"></select>
-                                 <p class="mt-2 text-[10px] text-amber-700">목록에는 메인 60 / 박동준 40 으로 표시만 됩니다. 실제 소득은 마스터본부 시트의 섭외자 쉐어율로 익월수수료·익월시책만 배분되고, 나머지는 메인에게 지급됩니다.</p>
                              </div>
                          </div>
                          <!-- BRIEF-FORM-END -->
@@ -1324,7 +1323,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
           <div class="text-sm font-extrabold text-indigo-700 mb-2 px-1">■ 브리핑 소득</div>
           <div id="mhqSummary" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6"></div>
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
-              <div class="flex items-center justify-between mb-2 gap-2"><div class="text-sm font-bold text-gray-700">👥 섭외자별 소득</div><div class="text-sm text-gray-500">섭외자 총 소득 <span id="mhqBrokerTotal" class="font-extrabold text-emerald-600 text-base">0원</span></div></div>
+              <div class="flex items-center justify-between mb-2 gap-x-3 gap-y-1 flex-wrap"><div class="font-bold text-gray-700 whitespace-nowrap" style="font-size:clamp(12px,3.4vw,14px)">👥 섭외자별 소득</div><div class="text-gray-500 whitespace-nowrap" style="font-size:clamp(11px,3vw,14px)">섭외자 총 소득 <span id="mhqBrokerTotal" class="font-extrabold text-emerald-600" style="font-size:clamp(12px,3.6vw,16px)">0원</span></div></div>
               <div id="mhqBrokers" class="overflow-x-auto"></div>
           </div>
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
@@ -13866,13 +13865,18 @@ function briefCollect() {
 
     // 총 소득 | 익월소득 한 줄 카드
     function card2(title, total, next, sub, color, extra) {
-        return '<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4"><div class="text-[11px] font-bold text-gray-500 mb-2">' + title + '</div>' +
-            '<div class="flex items-stretch gap-3 sm:gap-5">' +
-            '<div class="flex-1 min-w-0"><div class="text-[10px] text-gray-400 mb-0.5">총 소득</div><div class="text-base sm:text-xl font-extrabold ' + color + ' tracking-tight whitespace-nowrap">' + fmt(total) + '</div></div>' +
-            '<div class="w-px bg-gray-200"></div>' +
-            '<div class="flex-1 min-w-0"><div class="text-[10px] text-gray-400 mb-0.5">익월소득</div><div class="text-base sm:text-xl font-extrabold text-gray-700 tracking-tight whitespace-nowrap">' + fmt(next) + '</div></div>' +
-            (extra !== undefined ? '<div class="w-px bg-gray-200"></div><div class="flex-1 min-w-0"><div class="text-[10px] text-gray-400 mb-0.5 whitespace-nowrap">익월소득의 ' + Math.round(BRIEF_RECV_RATE * 100) + '%</div><div class="text-base sm:text-xl font-extrabold text-amber-600 tracking-tight whitespace-nowrap">' + fmt(extra) + '</div></div>' : '') +
-            '</div>' + (sub ? '<div class="text-[11px] text-gray-400 mt-2">' + sub + '</div>' : '') + '</div>';
+        var lab = 'font-size:clamp(8px,2.3vw,11px)';
+        var val = 'font-size:clamp(10px,3.3vw,20px)';
+        var col = function (label, v, cls) {
+            return '<div class="flex-1 min-w-0"><div class="text-gray-400 mb-0.5 whitespace-nowrap" style="' + lab + '">' + label + '</div>' +
+                '<div class="font-extrabold ' + cls + ' tracking-tight whitespace-nowrap" style="' + val + '">' + fmt(v) + '</div></div>';
+        };
+        var sep = '<div class="w-px bg-gray-200 shrink-0"></div>';
+        return '<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-3 sm:p-4 overflow-hidden"><div class="font-bold text-gray-500 mb-2 whitespace-nowrap" style="font-size:clamp(10px,2.8vw,12px)">' + title + '</div>' +
+            '<div class="flex items-stretch gap-2 sm:gap-5">' +
+            col('총 소득', total, color) + sep + col('익월소득', next, 'text-gray-700') +
+            (extra !== undefined ? sep + col('익월소득의 ' + Math.round(BRIEF_RECV_RATE * 100) + '%', extra, 'text-amber-600') : '') +
+            '</div>' + (sub ? '<div class="text-gray-400 mt-2" style="font-size:clamp(9px,2.5vw,11px)">' + sub + '</div>' : '') + '</div>';
     }
 
     window.renderMasterHqPage = function (monthChanged, manual) {

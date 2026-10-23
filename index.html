@@ -726,18 +726,18 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                         </div>
                         <div>
                             <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-1">월 납입 보험료 (또는 금액)</label>
-                            <div class="flex items-center gap-2">
-                                <div class="input-unified-container relative flex-1">
-                                    <input type="text" id="premiumInput" placeholder="0" class="input-unified-field text-right font-mono text-lg pr-8" onkeyup="formatCurrency(this);">
+                            <div class="flex items-center gap-1">
+                                <div class="input-unified-container relative flex-1 min-w-0">
+                                    <input type="text" id="premiumInput" placeholder="0" class="input-unified-field text-right font-mono text-sm sm:text-base pr-8 w-full min-w-0" onkeyup="formatCurrency(this);">
                                     <span class="absolute right-3 text-gray-400 font-medium">원</span>
                                 </div>
-                                <label id="briefCheckWrap" class="inline-flex items-center gap-1.5 cursor-pointer select-none whitespace-nowrap px-1">
+                                <label id="briefCheckWrap" class="inline-flex items-center gap-1 cursor-pointer select-none whitespace-nowrap px-0.5">
                                     <input type="checkbox" id="brief_contract" class="self-contract-box" onchange="briefToggle()">
                                     <span class="text-xs sm:text-sm font-semibold text-gray-600">브리핑</span>
                                 </label>
-                                <label id="selfContractWrap" class="hidden items-center gap-1.5 cursor-pointer select-none whitespace-nowrap px-1">
+                                <label id="selfContractWrap" class="hidden items-center gap-1 cursor-pointer select-none whitespace-nowrap px-0.5">
                                     <input type="checkbox" id="self_contract" class="self-contract-box">
-                                    <span class="text-xs sm:text-sm font-semibold text-gray-600">본인계약</span>
+                                    <span class="text-xs sm:text-sm font-semibold text-gray-600">본인</span>
                                 </label>
                             </div>
                         </div>
@@ -13762,9 +13762,20 @@ function briefBrokerRate(bf) {
 function briefIsAdmin() {
     var role = '';
     try { role = getRole(loggedInUser) || ''; } catch (e) { }
-    return /지사장|총무/.test(role);
+    return /지사장|총무|본부장/.test(role);
+}
+// 지사장·총무·본부장 외에는 브리핑 체크 자체를 막는다
+function briefApplyPerm() {
+    var c = document.getElementById('brief_contract');
+    if (!c) return;
+    var ok = briefIsAdmin();
+    c.disabled = !ok;
+    var w = document.getElementById('briefCheckWrap');
+    if (w) { w.style.opacity = ok ? '' : '0.4'; w.style.cursor = ok ? '' : 'not-allowed'; w.title = ok ? '' : '지사장·총무·본부장만 사용할 수 있습니다.'; }
+    if (!ok && c.checked) { c.checked = false; document.getElementById('briefFields').classList.add('hidden'); }
 }
 function briefToggle() {
+    briefApplyPerm();
     var on = document.getElementById('brief_contract').checked;
     var adm = briefIsAdmin();
     document.getElementById('briefFields').classList.toggle('hidden', !(on && adm));
@@ -13805,6 +13816,7 @@ function briefReset() {
 }
 // 체크 안됨 → null / 입력 오류 → false / 정상 → briefing 객체
 function briefCollect() {
+    briefApplyPerm();
     var c = document.getElementById('brief_contract');
     if (!c || !c.checked) return null;
     if (currentUser === BRIEF_RECEIVER) { showAlert('warning', '알림', BRIEF_RECEIVER + ' 본부장 본인 계약은 브리핑 계약으로 등록할 수 없습니다.'); return false; }
@@ -13970,11 +13982,13 @@ function briefCollect() {
 
     // 메뉴 노출 제어 (로그인 후 시트 로드 → 권한 확인)
     function applyMenu() {
+        try { briefApplyPerm(); } catch (e) { }
         var li = document.getElementById('menuMasterHq');
         if (!li) return;
         var ok = false;
         try { ok = !!canSee(); } catch (e) { }
         li.classList.toggle('hidden', !ok);
+        try { briefApplyPerm(); } catch (e) { }
     }
     window.briefApplyMenu = applyMenu;
     var tries = 0;

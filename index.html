@@ -731,6 +731,10 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                                     <input type="text" id="premiumInput" placeholder="0" class="input-unified-field text-right font-mono text-lg pr-8" onkeyup="formatCurrency(this);">
                                     <span class="absolute right-3 text-gray-400 font-medium">원</span>
                                 </div>
+                                <label id="briefCheckWrap" class="inline-flex items-center gap-1.5 cursor-pointer select-none whitespace-nowrap px-1">
+                                    <input type="checkbox" id="brief_contract" class="self-contract-box" onchange="briefToggle()">
+                                    <span class="text-xs sm:text-sm font-semibold text-gray-600">브리핑</span>
+                                </label>
                                 <label id="selfContractWrap" class="hidden items-center gap-1.5 cursor-pointer select-none whitespace-nowrap px-1">
                                     <input type="checkbox" id="self_contract" class="self-contract-box">
                                     <span class="text-xs sm:text-sm font-semibold text-gray-600">본인계약</span>
@@ -751,16 +755,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                         </div>
 
                                                  <!-- BRIEF-FORM-START -->
-                         <div id="briefWrap" class="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-                                 <input type="checkbox" id="brief_contract" class="w-4 h-4 accent-amber-600" onchange="briefToggle()">
-                                 <span class="text-sm font-bold text-amber-800">📣 브리핑 계약</span>
-                                 <span id="briefStatus" class="text-[11px] font-normal text-amber-700"></span>
-                             </label>
-                             <div id="briefFields" class="hidden mt-2">
-                                 <label class="block text-[11px] font-bold text-gray-500 mb-1">섭외자</label>
-                                 <select id="briefBroker" onchange="briefChanged()" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white"></select>
-                             </div>
+                         <div id="briefFields" class="hidden bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                             <label class="block text-[11px] font-bold text-amber-800 mb-1">📣 브리핑 섭외자 <span id="briefStatus" class="font-normal text-amber-700"></span></label>
+                             <select id="briefBroker" onchange="briefChanged()" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white"></select>
                          </div>
                          <!-- BRIEF-FORM-END -->
 
@@ -13761,10 +13758,17 @@ function briefBrokerRate(bf) {
     var b = (window.briefBrokers || []).find(function (x) { return x.name === bf.briefer; });
     return b ? (parseFloat(b.rate) || 0) : 0;
 }
+// 섭외자 선택 드롭다운은 지사장·총무에게만 보인다
+function briefIsAdmin() {
+    var role = '';
+    try { role = getRole(loggedInUser) || ''; } catch (e) { }
+    return /지사장|총무/.test(role);
+}
 function briefToggle() {
     var on = document.getElementById('brief_contract').checked;
-    document.getElementById('briefFields').classList.toggle('hidden', !on);
-    if (on) {
+    var adm = briefIsAdmin();
+    document.getElementById('briefFields').classList.toggle('hidden', !(on && adm));
+    if (on && adm) {
         briefFillBrokers();
         briefLoadBrokers(briefFillBrokers);   // 최신 시트값으로 갱신
     }
@@ -13804,12 +13808,13 @@ function briefCollect() {
     var c = document.getElementById('brief_contract');
     if (!c || !c.checked) return null;
     if (currentUser === BRIEF_RECEIVER) { showAlert('warning', '알림', BRIEF_RECEIVER + ' 본부장 본인 계약은 브리핑 계약으로 등록할 수 없습니다.'); return false; }
-    var name = document.getElementById('briefBroker').value;
-    if (!name) { showAlert('warning', '알림', '섭외자를 선택해주세요.'); return false; }
+    var adm = briefIsAdmin();
+    var name = adm ? document.getElementById('briefBroker').value : '';
+    if (adm && !name) { showAlert('warning', '알림', '섭외자를 선택해주세요.'); return false; }
     var recv = BRIEF_RECV_RATE;
     var b = (window.briefBrokers || []).find(function (x) { return x.name === name; });
     var br = b ? (parseFloat(b.rate) || 0) : 0;
-    if (br > recv) { showAlert('warning', '알림', name + ' 쉐어율(' + Math.round(br * 100) + '%)이 본부장 쉐어(' + Math.round(recv * 100) + '%)보다 큽니다. 마스터본부 시트의 쉐어율을 확인해주세요.'); return false; }
+    if (name && br > recv) { showAlert('warning', '알림', name + ' 쉐어율(' + Math.round(br * 100) + '%)이 본부장 쉐어(' + Math.round(recv * 100) + '%)보다 큽니다. 마스터본부 시트의 쉐어율을 확인해주세요.'); return false; }
     if (currentShareData && currentShareData.length > 0) {
         currentShareData = []; updateShareStatus();   // 브리핑 계약은 쉐어 설정을 대체
     }

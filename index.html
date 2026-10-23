@@ -576,13 +576,13 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <li id="menuGoalAchievement"><button onclick="navigateTo('goal-achievement')" class="w-full text-left px-6 py-3 hover:bg-rose-50 text-rose-700 font-medium border-l-4 border-transparent hover:border-rose-500 transition block">🎯 목표달성률</button></li>
                 <li><button onclick="navigateTo('performance')" class="w-full text-left px-6 py-3 hover:bg-green-50 text-green-700 font-medium border-l-4 border-transparent hover:border-green-600 transition block">📊 업적 현황</button></li>
                 <li><button onclick="navigateTo('active-status')" class="w-full text-left px-6 py-3 hover:bg-emerald-50 text-emerald-700 font-medium border-l-4 border-transparent hover:border-emerald-500 transition block">🏃‍♂️ 가동 현황</button></li>
-                <li id="menuMasterHq" class="hidden"><button onclick="navigateTo('master-hq')" class="w-full text-left px-6 py-3 hover:bg-amber-50 text-amber-700 font-medium border-l-4 border-transparent hover:border-amber-500 transition block">📣 마스터 본부</button></li>
                 <li id="menuLapse"><button onclick="navigateTo('lapse')" class="w-full text-left px-6 py-3 hover:bg-rose-50 text-rose-700 font-medium border-l-4 border-transparent hover:border-rose-500 transition block">🚨 연체·실효 관리</button></li>
                 <li><button onclick="navigateTo('global-ranking')" class="w-full text-left px-6 py-3 hover:bg-yellow-50 text-yellow-700 font-medium border-l-4 border-transparent hover:border-yellow-500 transition block">🏆 직영채널 순위</button></li>
                 <li id="menuBranchIncome" class="hidden"><button onclick="navigateTo('branch-income')" class="w-full text-left px-6 py-3 hover:bg-pink-50 text-pink-700 font-bold border-l-4 border-transparent hover:border-pink-500 transition block">💰 지사 소득</button></li>
                 <li id="menuFcRegister" class="hidden"><button onclick="navigateTo('fc-register')" class="w-full text-left px-6 py-3 hover:bg-teal-50 text-teal-700 font-bold border-l-4 border-transparent hover:border-teal-500 transition block">📝 FC 신규등록</button></li>
                 <li><button onclick="navigateTo('recruiting')" class="w-full text-left px-6 py-3 hover:bg-rose-50 text-rose-700 font-bold border-l-4 border-transparent hover:border-rose-500 transition block">🤝 리크루팅 현황</button></li>
                 <li><button onclick="navigateTo('gallery')" class="w-full text-left px-6 py-3 hover:bg-pink-50 text-pink-600 font-medium border-l-4 border-transparent hover:border-pink-500 transition block">📸 사진첩</button></li>
+                <li id="menuMasterHq" class="hidden"><button onclick="navigateTo('master-hq')" class="w-full text-left px-6 py-3 hover:bg-amber-50 text-amber-700 font-medium border-l-4 border-transparent hover:border-amber-500 transition block">📣 마스터 본부</button></li>
             </ul>
         </div>
         <div class="p-4 border-t border-gray-200 bg-gray-50">
@@ -757,19 +757,10 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                                  <span class="text-sm font-bold text-amber-800">📣 브리핑 계약</span>
                                  <span id="briefStatus" class="text-[11px] font-normal text-amber-700"></span>
                              </label>
-                             <div id="briefFields" class="hidden mt-2 grid grid-cols-2 gap-2">
-                                 <div>
-                                     <label class="block text-[11px] font-bold text-gray-500 mb-1">섭외자(브리퍼)</label>
-                                     <select id="briefBroker" onchange="briefChanged()" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white"></select>
-                                 </div>
-                                 <div>
-                                     <label class="block text-[11px] font-bold text-gray-500 mb-1">쉐어율 (본부장 몫)</label>
-                                     <select id="briefRate" onchange="briefChanged()" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white">
-                                         <option value="0.1">10%</option><option value="0.2">20%</option><option value="0.3">30%</option>
-                                         <option value="0.4" selected>40%</option><option value="0.5">50%</option>
-                                     </select>
-                                 </div>
-                                 <p class="col-span-2 text-[10px] text-amber-700">목록에는 입력한 비율로 표시만 됩니다. 실제 소득은 마스터본부 시트의 섭외자 쉐어율로 익월수수료·익월시책만 배분되고, 나머지는 메인에게 지급됩니다.</p>
+                             <div id="briefFields" class="hidden mt-2">
+                                 <label class="block text-[11px] font-bold text-gray-500 mb-1">섭외자</label>
+                                 <select id="briefBroker" onchange="briefChanged()" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white"></select>
+                                 <p class="mt-2 text-[10px] text-amber-700">목록에는 메인 60 / 박동준 40 으로 표시만 됩니다. 실제 소득은 마스터본부 시트의 섭외자 쉐어율로 익월수수료·익월시책만 배분되고, 나머지는 메인에게 지급됩니다.</p>
                              </div>
                          </div>
                          <!-- BRIEF-FORM-END -->
@@ -1323,7 +1314,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
       <div id="page-master-hq" class="page-section hidden p-4 sm:p-6 pb-20">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
               <h2 class="text-xl font-bold flex items-center text-gray-800">
-                  <span class="w-1.5 h-6 bg-amber-500 rounded-full mr-2"></span>마스터 본부 · 브리핑 계약
+                  <span class="w-1.5 h-6 bg-amber-500 rounded-full mr-2"></span>마스터본부
               </h2>
               <div class="flex items-center gap-2">
                   <select id="mhqMonth" onchange="renderMasterHqPage(true)" class="border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-bold bg-white text-gray-700"></select>
@@ -1335,7 +1326,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
           <div class="text-sm font-extrabold text-emerald-700 mb-2 px-1">■ 섭외자 소득</div>
           <div id="mhqSummary2" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3"></div>
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
-              <div class="text-sm font-bold text-gray-700 mb-2">👥 등록된 브리퍼별 브리핑계약 소득 <span class="text-[11px] font-normal text-gray-400">(구글시트 '마스터본부' 탭 기준 · 익월수수료+익월시책)</span></div>
+              <div class="text-sm font-bold text-gray-700 mb-2">👥 섭외자별 소득 <span class="text-[11px] font-normal text-gray-400">(구글시트 '마스터본부' 탭 기준 · 익월수수료+익월시책)</span></div>
               <div id="mhqBrokers" class="overflow-x-auto"></div>
           </div>
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
@@ -5827,7 +5818,7 @@ function renderList() {
                 shareDetails.push(`${s.user} ${Math.round((parseFloat(s.rate)||0) * 100)}%`);
             });
             const _bfb = (item.attributes && item.attributes.briefing && item.attributes.briefing.on) ? item.attributes.briefing : null;
-            const shareText = (_bfb ? '📣브리핑 ' : '') + shareDetails.join(', ') + (_bfb && _bfb.briefer ? ' · 섭외 ' + _bfb.briefer : '');
+            const shareText = (_bfb ? '📣브리핑 ' : '') + shareDetails.join(', ');
             
             if (!isValidUser(findUser(currentUser))) {
     // 직책 없는 사용자: 쉐어 뱃지(비율) 전체 숨김
@@ -13746,7 +13737,8 @@ function stopFlAnim() {
 <!-- BRIEF-SCRIPT-START -->
 <script>
 // ===== [브리핑 계약] 폼 + 마스터 본부 페이지 =====
-var BRIEF_RECEIVER = '박동준';          // 쉐어 받는 본부장(고정)
+var BRIEF_RECEIVER = '박동준';
+var BRIEF_RECV_RATE = 0.4;               // 본부장 쉐어율(고정 40%)          // 쉐어 받는 본부장(고정)
 window.briefBrokers = window.briefBrokers || null;   // [{name, rate}] — 구글시트 '마스터본부' 탭
 
 function briefLoadBrokers(cb) {
@@ -13793,7 +13785,7 @@ function briefChanged() {
     var el = document.getElementById('briefStatus');
     if (!el) return;
     if (!document.getElementById('brief_contract').checked) { el.textContent = ''; return; }
-    var r = parseFloat(document.getElementById('briefRate').value) || 0;
+    var r = BRIEF_RECV_RATE;
     var n = document.getElementById('briefBroker').value;
     el.textContent = '(' + (loggedInUser === currentUser ? currentUser : currentUser) + ' ' + Math.round((1 - r) * 100) + '% / ' + BRIEF_RECEIVER + ' ' + Math.round(r * 100) + '%' + (n ? ' · 섭외 ' + n : '') + ')';
 }
@@ -13811,11 +13803,11 @@ function briefCollect() {
     if (!c || !c.checked) return null;
     if (currentUser === BRIEF_RECEIVER) { showAlert('warning', '알림', BRIEF_RECEIVER + ' 본부장 본인 계약은 브리핑 계약으로 등록할 수 없습니다.'); return false; }
     var name = document.getElementById('briefBroker').value;
-    if (!name) { showAlert('warning', '알림', '섭외자(브리퍼)를 선택해주세요.'); return false; }
-    var recv = parseFloat(document.getElementById('briefRate').value) || 0;
+    if (!name) { showAlert('warning', '알림', '섭외자를 선택해주세요.'); return false; }
+    var recv = BRIEF_RECV_RATE;
     var b = (window.briefBrokers || []).find(function (x) { return x.name === name; });
     var br = b ? (parseFloat(b.rate) || 0) : 0;
-    if (br > recv) { showAlert('warning', '알림', name + ' 쉐어율(' + Math.round(br * 100) + '%)이 본부장 쉐어(' + Math.round(recv * 100) + '%)보다 큽니다. 쉐어율을 올려주세요.'); return false; }
+    if (br > recv) { showAlert('warning', '알림', name + ' 쉐어율(' + Math.round(br * 100) + '%)이 본부장 쉐어(' + Math.round(recv * 100) + '%)보다 큽니다. 마스터본부 시트의 쉐어율을 확인해주세요.'); return false; }
     if (currentShareData && currentShareData.length > 0) {
         currentShareData = []; updateShareStatus();   // 브리핑 계약은 쉐어 설정을 대체
     }
@@ -13848,29 +13840,39 @@ function briefCollect() {
                 var calc = function (patch, owner) {
                     var c = JSON.parse(JSON.stringify(it));
                     Object.keys(patch).forEach(function (k) { c[k] = patch[k]; });
-                    var sm = currentMonth; try { calculateItemMetrics(c, owner); } catch (e) { }
+                    try { calculateItemMetrics(c, owner); } catch (e) { }
                     return c;
                 };
                 var full = calc({ shares: [], attributes: Object.assign({}, it.attributes, { briefing: null }) }, d.name);   // 쉐어 전 총수수료
                 var main = calc({}, d.name);
                 var recv = calc({ isSharedView: true }, bf.receiver);
                 var brf = calc({ isSharedView: true, isBriefView: true }, bf.briefer);
-                // 본부장 명목 40% (브리퍼 차감 전, 익월수수료+익월시책)
-                var recvNominal = Math.round(((full.nextMoney || 0) + (full.bonusMoney || 0)) * (parseFloat(bf.recvRate) || 0));
+                var nx = function (x) { return (x.nextMoney || 0) + (x.bonusMoney || 0); };   // 익월소득 = 익월수수료 + 익월시책
                 rows.push({
                     month: d.month, owner: d.name, date: it.date, company: it.company, name: it.productName, premium: it.premium,
                     contractor: it.contractor || '', withdrawn: !!it.isWithdrawn, bf: bf,
-                    total: full.totalMoney || 0, mainInc: main.totalMoney || 0,
-                    recvNominal: recvNominal, recvReal: recv.totalMoney || 0, brfInc: brf.totalMoney || 0
+                    total: full.totalMoney || 0, totalNext: nx(full),
+                    mainInc: main.totalMoney || 0, mainNext: nx(main),
+                    recvReal: recv.totalMoney || 0, recvNext: nx(recv),
+                    brfInc: brf.totalMoney || 0
                 });
             });
         });
         return rows;
     }
 
-    function card(title, val, sub, color) {
-        return '<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4"><div class="text-[11px] font-bold text-gray-500 mb-1">' + title + '</div>' +
-            '<div class="text-2xl font-extrabold ' + color + ' tracking-tight">' + val + '</div><div class="text-[11px] text-gray-400 mt-1">' + sub + '</div></div>';
+    // 총 소득 | 익월소득 한 줄 카드
+    function card2(title, total, next, sub, color) {
+        return '<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4"><div class="text-[11px] font-bold text-gray-500 mb-2">' + title + '</div>' +
+            '<div class="flex items-stretch gap-3 sm:gap-5">' +
+            '<div class="flex-1 min-w-0"><div class="text-[10px] text-gray-400 mb-0.5">총 소득</div><div class="text-base sm:text-xl font-extrabold ' + color + ' tracking-tight whitespace-nowrap">' + fmt(total) + '</div></div>' +
+            '<div class="w-px bg-gray-200"></div>' +
+            '<div class="flex-1 min-w-0"><div class="text-[10px] text-gray-400 mb-0.5">익월소득</div><div class="text-base sm:text-xl font-extrabold text-gray-700 tracking-tight whitespace-nowrap">' + fmt(next) + '</div></div>' +
+            '</div>' + (sub ? '<div class="text-[11px] text-gray-400 mt-2">' + sub + '</div>' : '') + '</div>';
+    }
+    function card(title, val, color) {
+        return '<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4"><div class="text-[11px] font-bold text-gray-500 mb-2">' + title + '</div>' +
+            '<div class="text-[10px] text-gray-400 mb-0.5">총 소득</div><div class="text-base sm:text-xl font-extrabold ' + color + ' tracking-tight">' + fmt(val) + '</div></div>';
     }
 
     window.renderMasterHqPage = function (monthChanged) {
@@ -13888,20 +13890,17 @@ function briefCollect() {
                 if (sel.value !== (prev || currentMonth || '')) sel.value = '';
             }
             var month = sel.value;
-            var rows = collect(month).filter(function (r) { return !r.withdrawn; });
-            if (scope === 'self') rows = rows.filter(function (r) { return r.bf.briefer === loggedInUser; });
             if (!scope) { document.getElementById('mhqSummary2').innerHTML = ''; document.getElementById('mhqSummary').innerHTML = '<div class="text-sm text-gray-500 p-4">열람 권한이 없습니다.</div>'; document.getElementById('mhqBrokers').innerHTML = ''; document.getElementById('mhqList').innerHTML = ''; return; }
+            var rows = collect(month).filter(function (r) { return !r.withdrawn; });
 
-            var sumTotal = 0, sumRecvN = 0, sumRecvR = 0, sumBrf = 0;
-            rows.forEach(function (r) { sumTotal += r.total; sumRecvN += r.recvNominal; sumRecvR += r.recvReal; sumBrf += r.brfInc; });
+            var sT = 0, sTN = 0, sR = 0, sRN = 0, sB = 0;
+            rows.forEach(function (r) { sT += r.total; sTN += r.totalNext; sR += r.recvReal; sRN += r.recvNext; sB += r.brfInc; });
             document.getElementById('mhqSummary').innerHTML =
-                card('① 브리핑 계약 총 수수료', fmt(sumTotal), rows.length + '건 · 쉐어 전 전체 수수료', 'text-indigo-600') +
-                card('② ' + BRIEF_RECEIVER + ' 본부장 소득', fmt(sumRecvR), '쉐어 40% 중 브리퍼 몫 차감 후 (익월·시책·13회·유지 포함) · 명목 40% 기준(익월수수료+익월시책) ' + fmt(sumRecvN), 'text-amber-600');
-            document.getElementById('mhqSummary2').innerHTML =
-                card('③ 섭외자(브리퍼) 총 소득', fmt(sumBrf), '등록 브리퍼 합계 (익월수수료+익월시책만)', 'text-emerald-600') +
-                card('브리퍼 인원', Object.keys((function(){var o={};rows.forEach(function(r){if(r.bf.briefer)o[r.bf.briefer]=1;});return o;})()).length + '명', '브리핑 계약이 있는 섭외자', 'text-gray-700');
+                card2('① 브리핑 계약 총 수수료', sT, sTN, rows.length + '건 · 쉐어 전 전체 수수료', 'text-indigo-600') +
+                card2('② ' + BRIEF_RECEIVER + ' 본부장 소득', sR, sRN, '쉐어 ' + Math.round(BRIEF_RECV_RATE * 100) + '% 중 섭외자 몫 차감 후', 'text-amber-600');
+            document.getElementById('mhqSummary2').innerHTML = card('③ 섭외자 총 소득', sB, 'text-emerald-600');
 
-            // 브리퍼별
+            // 섭외자별
             var by = {};
             (window.briefBrokers || []).forEach(function (b) { by[b.name] = { rate: b.rate, cnt: 0, inc: 0, reg: true }; });
             rows.forEach(function (r) {
@@ -13909,20 +13908,42 @@ function briefCollect() {
                 if (!by[n]) by[n] = { rate: r.bf.brieferRate, cnt: 0, inc: 0, reg: false };
                 by[n].cnt++; by[n].inc += r.brfInc;
             });
-            var bn = Object.keys(by).filter(function (n) { return scope === 'all' || n === loggedInUser; });
-            document.getElementById('mhqBrokers').innerHTML = bn.length ? ('<table class="w-full text-xs sm:text-sm"><thead><tr class="text-gray-500 border-b"><th class="py-2 text-left">브리퍼</th><th class="py-2 text-right">쉐어율</th><th class="py-2 text-right">계약 수</th><th class="py-2 text-right">총 소득</th></tr></thead><tbody>' +
+            var bn = Object.keys(by);
+            var th = 'border border-gray-300 bg-gray-100 text-gray-600 font-bold px-3 py-2 whitespace-nowrap';
+            var td = 'border border-gray-300 px-3 py-2';
+            document.getElementById('mhqBrokers').innerHTML = bn.length ? ('<table class="w-full text-xs sm:text-sm border-collapse border border-gray-300"><thead><tr><th class="' + th + ' text-left">섭외자</th><th class="' + th + ' text-right">쉐어율</th><th class="' + th + ' text-right">계약 수</th><th class="' + th + ' text-right">총 소득</th></tr></thead><tbody>' +
                 bn.map(function (n) {
                     var b = by[n];
-                    return '<tr class="border-b border-gray-100"><td class="py-2 font-medium">' + esc(n) + (b.reg ? '' : ' <span class="text-[10px] text-gray-400">(시트 미등록)</span>') + '</td><td class="py-2 text-right">' + Math.round((b.rate || 0) * 100) + '%</td><td class="py-2 text-right">' + b.cnt + '건</td><td class="py-2 text-right font-bold text-emerald-600">' + fmt(b.inc) + '</td></tr>';
-                }).join('') + '</tbody></table>') : '<div class="text-xs text-gray-400 py-3">마스터본부 탭에 등록된 브리퍼가 없습니다. 구글시트 \'마스터본부\' 탭 A열=섭외자 이름, B열=쉐어율을 입력하세요.</div>';
+                    return '<tr class="hover:bg-gray-50"><td class="' + td + ' font-medium">' + esc(n) + (b.reg ? '' : ' <span class="text-[10px] text-gray-400">(시트 미등록)</span>') + '</td><td class="' + td + ' text-right">' + Math.round((b.rate || 0) * 100) + '%</td><td class="' + td + ' text-right">' + b.cnt + '건</td><td class="' + td + ' text-right font-bold text-emerald-600">' + fmt(b.inc) + '</td></tr>';
+                }).join('') + '</tbody></table>') : '<div class="text-xs text-gray-400 py-3">마스터본부 탭에 등록된 섭외자가 없습니다. 구글시트 \'마스터본부\' 탭 A열=섭외자 이름, B열=쉐어율을 입력하세요.</div>';
 
-            // 내역
+            // 브리핑 계약 내역 (줄·칸 표)
             rows.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
-            document.getElementById('mhqList').innerHTML = rows.length ? ('<table class="w-full text-xs whitespace-nowrap"><thead><tr class="text-gray-500 border-b"><th class="py-2 text-left">일자</th><th class="py-2 text-left">메인</th><th class="py-2 text-left">상품</th><th class="py-2 text-right">보험료</th><th class="py-2 text-center">쉐어</th><th class="py-2 text-left">섭외자</th><th class="py-2 text-right">총수수료</th><th class="py-2 text-right">메인</th><th class="py-2 text-right">' + BRIEF_RECEIVER + '</th><th class="py-2 text-right">브리퍼</th></tr></thead><tbody>' +
-                rows.map(function (r) {
-                    var rr = Math.round((parseFloat(r.bf.recvRate) || 0) * 100);
-                    return '<tr class="border-b border-gray-100"><td class="py-2">' + esc(String(r.date || '').substring(5)) + '</td><td class="py-2">' + esc(r.owner) + '</td><td class="py-2 max-w-[220px] truncate" title="' + esc(r.name) + '">' + esc(r.name) + '</td><td class="py-2 text-right">' + (r.premium || 0).toLocaleString() + '</td><td class="py-2 text-center">' + (100 - rr) + ' / ' + rr + '</td><td class="py-2">' + esc(r.bf.briefer) + ' ' + Math.round((r.bf.brieferRate || 0) * 100) + '%</td><td class="py-2 text-right">' + (r.total).toLocaleString() + '</td><td class="py-2 text-right">' + r.mainInc.toLocaleString() + '</td><td class="py-2 text-right">' + r.recvReal.toLocaleString() + '</td><td class="py-2 text-right text-emerald-600 font-bold">' + r.brfInc.toLocaleString() + '</td></tr>';
-                }).join('') + '</tbody></table>') : '<div class="text-xs text-gray-400 py-3">브리핑 계약이 없습니다.</div>';
+            var n = function (v) { return (v || 0).toLocaleString(); };
+            var rr = Math.round(BRIEF_RECV_RATE * 100);
+            var sumRow = rows.reduce(function (a, r) { a.prem += r.premium || 0; a.t += r.total; a.m += r.mainInc; a.r += r.recvReal; a.b += r.brfInc; return a; }, { prem: 0, t: 0, m: 0, r: 0, b: 0 });
+            document.getElementById('mhqList').innerHTML = rows.length ? ('<table class="w-full min-w-[980px] text-xs border-collapse border border-gray-300"><thead class="sticky top-0"><tr>' +
+                ['일자', '회사', '메인', '계약자', '상품', '보험료', '쉐어(메인/본부장)', '섭외자', '총 수수료', '메인 소득', BRIEF_RECEIVER + ' 소득', '섭외자 소득'].map(function (t, i) {
+                    return '<th class="' + th + (i >= 5 && i !== 6 && i !== 7 ? ' text-right' : ' text-center') + '">' + t + '</th>';
+                }).join('') + '</tr></thead><tbody>' +
+                rows.map(function (r, i) {
+                    var rate = Math.round((parseFloat(r.bf.recvRate) || 0) * 100);
+                    return '<tr class="' + (i % 2 ? 'bg-gray-50' : 'bg-white') + ' hover:bg-amber-50">' +
+                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(String(r.date || '').substring(5)) + '</td>' +
+                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.company || '-') + '</td>' +
+                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.owner) + '</td>' +
+                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.contractor || '-') + '</td>' +
+                        '<td class="' + td + ' min-w-[180px] break-words">' + esc(r.name) + '</td>' +
+                        '<td class="' + td + ' text-right whitespace-nowrap">' + n(r.premium) + '</td>' +
+                        '<td class="' + td + ' text-center whitespace-nowrap">' + (100 - rate) + ' / ' + rate + '</td>' +
+                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.bf.briefer) + ' <span class="text-gray-400">' + Math.round((r.bf.brieferRate || 0) * 100) + '%</span></td>' +
+                        '<td class="' + td + ' text-right whitespace-nowrap font-bold">' + n(r.total) + '</td>' +
+                        '<td class="' + td + ' text-right whitespace-nowrap">' + n(r.mainInc) + '</td>' +
+                        '<td class="' + td + ' text-right whitespace-nowrap text-amber-700">' + n(r.recvReal) + '</td>' +
+                        '<td class="' + td + ' text-right whitespace-nowrap text-emerald-600 font-bold">' + n(r.brfInc) + '</td></tr>';
+                }).join('') +
+                '<tr class="bg-indigo-50 font-bold"><td class="' + td + ' text-center" colspan="5">합계 (' + rows.length + '건)</td><td class="' + td + ' text-right">' + n(sumRow.prem) + '</td><td class="' + td + '"></td><td class="' + td + '"></td><td class="' + td + ' text-right">' + n(sumRow.t) + '</td><td class="' + td + ' text-right">' + n(sumRow.m) + '</td><td class="' + td + ' text-right text-amber-700">' + n(sumRow.r) + '</td><td class="' + td + ' text-right text-emerald-600">' + n(sumRow.b) + '</td></tr>' +
+                '</tbody></table>') : '<div class="text-xs text-gray-400 py-3">브리핑 계약이 없습니다.</div>';
         };
         if (window.briefBrokers === null) { briefLoadBrokers(run); } else { run(); if (!monthChanged) briefLoadBrokers(run); }
     };

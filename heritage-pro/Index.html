@@ -1299,13 +1299,16 @@
                   <button type="button" onclick="renderMasterHqPage()" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition">🔄 새로고침</button>
               </div>
           </div>
-          <div id="mhqSummary" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4"></div>
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
+          <div class="text-sm font-extrabold text-indigo-700 mb-2 px-1">■ 브리핑 소득</div>
+          <div id="mhqSummary" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6"></div>
+          <div class="text-sm font-extrabold text-emerald-700 mb-2 px-1">■ 섭외자 소득</div>
+          <div id="mhqSummary2" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3"></div>
+          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
               <div class="text-sm font-bold text-gray-700 mb-2">👥 등록된 브리퍼별 브리핑계약 소득 <span class="text-[11px] font-normal text-gray-400">(구글시트 '마스터본부' 탭 기준 · 익월수수료+익월시책)</span></div>
               <div id="mhqBrokers" class="overflow-x-auto"></div>
           </div>
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-              <div class="text-sm font-bold text-gray-700 mb-2">📋 브리핑 계약 내역</div>
+              <div class="text-sm font-extrabold text-gray-700 mb-2">■ 브리핑 계약 내역</div>
               <div id="mhqList" class="overflow-x-auto"></div>
           </div>
       </div>
@@ -3131,7 +3134,7 @@ function calculateItemMetrics(item, ownerName) {
     let myPrem = Math.round(basePrem * myShareRate);
 
     // [브리핑 계약] 실제 소득 분배: 익월수수료·익월시책만 쉐어(메인 60 / 본부장 40-브리퍼 / 브리퍼),
-    // 13회·유지(y2,y3)는 메인 100%. (환산P·월초P는 표시 쉐어율 그대로)
+    // 13회·유지(y2,y3)는 브리퍼 몫만 메인에게 가산(박동준은 본인 몫 그대로 수령). (환산P·월초P는 표시 쉐어율 그대로)
     let nextPrem = myPrem, othPrem = myPrem;
     const _bf = (item.attributes && item.attributes.briefing && item.attributes.briefing.on) ? item.attributes.briefing : null;
     if (_bf) {
@@ -3140,9 +3143,9 @@ function calculateItemMetrics(item, ownerName) {
         if (item.isBriefView) {                       // 브리퍼 본인 화면
             nextPrem = Math.round(basePrem * _br); othPrem = 0;
         } else if (item.isSharedView) {               // 본부장(쉐어 받은 사람)
-            nextPrem = Math.round(basePrem * (_rv - _br)); othPrem = 0;
+            nextPrem = Math.round(basePrem * (_rv - _br)); othPrem = nextPrem;
         } else {                                      // 메인(원청자)
-            nextPrem = myPrem; othPrem = Math.round(basePrem);
+            nextPrem = myPrem; othPrem = Math.round(basePrem * (1 - _rv + _br));
         }
     }
 
@@ -13792,13 +13795,11 @@ function briefCollect() {
     var fmt = function (n) { return Math.round(n || 0).toLocaleString() + '원'; };
     var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
 
-    // 메뉴 노출: 지사장·총무·본부장·박동준·등록된 브리퍼
+    // 메뉴 노출: 지사장·총무·본부장만
     function canSee() {
         var role = '';
         try { role = getRole(loggedInUser) || ''; } catch (e) { }
-        if (/지사장|총무|본부장/.test(role) || loggedInUser === BRIEF_RECEIVER) return 'all';
-        var mine = (window.briefBrokers || []).some(function (b) { return b.name === loggedInUser; });
-        return mine ? 'self' : '';
+        return /지사장|총무|본부장/.test(role) ? 'all' : '';
     }
 
     // 브리핑 계약 수집 (원청자 DB의 원본만, 쉐어 사본 제외)
@@ -13858,14 +13859,16 @@ function briefCollect() {
             var month = sel.value;
             var rows = collect(month).filter(function (r) { return !r.withdrawn; });
             if (scope === 'self') rows = rows.filter(function (r) { return r.bf.briefer === loggedInUser; });
-            if (!scope) { document.getElementById('mhqSummary').innerHTML = '<div class="text-sm text-gray-500 p-4">열람 권한이 없습니다.</div>'; document.getElementById('mhqBrokers').innerHTML = ''; document.getElementById('mhqList').innerHTML = ''; return; }
+            if (!scope) { document.getElementById('mhqSummary2').innerHTML = ''; document.getElementById('mhqSummary').innerHTML = '<div class="text-sm text-gray-500 p-4">열람 권한이 없습니다.</div>'; document.getElementById('mhqBrokers').innerHTML = ''; document.getElementById('mhqList').innerHTML = ''; return; }
 
             var sumTotal = 0, sumRecvN = 0, sumRecvR = 0, sumBrf = 0;
             rows.forEach(function (r) { sumTotal += r.total; sumRecvN += r.recvNominal; sumRecvR += r.recvReal; sumBrf += r.brfInc; });
             document.getElementById('mhqSummary').innerHTML =
                 card('① 브리핑 계약 총 수수료', fmt(sumTotal), rows.length + '건 · 쉐어 전 전체 수수료', 'text-indigo-600') +
-                card('② ' + BRIEF_RECEIVER + ' 본부장 쉐어(명목)', fmt(sumRecvN), '익월수수료+익월시책 기준 · 브리퍼 몫 차감 후 실수령 ' + fmt(sumRecvR), 'text-amber-600') +
-                card('③ 브리퍼 총 소득', fmt(sumBrf), '등록 브리퍼 합계 (익월수수료+익월시책)', 'text-emerald-600');
+                card('② ' + BRIEF_RECEIVER + ' 본부장 소득', fmt(sumRecvR), '쉐어 40% 중 브리퍼 몫 차감 후 (익월·시책·13회·유지 포함) · 명목 40% 기준(익월수수료+익월시책) ' + fmt(sumRecvN), 'text-amber-600');
+            document.getElementById('mhqSummary2').innerHTML =
+                card('③ 섭외자(브리퍼) 총 소득', fmt(sumBrf), '등록 브리퍼 합계 (익월수수료+익월시책만)', 'text-emerald-600') +
+                card('브리퍼 인원', Object.keys((function(){var o={};rows.forEach(function(r){if(r.bf.briefer)o[r.bf.briefer]=1;});return o;})()).length + '명', '브리핑 계약이 있는 섭외자', 'text-gray-700');
 
             // 브리퍼별
             var by = {};

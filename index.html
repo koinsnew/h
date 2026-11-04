@@ -3155,7 +3155,8 @@ function calculateItemMetrics(item, ownerName) {
     const _bf = (item.attributes && item.attributes.briefing && item.attributes.briefing.on) ? item.attributes.briefing : null;
     if (_bf) {
         const _rv = parseFloat(_bf.recvRate) || 0;
-        const _br = Math.min(_rv, briefBrokerRate(_bf));
+        const _cm = (item.date && String(item.date).length >= 7) ? String(item.date).substring(0, 7) : currentMonth;
+        const _br = Math.min(_rv, briefBrokerRate(_bf, _cm));
         if (item.isBriefView) {                       // 브리퍼 본인 화면
             nextPrem = Math.round(basePrem * _br); othPrem = 0;
         } else if (item.isSharedView) {               // 본부장(쉐어 받은 사람)
@@ -13751,12 +13752,30 @@ function briefLoadBrokers(cb) {
         .withFailureHandler(function (e) { console.error('마스터본부 탭 로드 실패:', e); window.briefBrokers = window.briefBrokers || []; if (cb) cb(); })
         .getMasterHqBrokers();
 }
-// 브리퍼 쉐어율(시트 기준). 입력 당시 스냅샷(brieferRate)을 우선 사용하고, 없으면 시트 최신값.
-function briefBrokerRate(bf) {
+// 섭외자의 월별 쉐어율: 시트에서 name 행 중 적용월(from) <= month 인 것 중 가장 늦은 행. 비어 있는 from은 처음부터.
+function briefRateAt(name, month) {
+    var rows = (window.briefBrokers || []).filter(function (x) { return x.name === name; });
+    if (!rows.length) return null;
+    month = month || (typeof currentMonth !== 'undefined' ? currentMonth : '');
+    var best = null;
+    rows.forEach(function (r) {
+        var f = r.from || '';
+        if (f <= month && (best === null || f >= (best.from || ''))) best = r;
+    });
+    if (!best) best = rows.slice().sort(function (a, b) { return (a.from || '').localeCompare(b.from || ''); })[0];   // 모두 미래 시작이면 가장 이른 행
+    return parseFloat(best.rate) || 0;
+}
+function briefNames() {
+    var seen = {}, out = [];
+    (window.briefBrokers || []).forEach(function (b) { if (!seen[b.name]) { seen[b.name] = 1; out.push(b.name); } });
+    return out;
+}
+// 계약월 기준 쉐어율(시트 우선, 시트에 없으면 입력 당시 스냅샷)
+function briefBrokerRate(bf, month) {
     if (!bf) return 0;
-    if (bf.brieferRate !== undefined && bf.brieferRate !== null && bf.brieferRate !== '') return parseFloat(bf.brieferRate) || 0;
-    var b = (window.briefBrokers || []).find(function (x) { return x.name === bf.briefer; });
-    return b ? (parseFloat(b.rate) || 0) : 0;
+    var r = briefRateAt(bf.briefer, month);
+    if (r !== null) return r;
+    return parseFloat(bf.brieferRate) || 0;
 }
 // 섭외자 선택 드롭다운은 지사장·총무에게만 보인다
 function briefIsAdmin() {
@@ -13789,10 +13808,12 @@ function briefFillBrokers() {
     var sel = document.getElementById('briefBroker');
     if (!sel) return;
     var prev = sel.value;
-    var list = (window.briefBrokers || []).filter(function (b) { return b.name !== BRIEF_RECEIVER; });
+    var list = briefNames().filter(function (n) { return n !== BRIEF_RECEIVER; });
+    var dv = (document.getElementById('dateInput') || {}).value || '';
+    var mon = dv.length >= 7 ? dv.substring(0, 7) : currentMonth;
     var html = '<option value="">선택</option>';
-    list.forEach(function (b) {
-        html += '<option value="' + b.name + '">' + b.name + ' (' + Math.round((b.rate || 0) * 100) + '%)</option>';
+    list.forEach(function (n) {
+        html += '<option value="' + n + '">' + n + ' (' + Math.round((briefRateAt(n, mon) || 0) * 100) + '%)</option>';
     });
     if (window.briefBrokers && list.length === 0) html = '<option value="">시트에 등록된 섭외자 없음</option>';
     sel.innerHTML = html;
@@ -13824,8 +13845,8 @@ function briefCollect() {
     var name = adm ? document.getElementById('briefBroker').value : '';
     if (adm && !name) { showAlert('warning', '알림', '섭외자를 선택해주세요.'); return false; }
     var recv = BRIEF_RECV_RATE;
-    var b = (window.briefBrokers || []).find(function (x) { return x.name === name; });
-    var br = b ? (parseFloat(b.rate) || 0) : 0;
+    var _dv = (document.getElementById('dateInput') || {}).value || '';
+    var br = name ? (briefRateAt(name, _dv.length >= 7 ? _dv.substring(0, 7) : currentMonth) || 0) : 0;
     if (name && br > recv) { showAlert('warning', '알림', name + ' 쉐어율(' + Math.round(br * 100) + '%)이 본부장 쉐어(' + Math.round(recv * 100) + '%)보다 큽니다. 마스터본부 시트의 쉐어율을 확인해주세요.'); return false; }
     if (currentShareData && currentShareData.length > 0) {
         currentShareData = []; updateShareStatus();   // 브리핑 계약은 쉐어 설정을 대체
@@ -13930,10 +13951,11 @@ function briefCollect() {
 
             // 섭외자별
             var by = {};
-            (window.briefBrokers || []).forEach(function (b) { by[b.name] = { rate: b.rate, cnt: 0, inc: 0, reg: true }; });
+            var _rm = month || currentMonth;
+            briefNames().forEach(function (n) { by[n] = { rate: briefRateAt(n, _rm), cnt: 0, inc: 0, reg: true }; });
             rows.forEach(function (r) {
                 var n = r.bf.briefer; if (!n) return;
-                if (!by[n]) by[n] = { rate: r.bf.brieferRate, cnt: 0, inc: 0, reg: false };
+                if (!by[n]) by[n] = { rate: briefBrokerRate(r.bf, r.month), cnt: 0, inc: 0, reg: false };
                 by[n].cnt++; by[n].inc += r.brfInc;
             });
             var bn = Object.keys(by);
@@ -13964,7 +13986,7 @@ function briefCollect() {
                         '<td class="' + td + ' min-w-[180px] break-words">' + esc(r.name) + '</td>' +
                         '<td class="' + td + ' text-right whitespace-nowrap">' + n(r.premium) + '</td>' +
                         '<td class="' + td + ' text-center whitespace-nowrap">' + (100 - rate) + ' / ' + rate + '</td>' +
-                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.bf.briefer) + ' <span class="text-gray-400">' + Math.round((r.bf.brieferRate || 0) * 100) + '%</span></td>' +
+                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.bf.briefer) + ' <span class="text-gray-400">' + Math.round((briefBrokerRate(r.bf, r.month) || 0) * 100) + '%</span></td>' +
                         '<td class="' + td + ' text-right whitespace-nowrap font-bold">' + n(r.total) + '</td>' +
                         '<td class="' + td + ' text-right whitespace-nowrap">' + n(r.mainInc) + '</td>' +
                         '<td class="' + td + ' text-right whitespace-nowrap text-amber-700">' + n(r.recvReal) + '</td>' +

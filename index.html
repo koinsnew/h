@@ -555,12 +555,24 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 
     #orgChartStats:empty{display:none}
     #quickTrendRow button{white-space:nowrap;font-size:.8125rem;padding-left:.25rem;padding-right:.25rem;min-height:2.75rem}
+    /* 넓은 화면 메뉴: 칸을 촘촘히, 머리는 로고, 상단 바의 로고는 숨김 */
+    @media (min-width:1024px){
+      #sidebarHead{background:#fff!important;height:4rem;padding:0 1rem!important;border-bottom:1px solid #f3f4f6;box-shadow:none!important;border-radius:0!important}
+      #sidebar .nav-item{height:2.375rem!important;font-size:14px!important}
+      #sidebar li[role="presentation"]{padding-top:.6rem!important;padding-bottom:.15rem!important}
+      #sidebar > div:last-child{padding:.6rem .75rem!important}
+      #sidebar > div:last-child button{padding-top:.5rem!important;padding-bottom:.5rem!important}
+      #navBrand{display:none!important}
+    }
+    /* 메뉴가 길어 아래가 가려질 때 아래쪽을 흐리게 */
+    #sidebarScroll.y-more{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 40px),transparent)}
     /* 표 안 빈 상태·로딩 문구: 표가 화면보다 넓어도 보이는 영역 가운데에 표시 */
     .tbl-msg{position:sticky;left:0;max-width:calc(100vw - 3rem);margin:0 auto 0 0;text-align:center}
     @media (min-width:640px){.tbl-msg{max-width:none;margin:0 auto}}
 </style>
 </head>
 <body class="text-gray-800">
+    <a href="#mainContent" onclick="var m=document.getElementById('mainContent'); if(m){m.focus();}" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[20000] focus:bg-white focus:text-indigo-700 focus:font-bold focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">본문으로 건너뛰기</a>
 
     <!-- 로그인 오버레이 -->
     <div id="loginOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-90 z-[10000] flex flex-col items-center justify-center px-4">
@@ -663,11 +675,12 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     <!-- 사이드바 -->
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden transition-opacity"></div>
     <aside id="sidebar" inert aria-label="메뉴" class="fixed top-0 left-0 w-64 h-full bg-white shadow-2xl z-[10000] transform -translate-x-full transition-transform duration-300 flex flex-col">
-        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-indigo-600">
-            <h2 class="text-white font-bold text-lg">메뉴</h2>
+        <div id="sidebarHead" class="p-5 border-b border-gray-100 flex justify-between items-center bg-indigo-600">
+            <h2 class="text-white font-bold text-lg lg:hidden">메뉴</h2>
+            <button onclick="navigateTo('home')" class="hidden lg:block text-xl font-bold text-gray-800 rounded px-1 hover:bg-gray-50">Heritage <span class="text-indigo-600">Pro</span></button>
             <button onclick="toggleSidebar()" aria-label="메뉴 닫기" class="lg:hidden text-white text-2xl w-11 h-11 -mr-2 flex items-center justify-center rounded-lg hover:bg-white/10">&times;</button>
         </div>
-        <div class="flex-1 overflow-y-auto py-4">
+        <div id="sidebarScroll" class="flex-1 overflow-y-auto py-4 lg:py-2">
             <ul class="space-y-0.5">
                 <li role="presentation" class="px-5 pt-1 pb-1 text-xs font-bold text-gray-500 tracking-wide">내 영업</li>
                 <li><button onclick="navigateTo('home')" data-nav="home" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🏠</span><span>홈</span></button></li>
@@ -704,7 +717,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center flex-shrink-0">
                     <button onclick="toggleSidebar()" aria-label="메뉴 열기" class="lg:hidden mr-1 sm:mr-3 text-gray-600 text-2xl w-11 h-11 flex items-center justify-center rounded-lg hover:bg-gray-100">☰</button>
-                    <button onclick="navigateTo('home')" class="text-sm sm:text-xl font-bold text-gray-800 whitespace-nowrap active:scale-95 transition-transform duration-100 px-1 sm:px-2 py-1 rounded hover:bg-gray-50 active:bg-gray-100">
+                    <button id="navBrand" onclick="navigateTo('home')" class="text-sm sm:text-xl font-bold text-gray-800 whitespace-nowrap active:scale-95 transition-transform duration-100 px-1 sm:px-2 py-1 rounded hover:bg-gray-50 active:bg-gray-100">
                         Heritage <span class="text-indigo-600">Pro</span>
                     </button>
                 </div>
@@ -725,7 +738,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <main id="mainContent" tabindex="-1" class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-8 outline-none">
       <!-- 홈 페이지 -->
       <div id="page-home" class="page-section">
         <div id="shareNotificationArea" class="mb-4 space-y-2 no-print max-h-[260px] overflow-y-auto custom-scrollbar pr-1"></div>
@@ -14995,6 +15008,15 @@ function briefCollect() {
     window.addEventListener('resize', all);
     document.addEventListener('click', function () { setTimeout(all, 400); }, true);
     setInterval(all, 1500); setTimeout(all, 500);
+})();
+</script>
+
+<script>
+// [메뉴] 아래에 더 있으면 흐림 표시
+(function () {
+    function upd() { var s = document.getElementById('sidebarScroll'); if (s) s.classList.toggle('y-more', s.scrollTop + s.clientHeight < s.scrollHeight - 4); }
+    document.addEventListener('DOMContentLoaded', function () { var s = document.getElementById('sidebarScroll'); if (s) s.addEventListener('scroll', upd, { passive: true }); upd(); });
+    window.addEventListener('resize', upd); setInterval(upd, 1500);
 })();
 </script>
 </body>

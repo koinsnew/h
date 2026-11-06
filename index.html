@@ -2577,7 +2577,7 @@ fp = flatpickr("#dateInput", {
     history.replaceState({ page: 'home', modal: null }, 'home', '');
 
     // [보안] API 모드에서는 로그인(토큰) 후에 사용자·자료를 불러온다
-    if (!window.__hpRemote || typeof google === 'undefined') { loadUserInfo(); if (typeof google !== 'undefined') preloadBoardData(); }
+    loadUserInfo(); if (typeof google !== 'undefined') preloadBoardData();   // [로그인] 기존 방식: 로그인 전에 미리 불러옴(빠른 로그인)
     startFlAnim();
 
     document.getElementById('loginNameInput').value = "";
@@ -15147,7 +15147,7 @@ function briefCollect() {
   function setBusy(on){ busy = on; var b=document.getElementById('btnLogin'); if(b){ b.disabled = on; b.classList.toggle('opacity-60', on); b.setAttribute('aria-busy', on?'true':'false'); } }
   window.secureLogin = function(){
     if (busy) return;
-    if (!window.__hpRemote || typeof google === 'undefined') { handleLogin(); return; }   // 로컬 테스트·Apps Script 내부 실행은 기존 방식
+    if (true) { handleLogin(); return; }   // [로그인] 기존 방식으로 복귀 (서버 토큰 방식은 아래에 보관)   // 로컬 테스트·Apps Script 내부 실행은 기존 방식
     var nameEl=document.getElementById('loginNameInput'), pwEl=document.getElementById('loginPwInput');
     var name=(nameEl.value||'').trim(), pw=(pwEl.value||'').trim();
     var el=document.getElementById('loginErrorMsg'); if(el){ el.classList.add('hidden'); el.innerText=''; }

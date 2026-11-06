@@ -568,6 +568,30 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     #sidebarScroll.y-more{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 40px),transparent)}
     /* 특별 프로모션 메뉴 제거: 목록의 합산 체크도 숨김 */
     .promo-chk{display:none!important}
+    /* 홈 접기 카드 (1280px 미만) */
+    .fold-btn{display:none}
+    @media (max-width:1279px){
+      .fold-card > h2{cursor:pointer}
+      .fold-card:not(.is-open) > :not(h2){display:none!important}
+      .fold-card:not(.is-open) > h2{margin-bottom:0}
+      .fold-card:not(.is-open) .fold-hide-c{display:none!important}
+      .fold-card.is-open .fold-sum{display:none}
+      .fold-btn{display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;margin:-.5rem -.5rem -.5rem .25rem;border-radius:.5rem;color:#6b7280;flex:none}
+      .fold-btn:hover{background:#f3f4f6}
+      .fold-btn svg{transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+      .fold-card.is-open .fold-btn svg{transform:rotate(180deg)}
+    }
+    .fold-sum{margin-left:auto;font-size:.875rem;font-weight:600;color:#374151;font-variant-numeric:tabular-nums;white-space:nowrap}
+    @media (min-width:1280px){.fold-sum{display:none}}
+    /* 홈 리스트 카드: 손가락 크기 */
+    @media screen{
+      #homeListTable td:last-child{gap:.75rem}
+      #homeListTable td:last-child button,#homeListTable td:last-child > span{min-height:40px;padding:0 .9rem!important;display:inline-flex;align-items:center;margin:0!important}
+      #homeListTable td:last-child button[onclick^="deleteRow"]{order:2}
+      #homeListTable td input[type=text]{min-height:40px;max-width:120px!important}
+    }
+    /* 밝은 화면의 흐린 회색 글자 대비 보강 */
+    #mainContent .text-gray-400{color:#6b7280}
     /* 표 안 빈 상태·로딩 문구: 표가 화면보다 넓어도 보이는 영역 가운데에 표시 */
     .tbl-msg{position:sticky;left:0;max-width:calc(100vw - 3rem);margin:0 auto 0 0;text-align:center}
     @media (min-width:640px){.tbl-msg{max-width:none;margin:0 auto}}
@@ -602,7 +626,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <p id="loginErrorMsg" class="text-red-500 text-sm font-bold hidden animate-pulse"></p>
                 <p class="text-xs text-gray-500 mt-2">* 등록되지 않은 사용자는 접속할 수 없습니다.<br>* 주민번호 미등록자는 성명만 입력하세요.</p>
             </div>
-            <p class="mt-4 text-xs text-gray-500">Copyright © Heritage Branch</p>
+            <p class="mt-4 text-xs text-gray-500">© 헤리티지 금융지사</p>
         </div>
     </div>
 
@@ -743,43 +767,29 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
       <div id="page-home" class="page-section">
         <div id="shareNotificationArea" class="mb-4 space-y-2 no-print max-h-[260px] overflow-y-auto custom-scrollbar pr-1"></div>
 
-        <div class="mb-6 flex flex-col sm:flex-row justify-between items-end gap-4">
+        <div class="mb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
             <div class="w-full sm:w-auto text-center sm:text-left">
-                <h1 class="text-lg sm:text-2xl font-bold text-gray-900 break-keep">나의 전문성은 고객을 위한 최소한의 배려</h1>
+                <h1 class="text-base sm:text-2xl font-bold text-gray-900 break-keep">나의 전문성은 고객을 위한 최소한의 배려</h1>
                 <p class="text-sm text-gray-500 mt-1" id="welcomeMsg">환영합니다.</p>
             </div>
-            <div class="flex flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
-                
-                <div class="flex flex-col gap-2 w-full sm:w-[280px] no-print">
-                    <div class="grid grid-cols-2 gap-2 w-full">
-                        <button onclick="navigateTo('product-strategy')" class="h-10 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1">
-                            📊 상품전략 <span aria-hidden="true">›</span>
-                        </button>
-                        <button onclick="openFinancialModal()" class="h-10 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-lg text-sm font-bold transition flex items-center justify-center gap-1">
-                            재무설계 <span aria-hidden="true">›</span>
-                        </button>
-                    </div>
-                    
-                    <div id="actionBtnRow" class="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full">
-                        <button onclick="openMaintModal()" class="h-10 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold shadow-sm transition flex items-center justify-center">
-                            유지수수료
-                        </button>
-                        <button id="btnSaveData" onclick="saveData(false)" class="h-10 bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 rounded-lg text-sm font-bold transition flex items-center justify-center">
-                            지금 저장
-                        </button>
-                        <button onclick="printPage()" class="hidden sm:flex h-10 bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 rounded-lg text-sm font-bold transition items-center justify-center">
-                            출력
-                        </button>
-                    </div>
-                    <p id="autoSaveStatus" class="text-xs text-gray-600 text-center sm:text-right tabular-nums" aria-live="polite">추가·삭제하면 자동으로 저장됩니다</p>
-                </div>
-                <div class="text-center sm:text-right w-full mt-1">
+            <div class="flex flex-col items-center sm:items-end gap-3 w-full sm:w-auto">
+                <div class="text-center sm:text-right w-full">
                     <span class="text-xs sm:text-sm text-gray-500"><span id="displayMonth" class="font-bold text-gray-700"></span>월 예상 수수료 (익월 + OR)</span>
-                    <p class="text-2xl sm:text-3xl font-extrabold text-indigo-600 leading-none mt-1 cursor-pointer hover:text-indigo-700 transition inline-flex items-center gap-1 justify-center sm:justify-end w-full" id="grandTotalCommission" onclick="openGmOperationModal()">0원</p>
-                    <span id="gmOperationHint" class="hidden text-xs text-purple-600 font-semibold mt-1 cursor-pointer" onclick="openGmOperationModal()">지사운영 내역 보기 ▸</span>
+                    <p class="text-3xl font-extrabold text-indigo-600 leading-none mt-1 cursor-pointer hover:text-indigo-700 transition inline-flex items-center gap-1 justify-center sm:justify-end w-full tabular-nums" id="grandTotalCommission" onclick="openGmOperationModal()">0원</p>
+                    <span id="gmOperationHint" class="hidden text-xs text-indigo-700 font-semibold mt-1 cursor-pointer" onclick="openGmOperationModal()">지사운영 내역 보기 ▸</span>
                     <div id="clubMsg" class="hidden mt-2 text-sm sm:text-base font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full animate-bounce-slow shadow-sm inline-block">
                         🎉 천만클럽 달성 축하드립니다! 🎉
                     </div>
+                </div>
+                <div id="actionBtnRow" class="no-print grid grid-cols-3 sm:flex sm:justify-end gap-2 w-full sm:w-auto" aria-label="도구">
+                    <button onclick="navigateTo('product-strategy')" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">상품전략</button>
+                    <button onclick="openFinancialModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">재무설계</button>
+                    <button onclick="openMaintModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">유지수수료</button>
+                    <button onclick="printPage()" class="hidden sm:inline-flex h-10 items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">출력</button>
+                </div>
+                <div class="no-print flex items-center justify-center sm:justify-end gap-2 w-full min-h-[2rem]">
+                    <p id="autoSaveStatus" class="text-xs text-gray-600 tabular-nums" aria-live="polite">추가·삭제하면 자동으로 저장됩니다</p>
+                    <button id="btnSaveData" onclick="saveData(false)" class="h-8 px-2 text-xs font-bold text-indigo-700 underline underline-offset-2 hover:text-indigo-900 rounded">지금 저장</button>
                 </div>
             </div>
         </div>
@@ -893,10 +903,10 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 <button type="button" onclick="addToList()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-md mt-2 input-unified flex items-center justify-center">리스트에 추가하기</button>
 
                         <div id="quickTrendRow" class="grid grid-cols-4 gap-2 mt-2">
-                            <button type="button" onclick="openTrendModal('personal')" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl transition shadow-md flex items-center justify-center text-xs sm:text-sm">📈 MY</button>
-                            <button type="button" onclick="openOperationModal()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl transition shadow-md flex items-center justify-center text-xs sm:text-sm">✅ 가동</button>
-                            <button type="button" id="btnBranchTrend" onclick="openTrendModal('branch')" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 rounded-xl transition shadow-md flex items-center justify-center text-xs sm:text-sm hidden">📊 지사</button>
-                            <button type="button" id="btnCompPerf" onclick="openCompanyPerfModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-md flex items-center justify-center text-xs sm:text-sm hidden">🏢 회사별</button>
+                            <button type="button" onclick="openTrendModal('personal')" class="h-11 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-sm">내 추이</button>
+                            <button type="button" onclick="openOperationModal()" class="h-11 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-sm">가동 현황</button>
+                            <button type="button" id="btnBranchTrend" onclick="openTrendModal('branch')" class="h-11 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-sm hidden">지사 추이</button>
+                            <button type="button" id="btnCompPerf" onclick="openCompanyPerfModal()" class="h-11 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-sm hidden">회사별</button>
                         </div>
                     </form>
                 </div>
@@ -909,7 +919,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 
             <!-- 중간 섹션 -->
             <div class="xl:col-span-4 space-y-4 no-print order-3">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                <div id="longTermCard" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center"><span class="w-1.5 h-5 sm:h-6 bg-blue-500 rounded-full mr-2"></span>장기근속 성장지원금</h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="text-center p-2 bg-blue-50 rounded-lg">
@@ -922,7 +932,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                         </div>
                     </div>
                     <p class="text-xs text-gray-500 text-center mt-2">* 1월/7월에 지급 및 리셋 (직전 1년+ 합산)</p>
-                    <p class="text-xs text-red-500 text-center mt-1">쉐어계약은 메인에게 모두 지급, 편의상 쉐어율 적용</p>
+                    <p class="text-xs text-gray-500 text-center mt-1">쉐어계약은 메인에게 모두 지급, 편의상 쉐어율 적용</p>
                 </div>
 
                 <div id="rookieCard" class="bg-white rounded-xl shadow-sm border border-green-100 p-4 sm:p-6 hidden bg-gradient-to-br from-white to-green-50">
@@ -1004,9 +1014,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 
                 <div id="rankingSection" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center justify-between">
-                        <div class="flex items-center"><span class="w-1.5 h-5 sm:h-6 bg-yellow-500 rounded-full mr-2"></span>실시간 업적 현황</div>
+                        <div class="flex items-center"><span class="w-1.5 h-5 sm:h-6 bg-indigo-500 rounded-full mr-2"></span>실시간 업적 현황</div>
                         <div class="flex items-center gap-2">
-                            <button onclick="captureRanking()" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full border border-gray-300 flex items-center justify-center transition no-print shadow-sm">📷</button>
+                            <button onclick="captureRanking()" aria-label="업적 현황 캡처" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full border border-gray-300 flex items-center justify-center transition no-print shadow-sm">📷</button>
                             <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs" id="rankMonthBadge">--</span>
                         </div>
                     </h2>
@@ -1016,9 +1026,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                         </span>
                     </div>
                     <div class="flex border-b border-gray-200 mb-4">
-                        <button onclick="switchRankTab('p')" id="tab-btn-p" class="flex-1 py-2 text-xs sm:text-sm font-bold text-indigo-600 border-b-2 border-indigo-600">환산P</button>
-                        <button onclick="switchRankTab('count')" id="tab-btn-count" class="flex-1 py-2 text-xs sm:text-sm font-medium text-gray-500">건수</button>
-                        <button onclick="switchRankTab('money')" id="tab-btn-money" class="flex-1 py-2 text-xs sm:text-sm font-medium text-gray-500">익월수수료</button>
+                        <button onclick="switchRankTab('p')" id="tab-btn-p" class="flex-1 py-3 text-xs sm:text-sm font-bold text-indigo-600 border-b-2 border-indigo-600">환산P</button>
+                        <button onclick="switchRankTab('count')" id="tab-btn-count" class="flex-1 py-3 text-xs sm:text-sm font-medium text-gray-500">건수</button>
+                        <button onclick="switchRankTab('money')" id="tab-btn-money" class="flex-1 py-3 text-xs sm:text-sm font-medium text-gray-500">익월수수료</button>
                     </div>
                     <div class="space-y-2 mb-4" id="rankingListContainer"><div class="text-center text-gray-500 py-4 text-xs">데이터 불러오는 중...</div></div>
                     <div class="pt-3 border-t border-gray-100">
@@ -1034,13 +1044,10 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     <div id="branchGoalSuccess" class="hidden mt-4 text-center">
                         <div class="text-xl sm:text-2xl font-black celebrate-text animate-bounce-slow">🎊 지사 목표 달성!! 🎊</div>
                     </div>
-
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <button onclick="openContactModal()" class="w-full bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold py-3 rounded-xl border border-teal-200 transition flex items-center justify-center gap-2">
-                            <span>📞</span> 원수사 지점장/매니저 연락처 확인
-                        </button>
-                    </div>
                 </div>
+                <button onclick="openContactModal()" class="w-full h-12 bg-white hover:bg-gray-50 text-gray-800 font-bold rounded-xl border border-gray-200 shadow-sm transition flex items-center justify-center gap-2">
+                    <span aria-hidden="true">📞</span> 원수사 지점장·매니저 연락처
+                </button>
             </div>
 
             <!-- 리스트 섹션 -->
@@ -1080,14 +1087,14 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                             </thead>
                             <tbody id="listBody" class="bg-white divide-y divide-gray-200"></tbody>
                             <tfoot class="bg-indigo-50 font-bold sticky bottom-0 z-10 outline outline-1 outline-indigo-200 shadow-[0_-2px_4px_rgba(0,0,0,0.05)]">
-                                <tr class="text-indigo-900">
+                                <tr class="text-gray-900">
                                     <td colspan="3" class="px-4 py-3 text-xs sm:text-sm text-center whitespace-nowrap bg-indigo-50">합계</td>
                                     <td class="px-4 py-3 text-right text-xs sm:text-sm whitespace-nowrap bg-indigo-50" id="sumPremium">0</td>
-                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-blue-700 whitespace-nowrap bg-indigo-50" id="sumP">0</td>
-                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-indigo-600 whitespace-nowrap bg-indigo-50" id="sumNextComm">0</td>
-                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-indigo-600 whitespace-nowrap bg-indigo-50" id="sumNextBonus">0</td>
-                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-purple-600 whitespace-nowrap bg-indigo-50" id="sumBonus13">0</td>
-                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-indigo-800 whitespace-nowrap bg-indigo-50" id="sumTotal">0</td>
+                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-gray-900 whitespace-nowrap bg-indigo-50" id="sumP">0</td>
+                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-gray-900 whitespace-nowrap bg-indigo-50" id="sumNextComm">0</td>
+                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-gray-900 whitespace-nowrap bg-indigo-50" id="sumNextBonus">0</td>
+                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-gray-900 whitespace-nowrap bg-indigo-50" id="sumBonus13">0</td>
+                                    <td class="px-4 py-3 text-right text-xs sm:text-sm text-indigo-800 font-extrabold whitespace-nowrap bg-indigo-50" id="sumTotal">0</td>
                                     <td class="no-print bg-indigo-50"></td>
                                 </tr>
                             </tfoot>
@@ -1312,7 +1319,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
               <div class="bg-white p-2 sm:p-4 rounded-xl shadow-sm border border-gray-200 text-center flex flex-col justify-center overflow-hidden">
                   <p class="text-xs sm:text-xs text-gray-500 font-bold mb-1 whitespace-nowrap">총 보험료 합계</p>
                   <p class="text-sm sm:text-xl font-extrabold text-gray-800 whitespace-nowrap tracking-tighter" id="perfTotalPremium">0원</p>
-                  <div class="text-xs sm:text-[11px] font-bold mt-1 text-gray-500 flex flex-col sm:flex-row justify-center items-center leading-tight" id="perfSplitAutoGeneral">차 0 | 일반 0</div>
+                  <div class="text-xs sm:text-xs font-bold mt-1 text-gray-500 flex flex-col sm:flex-row justify-center items-center leading-tight" id="perfSplitAutoGeneral">차 0 | 일반 0</div>
               </div>
               <div class="bg-blue-50 p-2 sm:p-4 rounded-xl shadow-sm border border-blue-200 text-center flex flex-col justify-center overflow-hidden">
                   <p class="text-xs sm:text-xs text-blue-700 font-bold mb-1 whitespace-nowrap">총 환산P 합계</p>
@@ -1321,7 +1328,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
               <div class="bg-white p-2 sm:p-4 rounded-xl shadow-sm border border-gray-200 text-center flex flex-col justify-center overflow-hidden">
                   <p class="text-xs sm:text-xs text-gray-500 font-bold mb-1 whitespace-nowrap">총 월초P 합계</p>
                   <p class="text-sm sm:text-xl font-extrabold text-gray-800 whitespace-nowrap tracking-tighter" id="perfTotalInitialP">0원</p>
-                  <div class="text-xs sm:text-[11px] font-bold mt-1 flex flex-col sm:flex-row justify-center items-center leading-tight" id="perfSplitInitialP">생보 0 | 손보 0</div>
+                  <div class="text-xs sm:text-xs font-bold mt-1 flex flex-col sm:flex-row justify-center items-center leading-tight" id="perfSplitInitialP">생보 0 | 손보 0</div>
               </div>
               <div class="bg-white p-2 sm:p-4 rounded-xl shadow-sm border border-gray-200 text-center flex flex-col justify-center overflow-hidden">
                   <p class="text-xs sm:text-xs text-gray-500 font-bold mb-1 whitespace-nowrap">총 건수 합계</p>
@@ -4166,7 +4173,7 @@ function calculateOverriding() {
         const _gmHqPay = _orDeduct.hqTotal || 0;
         const _gmSumTotal = (gmOAPremTotal + gmORTotal + gmRecruitTotal) - _gmMgrOR - _gmHqPay;
         if(gmOAPremTotal > 0 || gmORTotal > 0 || gmRecruitTotal > 0) {
-            orDetails.push({ from: "합계", money: _gmSumTotal, type: `지점장OR -${_gmMgrOR.toLocaleString()}<br>본부장 수수료 -${_gmHqPay.toLocaleString()}`, _displayOnly: true });
+            orDetails.push({ from: "합계", money: _gmSumTotal, type: [(_gmMgrOR ? '지점장OR -' + _gmMgrOR.toLocaleString() : ''), (_gmHqPay ? '본부장 수수료 -' + _gmHqPay.toLocaleString() : '')].filter(Boolean).join('<br>'), _displayOnly: true });
         }
     }
     else if (me.role.includes("지점장")) {
@@ -5964,7 +5971,7 @@ function renderList() {
             if (!item.rates.noCount && !item.isSharedView) validCount++;
         }
 
-        const pColor = item.pPoint < 0 ? 'text-red-500' : 'text-blue-600';
+        const pColor = item.pPoint < 0 ? 'text-red-600' : 'text-gray-800';
         const dateStr = item.date ? item.date.substring(5) : '-';
         
         // [핵심 변경] 쉐어 뱃지 로직 (원청자는 M 붙이고 굵게 표시)
@@ -6038,11 +6045,11 @@ if (item.isSharedView) {
                         <span>${item.productName}${shareBadge}</span>
                     </label>
                 </td>
-                <td class="px-4 py-3 text-right text-gray-500 whitespace-nowrap">${item.premium.toLocaleString()}</td>
+                <td class="px-4 py-3 text-right text-gray-600 whitespace-nowrap">${item.premium.toLocaleString()}</td>
                 <td class="px-4 py-3 text-right ${pColor} font-medium whitespace-nowrap">${item.pPoint.toLocaleString()}</td>
-                <td class="px-4 py-3 text-right text-indigo-500 whitespace-nowrap">${item.nextMoney.toLocaleString()}</td>
-                <td class="px-4 py-3 text-right text-indigo-500 whitespace-nowrap">${item.bonusMoney.toLocaleString()}</td>
-                <td class="px-4 py-3 text-right text-purple-600 whitespace-nowrap">${(item.bonus13Money || 0).toLocaleString()}</td>
+                <td class="px-4 py-3 text-right text-gray-800 whitespace-nowrap">${item.nextMoney.toLocaleString()}</td>
+                <td class="px-4 py-3 text-right text-gray-800 whitespace-nowrap">${item.bonusMoney.toLocaleString()}</td>
+                <td class="px-4 py-3 text-right text-gray-800 whitespace-nowrap">${(item.bonus13Money || 0).toLocaleString()}</td>
                 <td class="px-4 py-3 text-right text-gray-900 font-bold whitespace-nowrap">${item.totalMoney.toLocaleString()}</td>
                 <td class="px-2 py-3 text-center no-print whitespace-nowrap flex items-center justify-center">${buttons}</td>
             </tr>
@@ -6837,14 +6844,14 @@ window.renderGoalAchievementPage = function() {
         // [권한] 비권한자는 본인 기준만 보이므로 라벨을 본인 기준으로 바꾼다
         var bpct = totalTarget > 0 ? totalActual/totalTarget*100 : 0;
         var R = 70, C = 2*Math.PI*R, dash = C*Math.min(bpct,100)/100;
-        var ring = bpct>=100?'#16a34a':(bpct>=70?'#4f46e5':(bpct>=40?'#f59e0b':'#ef4444'));
+        var ring = (bpct<=0?'#6b7280':(bpct>=100?'#15803d':(bpct>=70?'#4f46e5':'#b45309')));
 
         // 그룹별 요약 카드 (맨 상단): 배정 그룹만 표시. 미배정은 상단 요약에서 제외한다.
         var groupCards = window.FC_GROUPS.map(function(g){
             var gt = 0, ga = 0;
             byGroup[g].forEach(function(n){ gt += Number(goals[n])||0; ga += Number(actuals[n])||0; });
             var gp = gt > 0 ? ga/gt*100 : 0;
-            var gc = gp>=100?'#16a34a':(gp>=70?'#4f46e5':(gp>=40?'#f59e0b':'#ef4444'));
+            var gc = (gp<=0?'#6b7280':(gp>=100?'#15803d':(gp>=70?'#4f46e5':'#b45309')));
             // [미배정] 목표 배정 대상이 아니므로 달성률(%)·진행바는 표시하지 않고 인원/실적만 보여준다.
             var _isUnassigned = (g === window.FC_UNASSIGNED);
             return '<div class="bg-gray-50 rounded-xl p-3">'
@@ -6867,13 +6874,13 @@ window.renderGoalAchievementPage = function() {
           + '<div class="bg-indigo-50 rounded-xl p-3 text-center"><div class="text-xs text-indigo-400">'+(_canEdit?'현재 지사 환산P':(_hasTeam?'합산 환산P':'내 환산P'))+'</div><div class="text-base font-bold text-indigo-700">'+totalActual.toLocaleString()+'</div></div>'
           + '</div>'
           + (_canEdit ? ('<div class="grid grid-cols-3 gap-2">' + groupCards + '</div>') : '')
-          + (totalTarget===0?('<div class="mt-2 text-xs text-rose-500">'+(_canEdit?'아래에서 FC별 목표 환산P를 입력하고 저장하세요.':'아직 목표가 입력되지 않았습니다.')+'</div>'):'') + '</div></div>';
+          + (totalTarget===0?('<div class="mt-2 text-sm text-gray-600">'+(_canEdit?'아래에서 FC별 목표 환산P를 입력하고 저장하세요.':'아직 목표가 입력되지 않았습니다.')+'</div>'):'') + '</div></div>';
 
         // FC 한 줄
         var fcRow = function(n) {
             var t = Number(goals[n])||0, a = Number(actuals[n])||0;
             var pct = t>0 ? a/t*100 : 0;
-            var col = pct>=100?'#16a34a':(pct>=70?'#4f46e5':(pct>=40?'#f59e0b':'#ef4444'));
+            var col = (pct<=0?'#6b7280':(pct>=100?'#15803d':(pct>=70?'#4f46e5':'#b45309')));
             var g = window.getFcGroupOf(n);
             var opts = window.FC_GROUPS.map(function(gg){
                 return '<option value="'+gg+'"'+(gg===g?' selected':'')+'>'+gg+'</option>';
@@ -6909,7 +6916,7 @@ window.renderGoalAchievementPage = function() {
             var gt = 0, ga = 0;
             arr.forEach(function(n){ gt += Number(goals[n])||0; ga += Number(actuals[n])||0; });
             var gp = gt > 0 ? ga/gt*100 : 0;
-            var gc = gp>=100?'#16a34a':(gp>=70?'#4f46e5':(gp>=40?'#f59e0b':'#ef4444'));
+            var gc = (gp<=0?'#6b7280':(gp>=100?'#15803d':(gp>=70?'#4f46e5':'#b45309')));
             // [디자인] 그룹마다 색 테두리 박스 + 색 헤더 바로 그룹 구분을 명확히
             var gIdx = window.FC_DISPLAY_GROUPS.indexOf(g);
             var theme = [
@@ -6972,7 +6979,7 @@ window.onGoalInput = function(inp) {
     var actual = Number(inp.getAttribute('data-actual')) || 0;
     var target = Number(raw) || 0;
     var pct = target>0 ? actual/target*100 : 0;
-    var col = pct>=100?'#16a34a':(pct>=70?'#4f46e5':(pct>=40?'#f59e0b':'#ef4444'));
+    var col = (pct<=0?'#6b7280':(pct>=100?'#15803d':(pct>=70?'#4f46e5':'#b45309')));
     var row = inp.closest('.goal-row');
     if (row) { var bar = row.querySelector('.goal-bar'), lbl = row.querySelector('.goal-pct');
         if (bar) { bar.style.width = Math.min(pct,100)+'%'; bar.style.background = col; }
@@ -8481,7 +8488,7 @@ function navigateTo(pageId) {
         }
     }
     if (pageId === 'orgchart')      loadOrgChart();
-    if (pageId === 'schedule')      renderSchedules();
+    if (pageId === 'schedule') { try { if (typeof currentMonth === 'string' && /^\d{4}-\d{2}$/.test(currentMonth)) { calYear = +currentMonth.slice(0,4); calMonth = +currentMonth.slice(5,7); } } catch (e) { } renderSchedules(); }
     if (pageId === 'contact')       renderHeritageContacts();
     if (pageId === 'life')          loadLifeFiles();
     if (pageId === 'board')         loadBoardData();
@@ -9279,7 +9286,7 @@ function openOperationModal() {
                     <div class="op-cell flex flex-col items-center justify-center whitespace-nowrap cursor-pointer p-1 rounded-lg transition-all duration-200 hover:bg-gray-100" 
                          data-comp="${comp}" data-amount="${premAmt}" onclick="toggleOpCell(this)">
                         <span class="text-green-500 font-bold text-[13px] sm:text-base leading-none">✔</span>
-                        <span class="text-xs sm:text-[10px] text-gray-500 font-medium mt-0.5 tracking-tighter">${displayAmt}</span>
+                        <span class="text-xs sm:text-xs text-gray-500 font-medium mt-0.5 tracking-tighter">${displayAmt}</span>
                     </div>`;
             } else {
                 checkMark = '<span class="text-gray-200 text-xs">.</span>';
@@ -10385,7 +10392,7 @@ function renderPerformancePage() {
                 if (shares.length > 0) {
                     let shareDetails = [`<strong class="font-black">M${userName}</strong> ${Math.round(writerRate * 100)}%`];
                     shares.forEach(s => shareDetails.push(`${s.user} ${Math.round((parseFloat(s.rate)||0)*100)}%`));
-                    badge = `<div class="mt-0.5"><span class="inline-block text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200 whitespace-nowrap font-medium shadow-sm">🤝 🤝 쉐어: ${shareDetails.join(', ')}</span></div>`;
+                    badge = `<div class="mt-0.5"><span class="inline-block text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200 whitespace-nowrap font-medium shadow-sm">🤝 쉐어: ${shareDetails.join(', ')}</span></div>`;
                 }
 
                 const wUser = userDB.find(u => u.name === userName);
@@ -10512,7 +10519,7 @@ function renderPerformancePage() {
 
                     weekItems.forEach(item => {
                         const dateStr = item.date.substring(5); 
-                        const pColor = item.pPoint < 0 ? 'text-red-500' : 'text-blue-600';
+                        const pColor = item.pPoint < 0 ? 'text-red-600' : 'text-gray-800';
                         
                         const tr = document.createElement('tr');
                         tr.className = "hover:bg-gray-50 border-b border-gray-100 text-xs sm:text-sm transition";
@@ -10537,7 +10544,7 @@ function renderPerformancePage() {
         } else {
             flatList.forEach(item => {
                 const dateStr = item.date.substring(5); 
-                const pColor = item.pPoint < 0 ? 'text-red-500' : 'text-blue-600';
+                const pColor = item.pPoint < 0 ? 'text-red-600' : 'text-gray-800';
                 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 border-b border-gray-100 text-xs sm:text-sm transition";
@@ -10583,7 +10590,7 @@ function renderPerformancePage() {
     if(splitInitialPEl) {
         splitInitialPEl.innerHTML = `
             <span class="text-blue-600 whitespace-nowrap">생보 ${sumLifeInitialP.toLocaleString()}</span> 
-            <span class="mx-1 text-indigo-200 hidden sm:inline">|</span> 
+            <span class="mx-1 text-gray-400 hidden sm:inline" aria-hidden="true">·</span> 
             <span class="text-red-500 whitespace-nowrap">손보 ${sumSonboInitialP.toLocaleString()}</span>
         `;
     }
@@ -11652,7 +11659,7 @@ function renderSonboBonusPage() {
                         <span class="font-bold text-red-500">${gap.toLocaleString()}원</span> 더 하면
                         <span class="block sm:inline mt-0.5 text-gray-600">
                             <span class="font-bold text-teal-600">${nextBonus.toLocaleString()}원</span> 달성!
-                            <span class="text-xs sm:text-[10px] text-teal-500 font-medium ml-0.5">(+${bonusDiff.toLocaleString()})</span>
+                            <span class="text-xs sm:text-xs text-teal-500 font-medium ml-0.5">(+${bonusDiff.toLocaleString()})</span>
                         </span>
                     </div>
                 `;
@@ -11778,13 +11785,7 @@ window.handleLogin = function() {
         if (sn) sn.classList.toggle('hidden', canS);
         var ss = document.getElementById('autoSaveStatus');
         if (ss) ss.classList.toggle('hidden', !canS);
-        var row = document.getElementById('actionBtnRow');
-        if (row) {
-            row.classList.toggle('grid-cols-2', canS);
-            row.classList.toggle('sm:grid-cols-3', canS);
-            row.classList.toggle('grid-cols-1', !canS);
-            row.classList.toggle('sm:grid-cols-2', !canS);
-        }
+
     }, 300);
     setTimeout(checkPromoMenuPermission, 300);
     setTimeout(checkMaintCardPermission, 300);
@@ -13653,7 +13654,7 @@ function renderOrgChart() {
                 const yyyy = jd.getFullYear();
                 const mm = String(jd.getMonth() + 1).padStart(2, '0');
                 // 예: 2024.01
-                joinDateHtml = `<div class="text-xs sm:text-[10px] text-gray-500 mt-1 tracking-tighter bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">${yyyy}.${mm}</div>`;
+                joinDateHtml = `<div class="text-xs sm:text-xs text-gray-500 mt-1 tracking-tighter bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">${yyyy}.${mm}</div>`;
             }
         }
 
@@ -13811,18 +13812,15 @@ function renderOrgChart() {
 
 <div id="gmOperationModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 z-[10001] flex items-center justify-center hidden px-4" style="backdrop-filter:blur(3px)">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[85vh]">
-        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-4 rounded-t-2xl flex justify-between items-center">
-            <div>
-                <h3 class="text-white font-bold text-lg flex items-center gap-2" id="gmOpModalTitle">지사 운영</h3>
-                <p class="text-purple-200 text-xs mt-0.5">&nbsp;</p>
-            </div>
-            <button onclick="closeGmOperationModal()" class="text-white text-2xl font-bold hover:text-purple-200 transition">&times;</button>
+        <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="text-gray-900 font-bold text-lg flex items-center gap-2"><span class="w-1.5 h-5 bg-indigo-500 rounded-full"></span><span id="gmOpModalTitle">지사 운영</span></h3>
+            <button onclick="closeGmOperationModal()" aria-label="닫기" class="w-10 h-10 -mr-2 rounded-lg text-gray-500 hover:bg-gray-100 text-2xl font-bold transition">&times;</button>
         </div>
         <div class="flex-1 overflow-y-auto custom-scrollbar p-5">
             <div id="gmOpModalList" class="space-y-2 text-sm"></div>
         </div>
         <div class="p-4 border-t border-gray-100">
-            <button onclick="closeGmOperationModal()" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-xl transition">닫기</button>
+            <button onclick="closeGmOperationModal()" class="w-full py-3 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-xl transition">닫기</button>
         </div>
     </div>
 </div>
@@ -14278,7 +14276,7 @@ function briefCollect() {
             } else if (window.briefLoadError) {
                 setHTML(bEl, '<div class="text-sm text-gray-600 py-3">섭외자 목록을 불러오지 못해 표시할 수 없습니다.</div>');
             } else {
-                setHTML(bEl, !canSaveData() ? '<div class="text-sm text-gray-600 py-3">등록된 섭외자가 없습니다. 담당자가 설정하면 표시됩니다.</div>' : '<div class="text-sm text-gray-600 py-3">마스터본부 탭에 등록된 섭외자가 없습니다. 구글시트 \'마스터본부\' 탭에 A열 섭외자 이름, B열 쉐어율, C열 적용월(선택)을 입력하세요.</div>');
+                setHTML(bEl, !canSaveData() ? '<div class="text-sm text-gray-600 py-3">등록된 섭외자가 없습니다. 담당자가 설정하면 표시됩니다.</div>' : '<div class="text-sm text-gray-600 py-3">아직 등록된 섭외자가 없습니다. 메인 시트의 \'마스터본부\' 탭에 이름·쉐어율·적용월을 적으면 여기에 나타납니다.</div>');
             }
 
             // 브리핑 계약 내역
@@ -15017,6 +15015,44 @@ function briefCollect() {
     function upd() { var s = document.getElementById('sidebarScroll'); if (s) s.classList.toggle('y-more', s.scrollTop + s.clientHeight < s.scrollHeight - 4); }
     document.addEventListener('DOMContentLoaded', function () { var s = document.getElementById('sidebarScroll'); if (s) s.addEventListener('scroll', upd, { passive: true }); upd(); });
     window.addEventListener('resize', upd); setInterval(upd, 1500);
+})();
+</script>
+<script>
+/* [홈] 1280px 미만에서 아래 카드 접기 + 한 줄 요약, 홈 로딩 문구 시간 제한 */
+(function(){
+  var chev='<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>';
+  var cfg=[['longTermCard','longTermBonusDisplay','이번 달 '],['recruitBonusCard',null,''],['overridingCard',null,''],['rankingSection','branchPercent','지사 목표 ']];
+  function setup(){
+    cfg.forEach(function(c){
+      var card=document.getElementById(c[0]); if(!card||card.classList.contains('fold-card')) return;
+      var h=card.querySelector(':scope > h2'); if(!h) return;
+      card.classList.add('fold-card');
+      if(h.children.length>1 && c[0]==='rankingSection') h.children[1].classList.add('fold-hide-c');
+      var title=(h.textContent||'').trim().split(/\s{2,}|\n/)[0];
+      if(c[1]){
+        var src=document.getElementById(c[1]); var sum=document.createElement('span'); sum.className='fold-sum';
+        var upd=function(){ sum.textContent=c[2]+((src&&src.textContent)||'').trim(); };
+        upd(); if(src) new MutationObserver(upd).observe(src,{childList:true,characterData:true,subtree:true});
+        h.appendChild(sum);
+      }
+      var b=document.createElement('button'); b.type='button'; b.className='fold-btn'; b.innerHTML=chev;
+      b.setAttribute('aria-expanded','false'); b.setAttribute('aria-label',title+' 펼치기');
+      h.appendChild(b);
+      var toggle=function(){ var o=card.classList.toggle('is-open'); b.setAttribute('aria-expanded',o?'true':'false'); b.setAttribute('aria-label',title+(o?' 접기':' 펼치기')); };
+      h.addEventListener('click',function(e){ if(window.innerWidth>=1280) return; var t=e.target.closest('button,a,input,select'); if(t && t!==b) return; toggle(); });
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup); else setup();
+  // 홈 로딩 문구: 20초 넘게 그대로면 안내로 바꿈
+  var seen={};
+  setInterval(function(){
+    document.querySelectorAll('#page-home .fl-label, #rankingListContainer > div').forEach(function(el,i){
+      var t=(el.textContent||''); if(t.indexOf('불러오는 중')<0){ delete seen[i]; return; }
+      if(!el.offsetParent) return;
+      seen[i]=(seen[i]||0)+2;
+      if(seen[i]>=20){ el.textContent = el.classList.contains('fl-label') ? '목록을 불러오지 못했습니다 · 새로고침해 주세요' : '아직 표시할 업적이 없습니다'; delete seen[i]; }
+    });
+  },2000);
 })();
 </script>
 </body>

@@ -554,7 +554,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     .x-more-r.x-more-l{-webkit-mask-image:linear-gradient(to right,transparent,#000 36px,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(to right,transparent,#000 36px,#000 calc(100% - 36px),transparent)}
 
     #orgChartStats:empty{display:none}
-    #quickTrendRow button{white-space:nowrap;font-size:.8125rem;padding-left:.25rem;padding-right:.25rem;min-height:2.75rem}
+    #actionBtnRow button{white-space:nowrap;font-size:.8125rem;padding-left:.25rem;padding-right:.25rem;min-height:2.75rem}
     /* 넓은 화면 메뉴: 칸을 촘촘히, 머리는 로고, 상단 바의 로고는 숨김 */
     @media (min-width:1024px){
       #sidebarHead{background:#fff!important;height:4rem;padding:0 1rem!important;border-bottom:1px solid #f3f4f6;box-shadow:none!important;border-radius:0!important}
@@ -592,6 +592,32 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     }
     /* 밝은 화면의 흐린 회색 글자 대비 보강 */
     #mainContent .text-gray-400{color:#6b7280}
+    /* 리크루팅 빈 칸 안내 */
+    #recruitBoard [id^="stage"]:empty::before{content:'아직 없습니다';display:block;padding:1.5rem .5rem;text-align:center;font-size:.8125rem;color:#6b7280}
+    #recruitBoard #stage2:empty::before{content:'아직 없습니다 · 위 ‘후보자 등록’으로 추가하세요'}
+    @media (max-width:639px){ #recruitBoard [id^="stage"]{min-height:0!important} }
+    /* 상태색 대비 보강 (밝은 바탕) */
+    #mainContent .text-green-600{color:#15803d}
+    #mainContent .text-red-500{color:#dc2626}
+    #mainContent .text-amber-600,#mainContent .text-yellow-600{color:#b45309}
+    #mainContent .text-orange-500,#mainContent .text-orange-600{color:#c2410c}
+    #mainContent .text-blue-500{color:#2563eb}
+    #mainContent .text-indigo-400{color:#4f46e5}
+    #mainContent .text-pink-500,#mainContent .text-pink-600{color:#be185d}
+    .fl-label{color:#6b7280!important;font-size:.75rem!important}
+    .ctr-input:not(:placeholder-shown){background-image:none}
+    /* 청약 입력: 1280px 미만은 왼쪽에서 밀려 나오는 패널 (기본 홈에는 숨김) */
+    .entry-bar{display:none}
+    @media (max-width:1279px){
+      #entryPanel{position:fixed;top:0;left:0;bottom:0;width:min(100vw,30rem);z-index:60;margin:0!important;overflow-y:auto;overscroll-behavior:contain;background:#f3f4f6;padding:0 .75rem 2rem;box-shadow:8px 0 32px rgba(15,23,42,.18);transform:translateX(-104%);visibility:hidden;transition:transform .34s cubic-bezier(.2,.8,.2,1),visibility 0s linear .34s}
+      body.entry-open #entryPanel{transform:none;visibility:visible;transition:transform .34s cubic-bezier(.2,.8,.2,1),visibility 0s}
+      #entryPanel > .entry-bar{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:2;margin:0 -.75rem 0;padding:.75rem;background:#f3f4f6;border-bottom:1px solid #e5e7eb}
+      #entryPanel > .bg-white > h2:first-child{display:none}
+      #entryBackdrop{position:fixed;inset:0;z-index:59;background:rgba(15,23,42,.35);opacity:0;pointer-events:none;transition:opacity .3s}
+      body.entry-open #entryBackdrop{opacity:1;pointer-events:auto}
+      body.entry-open{overflow:hidden}
+    }
+    @media (prefers-reduced-motion:reduce){ #entryPanel{transition:none!important} }
     /* 표 안 빈 상태·로딩 문구: 표가 화면보다 넓어도 보이는 영역 가운데에 표시 */
     .tbl-msg{position:sticky;left:0;max-width:calc(100vw - 3rem);margin:0 auto 0 0;text-align:center}
     @media (min-width:640px){.tbl-msg{max-width:none;margin:0 auto}}
@@ -626,7 +652,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <p id="loginErrorMsg" class="text-red-500 text-sm font-bold hidden animate-pulse"></p>
                 <p class="text-xs text-gray-500 mt-2">* 등록되지 않은 사용자는 접속할 수 없습니다.<br>* 주민번호 미등록자는 성명만 입력하세요.</p>
             </div>
-            <p class="mt-4 text-xs text-gray-500">© 헤리티지 금융지사</p>
+            <p class="mt-5 text-sm font-semibold text-slate-300 break-keep">나의 전문성은 고객을 위한 최소한의 배려</p>
+            <p class="mt-2 text-xs text-gray-500">© 헤리티지 금융지사</p>
         </div>
     </div>
 
@@ -737,11 +764,11 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 
     <!-- 상단 네비게이션 -->
     <nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200 no-print">
-        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center flex-shrink-0">
                     <button onclick="toggleSidebar()" aria-label="메뉴 열기" class="lg:hidden mr-1 sm:mr-3 text-gray-600 text-2xl w-11 h-11 flex items-center justify-center rounded-lg hover:bg-gray-100">☰</button>
-                    <button id="navBrand" onclick="navigateTo('home')" class="text-sm sm:text-xl font-bold text-gray-800 whitespace-nowrap active:scale-95 transition-transform duration-100 px-1 sm:px-2 py-1 rounded hover:bg-gray-50 active:bg-gray-100">
+                    <button id="navBrand" onclick="navigateTo('home')" class="h-10 text-sm sm:text-xl font-bold text-gray-800 whitespace-nowrap active:scale-95 transition-transform duration-100 px-1 sm:px-2 rounded hover:bg-gray-50 active:bg-gray-100">
                         Heritage <span class="text-indigo-600">Pro</span>
                     </button>
                 </div>
@@ -752,10 +779,11 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                         <input type="month" id="monthPicker" aria-label="조회 월" onchange="changeMonth()" 
                             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                     </label>
-                    <div id="userSelectWrapper" class="hidden min-w-0 max-w-[108px] sm:max-w-none border border-gray-200 rounded-lg bg-gray-50">
-                        <select id="userSelect" aria-label="조회 대상" onchange="changeUser()" 
-                            class="bg-transparent h-10 px-1.5 sm:px-2 text-sm font-bold w-full sm:max-w-none outline-none truncate">
+                    <div id="userSelectWrapper" class="hidden relative min-w-0 max-w-[112px] sm:max-w-none border border-gray-200 rounded-lg bg-gray-50 focus-within:ring-2 focus-within:ring-indigo-500" title="볼 사람 바꾸기">
+                        <select id="userSelect" aria-label="조회 대상 (볼 사람 바꾸기)" onchange="changeUser()" 
+                            class="appearance-none bg-transparent h-10 pl-2.5 pr-6 text-sm font-bold text-gray-800 w-full sm:max-w-none outline-none truncate cursor-pointer">
                         </select>
+                        <span aria-hidden="true" class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">▾</span>
                     </div>
                 </div>
             </div>
@@ -764,13 +792,13 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 
     <main id="mainContent" tabindex="-1" class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-8 outline-none">
       <!-- 홈 페이지 -->
-      <div id="page-home" class="page-section">
+      <div id="page-home" class="page-section px-2 sm:px-0">
         <div id="shareNotificationArea" class="mb-4 space-y-2 no-print max-h-[260px] overflow-y-auto custom-scrollbar pr-1"></div>
 
         <div class="mb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
             <div class="w-full sm:w-auto text-center sm:text-left">
-                <h1 class="text-base sm:text-2xl font-bold text-gray-900 break-keep">나의 전문성은 고객을 위한 최소한의 배려</h1>
-                <p class="text-sm text-gray-500 mt-1" id="welcomeMsg">환영합니다.</p>
+                <h1 class="sr-only">홈</h1>
+                <p class="text-base sm:text-xl font-bold text-gray-900 break-keep" id="welcomeMsg">환영합니다.</p>
             </div>
             <div class="flex flex-col items-center sm:items-end gap-3 w-full sm:w-auto">
                 <div class="text-center sm:text-right w-full">
@@ -781,10 +809,17 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                         🎉 천만클럽 달성 축하드립니다! 🎉
                     </div>
                 </div>
-                <div id="actionBtnRow" class="no-print grid grid-cols-3 sm:flex sm:justify-end gap-2 w-full sm:w-auto" aria-label="도구">
+                <button type="button" id="btnOpenEntry" onclick="openEntryPanel()" class="xl:hidden no-print w-full h-12 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+                    <span class="text-lg leading-none" aria-hidden="true">＋</span> 청약 입력 <span class="text-xs font-semibold text-indigo-100">· 오른쪽으로 밀어도 열려요</span>
+                </button>
+                <div id="actionBtnRow" class="no-print grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-end gap-2 w-full sm:w-auto sm:max-w-[34rem]" aria-label="도구">
                     <button onclick="navigateTo('product-strategy')" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">상품전략</button>
                     <button onclick="openFinancialModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">재무설계</button>
                     <button onclick="openMaintModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">유지수수료</button>
+                    <button type="button" onclick="openTrendModal('personal')" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">내 추이</button>
+                    <button type="button" onclick="openOperationModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">가동 현황</button>
+                    <button type="button" id="btnBranchTrend" onclick="openTrendModal('branch')" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap hidden">지사 추이</button>
+                    <button type="button" id="btnCompPerf" onclick="openCompanyPerfModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap hidden">회사별</button>
                     <button onclick="printPage()" class="hidden sm:inline-flex h-10 items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">출력</button>
                 </div>
                 <div class="no-print flex items-center justify-center sm:justify-end gap-2 w-full min-h-[2rem]">
@@ -796,7 +831,12 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 
         <div class="flex flex-col xl:grid xl:grid-cols-12 gap-6">
             <!-- 입력 섹션 -->
-            <div class="xl:col-span-4 space-y-4 input-section no-print order-1">
+            <div id="entryBackdrop" class="xl:hidden no-print" onclick="closeEntryPanel()" aria-hidden="true"></div>
+            <div id="entryPanel" class="xl:col-span-4 space-y-4 input-section no-print order-1" aria-label="신규 청약 입력">
+                <div class="entry-bar xl:hidden">
+                    <span class="font-bold text-gray-900 text-base">신규 청약 입력</span>
+                    <button type="button" onclick="closeEntryPanel()" class="h-10 px-3 inline-flex items-center gap-1 rounded-lg text-sm font-bold text-gray-700 bg-white border border-gray-200 shadow-sm hover:bg-gray-50">홈으로 <span aria-hidden="true">→</span></button>
+                </div>
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center">
                         <span class="w-1.5 h-5 sm:h-6 bg-indigo-500 rounded-full mr-2"></span>
@@ -902,12 +942,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 
 <button type="button" onclick="addToList()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition duration-200 shadow-md mt-2 input-unified flex items-center justify-center">리스트에 추가하기</button>
 
-                        <div id="quickTrendRow" class="grid grid-cols-4 gap-2 mt-2">
-                            <button type="button" onclick="openTrendModal('personal')" class="h-11 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-sm">내 추이</button>
-                            <button type="button" onclick="openOperationModal()" class="h-11 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-sm">가동 현황</button>
-                            <button type="button" id="btnBranchTrend" onclick="openTrendModal('branch')" class="h-11 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-sm hidden">지사 추이</button>
-                            <button type="button" id="btnCompPerf" onclick="openCompanyPerfModal()" class="h-11 bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-sm hidden">회사별</button>
-                        </div>
+
                     </form>
                 </div>
 
@@ -1208,7 +1243,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   </table>
               </div>
           </div>
-          <button onclick="openWriteModal()" class="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl font-bold z-40 transition transform active:scale-95">+</button>
+          <button onclick="openWriteModal()" aria-label="글쓰기" class="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl font-bold z-40 transition transform active:scale-95">+</button>
       </div>
 
       <!-- 시책확인 페이지 -->
@@ -1560,10 +1595,10 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 </button>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-              <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 text-center"><p class="text-xs text-gray-500 font-bold mb-1">총 익월수수료</p><p class="text-base sm:text-lg font-extrabold text-pink-600" id="biTotalIncome">0원</p></div>
-              <div class="bg-pink-50 p-4 rounded-xl shadow-sm border border-pink-100 text-center"><p class="text-xs text-pink-600 font-bold mb-1">총 익월시책</p><p class="text-base sm:text-lg font-extrabold text-pink-700" id="biTotalBonus">0원</p></div>
-              <div class="bg-orange-50 p-4 rounded-xl shadow-sm border border-orange-100 text-center"><p class="text-xs text-orange-600 font-bold mb-1">총 오버라이딩(OR)</p><p class="text-base sm:text-lg font-extrabold text-orange-700" id="biTotalOR">0원</p></div>
-              <div class="bg-indigo-50 p-4 rounded-xl shadow-sm border border-indigo-100 text-center"><p class="text-xs text-indigo-600 font-bold mb-1">총 예상수수료</p><p class="text-base sm:text-lg font-extrabold text-indigo-700" id="biTotalExpected">0원</p></div>
+              <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 text-center"><p class="text-xs text-gray-500 font-bold mb-1">총 익월수수료</p><p class="text-base sm:text-lg font-extrabold text-gray-900" id="biTotalIncome">0원</p></div>
+              <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 text-center"><p class="text-xs text-gray-500 font-bold mb-1">총 익월시책</p><p class="text-base sm:text-lg font-extrabold text-gray-900" id="biTotalBonus">0원</p></div>
+              <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 text-center"><p class="text-xs text-gray-500 font-bold mb-1">총 오버라이딩(OR)</p><p class="text-base sm:text-lg font-extrabold text-gray-900" id="biTotalOR">0원</p></div>
+              <div class="bg-indigo-50 p-4 rounded-xl shadow-sm border border-indigo-100 text-center"><p class="text-xs text-indigo-700 font-bold mb-1">총 예상수수료</p><p class="text-base sm:text-lg font-extrabold text-indigo-700" id="biTotalExpected">0원</p></div>
           </div>
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div class="overflow-x-auto custom-scrollbar">
@@ -1664,27 +1699,27 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 </div>
           
           <div id="recruitBoard" class="flex-1 overflow-x-auto flex gap-4 pb-4 items-start custom-scrollbar">
-              <div class="w-72 shrink-0 bg-blue-50 rounded-xl flex flex-col max-h-full border border-blue-100">
-                  <div class="p-3 border-b border-blue-100 font-bold text-blue-800 flex justify-between bg-blue-100/50 rounded-t-xl">
-                      CIS <span id="cnt-stage2" class="text-xs bg-white px-2 py-0.5 rounded-full shadow-sm text-blue-600">0</span>
+              <div class="w-72 shrink-0 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
+                  <div class="p-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between bg-white rounded-t-xl">
+                      CIS <span id="cnt-stage2" class="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-700 tabular-nums">0</span>
                   </div>
                   <div id="stage2" class="p-2 flex-1 overflow-y-auto space-y-2 custom-scrollbar min-h-[100px]"></div>
               </div>
-              <div class="w-72 shrink-0 bg-purple-50 rounded-xl flex flex-col max-h-full border border-purple-100">
-                  <div class="p-3 border-b border-purple-100 font-bold text-purple-800 flex justify-between bg-purple-100/50 rounded-t-xl">
-                      면접 진행 <span id="cnt-stage3" class="text-xs bg-white px-2 py-0.5 rounded-full shadow-sm text-purple-600">0</span>
+              <div class="w-72 shrink-0 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
+                  <div class="p-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between bg-white rounded-t-xl">
+                      면접 진행 <span id="cnt-stage3" class="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-700 tabular-nums">0</span>
                   </div>
                   <div id="stage3" class="p-2 flex-1 overflow-y-auto space-y-2 custom-scrollbar min-h-[100px]"></div>
               </div>
-              <div class="w-72 shrink-0 bg-green-50 rounded-xl flex flex-col max-h-full border border-green-100">
-                  <div class="p-3 border-b border-green-100 font-bold text-green-800 flex justify-between bg-green-100/50 rounded-t-xl">
-                      위촉 진행 <span id="cnt-stage4" class="text-xs bg-white px-2 py-0.5 rounded-full shadow-sm text-green-600">0</span>
+              <div class="w-72 shrink-0 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
+                  <div class="p-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between bg-white rounded-t-xl">
+                      위촉 진행 <span id="cnt-stage4" class="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-700 tabular-nums">0</span>
                   </div>
                   <div id="stage4" class="p-2 flex-1 overflow-y-auto space-y-2 custom-scrollbar min-h-[100px]"></div>
               </div>
               <div class="w-72 shrink-0 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
-                  <div class="p-3 border-b border-gray-200 font-bold text-gray-700 flex justify-between bg-gray-100/50 rounded-t-xl">
-                      보류 <span id="cnt-stage5" class="text-xs bg-white px-2 py-0.5 rounded-full shadow-sm text-gray-600">0</span>
+                  <div class="p-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between bg-white rounded-t-xl">
+                      보류 <span id="cnt-stage5" class="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-700 tabular-nums">0</span>
                   </div>
                   <div id="stage5" class="p-2 flex-1 overflow-y-auto space-y-2 custom-scrollbar min-h-[100px]"></div>
               </div>
@@ -2161,6 +2196,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     if (item) {
         item.contractor = value;
         saveData(true); // true 파라미터로 팝업 없이 백그라운드 조용히 저장
+        try { Swal.fire({ toast: true, position: 'top', icon: 'success', title: '계약자 ' + (value ? '"' + value + '"' : '지움') + (canSaveData() ? ' · 저장됨' : ' (시뮬레이션)'), showConfirmButton: false, timer: 1800 }); } catch (e) { }
     }
 }
 
@@ -5655,6 +5691,11 @@ function calculateCumulativeBonus() {
         const krwEl = document.getElementById('met_krw_fixed');
         if(krwEl) { krwEl.checked = false; krwEl.setAttribute('data-checked', 'false'); }
     }
+    try {
+        Swal.fire({ toast: true, position: 'top', icon: 'success', showConfirmButton: false, timer: 2200,
+            title: '추가됨 · 총수수료 ' + (Number(calculatedItem.totalMoney) || 0).toLocaleString() + '원' + (canSaveData() ? '' : ' (시뮬레이션)') });
+        setTimeout(function () { var pi = document.getElementById('premiumInput'); if (pi) pi.focus({ preventScroll: true }); }, 50);
+    } catch (e) { }
 }
 
     function toggleWithdraw(id) {
@@ -5710,7 +5751,7 @@ function calculateCumulativeBonus() {
     updateSonboGapDisplay();
     checkNotifications();
     saveData(true);
-    if (!canSaveData()) { try { Swal.fire({ toast: true, position: 'top', icon: 'info', title: '시뮬레이션에 추가됨 · 저장되지 않습니다', showConfirmButton: false, timer: 2200 }); } catch (e) { } }
+    try { Swal.fire({ toast: true, position: 'top', icon: 'info', title: (newWithdrawn ? '철회 처리됨 · 합계에서 빠졌습니다' : '복구됨 · 합계에 다시 들어갔습니다') + (canSaveData() ? '' : ' (시뮬레이션)'), showConfirmButton: false, timer: 2200 }); } catch (e) { }
 }
 
     function deleteRow(id, silent = false) {
@@ -5838,7 +5879,7 @@ function calculateCumulativeBonus() {
                 if (item.attributes && item.attributes.prateAdj) { currentPrateAdj = item.attributes.prateAdj; updatePrateAdjStatus(); }
                 if (item.attributes && item.attributes.isKrwFixed) { const krwEl = document.getElementById('met_krw_fixed'); if(krwEl && !krwEl.closest('div').classList.contains('hidden')) { krwEl.checked = true; krwEl.setAttribute('data-checked', 'true'); } }
                 if (item.shares && item.shares.length > 0) { currentShareData = JSON.parse(JSON.stringify(item.shares)); updateShareStatus(); } else { currentShareData = []; updateShareStatus(); }
-                const formEl = document.getElementById('calcForm'); if(formEl) { formEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => document.getElementById('premiumInput').focus(), 500); }
+                try { openEntryPanel(); } catch (e) { } const formEl = document.getElementById('calcForm'); if(formEl) { formEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => document.getElementById('premiumInput').focus(), 500); }
                 deleteRow(id, true);
                 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }); Toast.fire({ icon: 'info', title: '수정 모드: 내용을 변경하고 다시 추가하세요.' });
             }
@@ -6031,8 +6072,9 @@ if (item.isSharedView) {
                     
                     <div class="mt-1 no-print">
                         <input type="text" 
-                            class="w-full min-w-[60px] max-w-[90px] mx-auto px-1.5 py-1 text-xs text-center border border-gray-200 rounded outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 bg-gray-50 text-gray-900 font-bold placeholder:text-gray-500 placeholder:font-normal transition" 
-                            placeholder="계약자" 
+                            aria-label="계약자 이름 (바꾸면 자동 저장)" title="눌러서 계약자 이름 수정"
+                            class="ctr-input w-full min-w-[60px] max-w-[90px] mx-auto px-1.5 py-1 text-sm text-center border border-transparent rounded outline-none hover:border-gray-200 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 focus:bg-white bg-transparent text-gray-900 font-bold placeholder:text-indigo-700 placeholder:font-semibold transition" 
+                            placeholder="＋ 계약자" 
                             value="${item.contractor || ''}" 
                             onchange="updateRowContractor(${item.id}, this.value)"
                             onclick="event.stopPropagation()">
@@ -6855,7 +6897,7 @@ window.renderGoalAchievementPage = function() {
             // [미배정] 목표 배정 대상이 아니므로 달성률(%)·진행바는 표시하지 않고 인원/실적만 보여준다.
             var _isUnassigned = (g === window.FC_UNASSIGNED);
             return '<div class="bg-gray-50 rounded-xl p-3">'
-              + '<div class="flex items-center justify-between mb-1"><span class="text-xs font-bold text-gray-600 whitespace-nowrap">'+g+'</span>'
+              + '<div class="flex items-center justify-between gap-1 mb-1"><span class="text-xs font-bold text-gray-700 whitespace-nowrap">'+g+'</span>'
               + (_isUnassigned ? '' : '<span class="text-xs font-black" style="color:'+gc+'">'+gp.toFixed(0)+'%</span>') + '</div>'
               + (_isUnassigned ? '' : '<div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden mb-1"><div class="h-1.5 rounded-full" style="width:'+Math.min(gp,100)+'%;background:'+gc+';transition:width .5s ease"></div></div>')
               + '<div class="text-xs text-gray-500 whitespace-nowrap">'+ga.toLocaleString()+' / '+gt.toLocaleString()+'</div>'
@@ -6871,9 +6913,10 @@ window.renderGoalAchievementPage = function() {
           + '<div class="flex-1 w-full"><div class="text-sm text-gray-500 mb-2">'+(_canEdit?(branch+' · '+month+' FC목표 합산 달성'):(month+(_hasTeam?' 나 + 도입 FC 목표 달성 현황':' 내 목표 달성 현황')))+'</div>'
           + '<div class="grid grid-cols-2 gap-3 mb-3">'
           + '<div class="bg-gray-50 rounded-xl p-3 text-center"><div class="text-xs text-gray-500">'+(_canEdit?'총 목표 환산P':(_hasTeam?'합산 목표 환산P':'내 목표 환산P'))+'</div><div class="text-base font-bold text-gray-800">'+totalTarget.toLocaleString()+'</div></div>'
-          + '<div class="bg-indigo-50 rounded-xl p-3 text-center"><div class="text-xs text-indigo-400">'+(_canEdit?'현재 지사 환산P':(_hasTeam?'합산 환산P':'내 환산P'))+'</div><div class="text-base font-bold text-indigo-700">'+totalActual.toLocaleString()+'</div></div>'
+          + '<div class="bg-indigo-50 rounded-xl p-3 text-center"><div class="text-xs text-indigo-700">'+(_canEdit?'현재 지사 환산P':(_hasTeam?'합산 환산P':'내 환산P'))+'</div><div class="text-base font-bold text-indigo-700">'+totalActual.toLocaleString()+'</div></div>'
           + '</div>'
           + (_canEdit ? ('<div class="grid grid-cols-3 gap-2">' + groupCards + '</div>') : '')
+          + (function(){ try { var un=(byGroup[window.FC_UNASSIGNED]||[]); var ua=0; un.forEach(function(n){ ua+=Number(actuals[n])||0; }); return (_canEdit && un.length) ? '<div class="mt-2 text-sm text-gray-600">미배정 '+un.length+'명'+(ua?' (실적 '+ua.toLocaleString()+')':'')+'은 달성률에 빠져 있습니다 · 아래에서 그룹을 정하면 반영됩니다</div>' : ''; } catch(e){ return ''; } })()
           + (totalTarget===0?('<div class="mt-2 text-sm text-gray-600">'+(_canEdit?'아래에서 FC별 목표 환산P를 입력하고 저장하세요.':'아직 목표가 입력되지 않았습니다.')+'</div>'):'') + '</div></div>';
 
         // FC 한 줄
@@ -6920,12 +6963,12 @@ window.renderGoalAchievementPage = function() {
             // [디자인] 그룹마다 색 테두리 박스 + 색 헤더 바로 그룹 구분을 명확히
             var gIdx = window.FC_DISPLAY_GROUPS.indexOf(g);
             var theme = [
-                { bd: '#6366f1', bg: '#eef2ff', tx: '#4338ca' },   // 마스터본부
-                { bd: '#0ea5e9', bg: '#e0f2fe', tx: '#0369a1' },   // 아너스지점
-                { bd: '#10b981', bg: '#d1fae5', tx: '#047857' },   // 리더스지점
-                { bd: '#94a3b8', bg: '#f1f5f9', tx: '#475569' }    // 미배정
+                { bd: '#e5e7eb', bg: '#f9fafb', tx: '#1f2937' },   // 마스터본부
+                { bd: '#e5e7eb', bg: '#f9fafb', tx: '#1f2937' },   // 아너스지점
+                { bd: '#e5e7eb', bg: '#f9fafb', tx: '#1f2937' },   // 리더스지점
+                { bd: '#e5e7eb', bg: '#f9fafb', tx: '#4b5563' }    // 미배정
             ][gIdx < 0 ? 3 : gIdx];
-            return '<div class="rounded-2xl shadow-sm mb-4 overflow-hidden" style="border:2px solid '+theme.bd+'">'
+            return '<div class="rounded-2xl shadow-sm mb-4 overflow-hidden" style="border:1px solid '+theme.bd+'">'
               + '<div class="flex items-center justify-between px-4 py-2.5 gap-2" style="background:'+theme.bg+'">'
               + '<span class="text-sm font-black whitespace-nowrap" style="color:'+theme.tx+'">'+g
               + ' <span class="text-xs font-bold" style="opacity:.7">('+arr.length+'명)</span></span>'
@@ -7110,7 +7153,7 @@ window.saveFcGoalsUI = function() {
         const ctx = document.getElementById('commissionChart').getContext('2d');
         commChart = new Chart(ctx, {
             type: 'bar',
-            data: { labels: ['익월 수수료', '익월 시책', '13회 시책', '2차년 유지', '3차년 유지'], datasets: [{ label: '금액', data: [0, 0, 0, 0, 0], backgroundColor: [ 'rgba(79, 70, 229, 0.9)', 'rgba(59, 130, 246, 0.9)', 'rgba(147, 51, 234, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(16, 185, 129, 0.4)' ], borderRadius: 4, barPercentage: 0.6 }] },
+            data: { labels: ['익월 수수료', '익월 시책', '13회 시책', '2차년 유지', '3차년 유지'], datasets: [{ label: '금액', data: [0, 0, 0, 0, 0], backgroundColor: [ 'rgba(79, 70, 229, 0.95)', 'rgba(79, 70, 229, 0.7)', 'rgba(79, 70, 229, 0.5)', 'rgba(79, 70, 229, 0.32)', 'rgba(79, 70, 229, 0.2)' ], borderRadius: 4, barPercentage: 0.6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#4b5563', anchor: 'end', align: 'top', formatter: function(value) { return value === 0 ? '' : Math.round(value/10000).toLocaleString() + '만'; }, font: { weight: 'bold', size: 11 } } }, scales: { y: { beginAtZero: true, grid: { borderDash: [2, 4] }, suggestedMax: 1000000, ticks: { callback: (v) => tickMan(v) } }, x: { grid: { display: false } } }, layout: { padding: { top: 20 } } }
         });
         chartEmptyOverlay();
@@ -11300,7 +11343,7 @@ function renderActiveStatusPage() {
                         🏢 ${branchName} 
                         <span class="ml-2 text-xs font-normal text-gray-500">총 ${bTotal}명</span>
                     </h3>
-                    <span class="text-sm font-bold ${bRate >= 50 ? 'text-indigo-600' : 'text-orange-500'}">가동률 ${bRate}%</span>
+                    <span class="text-sm font-bold ${bRate >= 50 ? 'text-indigo-700' : (bRate > 0 ? 'text-amber-700' : 'text-gray-600')}">가동률 ${bRate}%</span>
                 </div>
                 
                 <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -15021,13 +15064,13 @@ function briefCollect() {
 /* [홈] 1280px 미만에서 아래 카드 접기 + 한 줄 요약, 홈 로딩 문구 시간 제한 */
 (function(){
   var chev='<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>';
-  var cfg=[['longTermCard','longTermBonusDisplay','이번 달 '],['recruitBonusCard',null,''],['overridingCard',null,''],['rankingSection','branchPercent','지사 목표 ']];
+  var cfg=[['longTermCard','longTermBonusDisplay','이번 달 '],['recruitBonusCard',null,''],['overridingCard',null,''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
   function setup(){
     cfg.forEach(function(c){
       var card=document.getElementById(c[0]); if(!card||card.classList.contains('fold-card')) return;
       var h=card.querySelector(':scope > h2'); if(!h) return;
       card.classList.add('fold-card');
-      if(h.children.length>1 && c[0]==='rankingSection') h.children[1].classList.add('fold-hide-c');
+      if(h.children.length>1 && (c[0]==='rankingSection'||c[0]==='conventionCard')) h.children[1].classList.add('fold-hide-c');
       var title=(h.textContent||'').trim().split(/\s{2,}|\n/)[0];
       if(c[1]){
         var src=document.getElementById(c[1]); var sum=document.createElement('span'); sum.className='fold-sum';
@@ -15053,6 +15096,39 @@ function briefCollect() {
       if(seen[i]>=20){ el.textContent = el.classList.contains('fl-label') ? '목록을 불러오지 못했습니다 · 새로고침해 주세요' : '아직 표시할 업적이 없습니다'; delete seen[i]; }
     });
   },2000);
+})();
+</script>
+<script>
+/* [홈] 청약 입력 패널: 버튼·오른쪽 스와이프로 열고, 왼쪽 스와이프·Esc·바깥 누르기로 닫기 (1280px 미만) */
+(function(){
+  function narrow(){ return window.innerWidth < 1280; }
+  function homeVisible(){ var h=document.getElementById('page-home'); return h && !h.classList.contains('hidden'); }
+  // 부모 요소의 transform 영향을 피하려고 열 때 body 바로 아래로 옮기고, 닫히면 제자리로 되돌림
+  var _mark=null, _tm=null;
+  function lift(){ var pn=document.getElementById('entryPanel'), bd=document.getElementById('entryBackdrop'); if(!pn||pn.parentNode===document.body) return; _mark=document.createComment('entryPanel'); pn.parentNode.insertBefore(_mark,pn); if(bd) document.body.appendChild(bd); document.body.appendChild(pn); void pn.offsetWidth; }
+  function drop(){ var pn=document.getElementById('entryPanel'), bd=document.getElementById('entryBackdrop'); if(!_mark||!pn||document.body.classList.contains('entry-open')) return; if(bd) _mark.parentNode.insertBefore(bd,_mark); _mark.parentNode.insertBefore(pn,_mark); _mark.remove(); _mark=null; }
+  window.openEntryPanel=function(){ if(!narrow()) return; clearTimeout(_tm); lift(); document.body.classList.add('entry-open'); var pn=document.getElementById('entryPanel'); if(pn){ pn.setAttribute('role','dialog'); pn.setAttribute('aria-modal','true'); } var b=document.getElementById('btnOpenEntry'); if(b) b.setAttribute('aria-expanded','true'); };
+  window.closeEntryPanel=function(){ document.body.classList.remove('entry-open'); clearTimeout(_tm); _tm=setTimeout(drop, narrow()?360:0); var pn=document.getElementById('entryPanel'); if(pn){ pn.removeAttribute('role'); pn.removeAttribute('aria-modal'); } var b=document.getElementById('btnOpenEntry'); if(b){ b.setAttribute('aria-expanded','false'); } };
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && document.body.classList.contains('entry-open') && !document.querySelector('.swal2-container')) closeEntryPanel(); });
+  window.addEventListener('resize',function(){ if(!narrow()) closeEntryPanel(); });
+  var x0=null,y0=null,t0=0,ok=false;
+  function blocked(el){
+    if(!el||!el.closest) return true;
+    if(el.closest('input[type=range],canvas,.swal2-container,#sidebar')) return true;
+    for(var n=el;n&&n!==document.body;n=n.parentElement){ if(n.scrollWidth>n.clientWidth+4){ var ox=getComputedStyle(n).overflowX; if(ox==='auto'||ox==='scroll') return true; } }
+    return false;
+  }
+  document.addEventListener('touchstart',function(e){ if(e.touches.length!==1){ok=false;return;} var t=e.touches[0]; x0=t.clientX; y0=t.clientY; t0=Date.now(); ok=narrow()&&homeVisible()&&!blocked(e.target); },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(!ok||x0===null) return; ok=false;
+    var t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+    if(Date.now()-t0>800 || Math.abs(dx)<70 || Math.abs(dy)>Math.abs(dx)*0.6) return;
+    var sb=document.getElementById('sidebar'); if(sb && !sb.classList.contains('-translate-x-full')) return;
+    var open=document.body.classList.contains('entry-open');
+    if(dx>0 && !open) openEntryPanel(); else if(dx<0 && open) closeEntryPanel();
+  },{passive:true});
+  // 다른 페이지로 이동하면 닫기
+  var _nav=window.navigateTo; if(typeof _nav==='function'){ window.navigateTo=function(){ closeEntryPanel(); return _nav.apply(this,arguments); }; }
 })();
 </script>
 </body>

@@ -582,7 +582,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <li id="menuFcRegister" class="hidden"><button onclick="navigateTo('fc-register')" class="w-full text-left px-6 py-3 hover:bg-teal-50 text-teal-700 font-bold border-l-4 border-transparent hover:border-teal-500 transition block">📝 FC 신규등록</button></li>
                 <li><button onclick="navigateTo('recruiting')" class="w-full text-left px-6 py-3 hover:bg-rose-50 text-rose-700 font-bold border-l-4 border-transparent hover:border-rose-500 transition block">🤝 리크루팅 현황</button></li>
                 <li><button onclick="navigateTo('gallery')" class="w-full text-left px-6 py-3 hover:bg-pink-50 text-pink-600 font-medium border-l-4 border-transparent hover:border-pink-500 transition block">📸 사진첩</button></li>
-                <li id="menuMasterHq" class="hidden"><button onclick="navigateTo('master-hq')" class="w-full text-left px-6 py-3 hover:bg-amber-50 text-amber-700 font-medium border-l-4 border-transparent hover:border-amber-500 transition block">📣 마스터 본부</button></li>
+                <li id="menuMasterHq" class="hidden"><button onclick="navigateTo('master-hq')" class="w-full text-left px-6 py-3 hover:bg-amber-50 text-amber-700 font-medium border-l-4 border-transparent hover:border-amber-500 transition block">📣 마스터본부</button></li>
             </ul>
         </div>
         <div class="p-4 border-t border-gray-200 bg-gray-50">
@@ -731,11 +731,11 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                                     <input type="text" id="premiumInput" placeholder="0" class="input-unified-field text-right font-mono text-sm sm:text-base pr-8 w-full min-w-0" onkeyup="formatCurrency(this);">
                                     <span class="absolute right-3 text-gray-400 font-medium">원</span>
                                 </div>
-                                <label id="briefCheckWrap" class="inline-flex items-center gap-1 cursor-pointer select-none whitespace-nowrap px-0.5">
+                                <label id="briefCheckWrap" onclick="briefDeniedTap(event)" class="inline-flex items-center gap-1 h-10 cursor-pointer select-none whitespace-nowrap px-1 rounded-lg">
                                     <input type="checkbox" id="brief_contract" class="self-contract-box" onchange="briefToggle()">
                                     <span class="text-xs sm:text-sm font-semibold text-gray-600">브리핑</span>
                                 </label>
-                                <label id="selfContractWrap" class="hidden items-center gap-1 cursor-pointer select-none whitespace-nowrap px-0.5">
+                                <label id="selfContractWrap" class="hidden items-center gap-1 h-10 cursor-pointer select-none whitespace-nowrap px-1 rounded-lg">
                                     <input type="checkbox" id="self_contract" class="self-contract-box">
                                     <span class="text-xs sm:text-sm font-semibold text-gray-600">본인</span>
                                 </label>
@@ -755,9 +755,10 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                         </div>
 
                                                  <!-- BRIEF-FORM-START -->
-                         <div id="briefFields" class="hidden bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                             <label class="block text-[11px] font-bold text-amber-800 mb-1">📣 브리핑 섭외자 <span id="briefStatus" class="font-normal text-amber-700"></span></label>
-                             <select id="briefBroker" onchange="briefChanged()" class="w-full border border-gray-300 rounded-lg px-2 py-2 text-sm bg-white"></select>
+                         <div id="briefFields" class="hidden bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
+                             <label for="briefBroker" class="block text-xs font-bold text-amber-900 mb-1.5">📣 브리핑 섭외자</label>
+                             <select id="briefBroker" onchange="briefChanged()" class="w-full h-10 border border-gray-300 rounded-lg px-2 text-sm bg-white"></select>
+                             <p id="briefStatus" class="mt-1.5 text-xs text-amber-800 tabular-nums"></p>
                          </div>
                          <!-- BRIEF-FORM-END -->
 
@@ -1307,26 +1308,36 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
       </div>
 
       <!-- MHQ-PAGE-START -->
-      <div id="page-master-hq" class="page-section hidden p-4 sm:p-6 pb-20">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+      <div id="page-master-hq" class="page-section hidden p-4 sm:p-6 pb-24">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
               <h2 class="text-xl font-bold flex items-center text-gray-800">
                   <span class="w-1.5 h-6 bg-amber-500 rounded-full mr-2"></span>마스터본부
               </h2>
-              <div class="flex items-center gap-2">
-                  <select id="mhqMonth" onchange="renderMasterHqPage(true)" class="border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-bold bg-white text-gray-700"></select>
-                  <button type="button" id="mhqRefreshBtn" onclick="renderMasterHqPage(false, true)" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition"><span id="mhqRefreshIcon" class="inline-block">🔄</span> 새로고침</button>
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                  <select id="mhqMonth" aria-label="조회 월" onchange="renderMasterHqPage(true)" class="flex-1 sm:flex-none h-10 border border-gray-300 rounded-lg px-3 text-sm font-bold bg-white text-gray-700"></select>
+                  <button type="button" id="mhqRefreshBtn" onclick="renderMasterHqPage(false, true)" class="h-10 inline-flex items-center gap-1.5 text-sm font-bold px-4 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
+                      <svg id="mhqRefreshIcon" aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>새로고침
+                  </button>
               </div>
           </div>
-          <div class="text-sm font-extrabold text-indigo-700 mb-2 px-1">■ 브리핑 소득</div>
-          <div id="mhqSummary" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6"></div>
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
-              <div class="flex items-center justify-between mb-2 gap-x-3 gap-y-1 flex-wrap"><div class="font-bold text-gray-700 whitespace-nowrap" style="font-size:clamp(12px,3.4vw,14px)">👥 섭외자별 소득</div><div class="text-gray-500 whitespace-nowrap" style="font-size:clamp(11px,3vw,14px)">섭외자 총 소득 <span id="mhqBrokerTotal" class="font-extrabold text-emerald-600" style="font-size:clamp(12px,3.6vw,16px)">0원</span></div></div>
-              <div id="mhqBrokers" class="overflow-x-auto"></div>
-          </div>
-          <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-              <div class="text-sm font-extrabold text-gray-700 mb-2">■ 브리핑 계약 내역</div>
-              <div id="mhqList" class="overflow-x-auto"></div>
-          </div>
+          <div id="mhqAlert" class="hidden mb-4" role="alert"></div>
+
+          <h3 class="text-sm font-bold text-gray-800 mb-2 px-1">브리핑 소득</h3>
+          <div id="mhqSummary" class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6" aria-live="polite"></div>
+
+          <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+              <div class="flex items-baseline justify-between mb-3 gap-x-3 gap-y-1 flex-wrap">
+                  <h3 class="text-sm font-bold text-gray-800">섭외자별 소득</h3>
+                  <div class="text-sm text-gray-600">섭외자 총 소득 <span id="mhqBrokerTotal" class="font-extrabold text-emerald-700 text-base tabular-nums">0원</span></div>
+              </div>
+              <div id="mhqBrokers" class="overflow-x-auto sm:max-w-2xl"></div>
+          </section>
+
+          <section class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <h3 class="text-sm font-bold text-gray-800 mb-3">브리핑 계약 내역</h3>
+              <div id="mhqList"></div>
+              <div id="mhqTotalBar" class="hidden sm:hidden sticky bottom-3 mt-2 z-10"></div>
+          </section>
       </div>
       <!-- MHQ-PAGE-END -->
 
@@ -13738,18 +13749,19 @@ function stopFlAnim() {
 <script>
 // ===== [브리핑 계약] 폼 + 마스터 본부 페이지 =====
 var BRIEF_RECEIVER = '박동준';
-var BRIEF_RECV_RATE = 0.4;               // 본부장 쉐어율(고정 40%)          // 쉐어 받는 본부장(고정)
-window.briefBrokers = window.briefBrokers || null;   // [{name, rate}] — 구글시트 '마스터본부' 탭
+var BRIEF_RECV_RATE = 0.4;               // 본부장 쉐어율(고정 40%) — 쉐어 받는 본부장(고정)
+window.briefBrokers = window.briefBrokers || null;   // [{name, rate, from}] — 구글시트 '마스터본부' 탭
+window.briefLoadError = '';                           // 마지막 로드 실패 사유(성공 시 빈 문자열)
 
 function briefLoadBrokers(cb) {
     if (typeof google === 'undefined' || !google.script || !google.script.run) { window.briefBrokers = window.briefBrokers || []; if (cb) cb(); return; }
     google.script.run
         .withSuccessHandler(function (res) {
-            window.briefBrokers = Array.isArray(res) ? res : [];
-            if (res && res.error) console.error('마스터본부 탭 로드 실패:', res.error);
+            if (res && res.error) { console.error('마스터본부 탭 로드 실패:', res.error); window.briefLoadError = String(res.error); window.briefBrokers = window.briefBrokers || []; }
+            else { window.briefLoadError = ''; window.briefBrokers = Array.isArray(res) ? res : []; }
             if (cb) cb();
         })
-        .withFailureHandler(function (e) { console.error('마스터본부 탭 로드 실패:', e); window.briefBrokers = window.briefBrokers || []; if (cb) cb(); })
+        .withFailureHandler(function (e) { console.error('마스터본부 탭 로드 실패:', e); window.briefLoadError = String((e && e.message) || e || '연결 오류'); window.briefBrokers = window.briefBrokers || []; if (cb) cb(); })
         .getMasterHqBrokers();
 }
 // 섭외자의 월별 쉐어율: 시트에서 name 행 중 적용월(from) <= month 인 것 중 가장 늦은 행. 비어 있는 from은 처음부터.
@@ -13793,9 +13805,28 @@ function briefApplyPerm() {
     if (w) { w.style.opacity = ok ? '' : '0.4'; w.style.cursor = ok ? '' : 'not-allowed'; w.title = ok ? '' : '지사장·총무·본부장만 사용할 수 있습니다.'; }
     if (!ok && c.checked) { c.checked = false; document.getElementById('briefFields').classList.add('hidden'); }
 }
+// 권한 없는 사용자가 비활성 체크박스를 눌렀을 때 이유를 알려준다(터치 화면은 툴팁이 안 보임)
+function briefDeniedTap(ev) {
+    var c = document.getElementById('brief_contract');
+    if (c && c.disabled) { if (ev) ev.preventDefault(); showAlert('info', '브리핑 계약', '브리핑 계약은 지사장·총무·본부장만 등록할 수 있습니다.'); }
+}
 function briefToggle() {
     briefApplyPerm();
-    var on = document.getElementById('brief_contract').checked;
+    var _c = document.getElementById('brief_contract');
+    // 이미 쉐어계약을 설정해 둔 상태면, 브리핑으로 바꾸기 전에 확인을 받는다
+    if (_c.checked && currentShareData && currentShareData.length > 0 && !_c.dataset.shareOk) {
+        _c.checked = false;
+        var who = currentShareData.map(function (s) { return s.user + ' ' + Math.round((parseFloat(s.rate) || 0) * 100) + '%'; }).join(', ');
+        Swal.fire({ icon: 'warning', title: '쉐어 설정이 해제됩니다', html: '현재 쉐어(' + who + ')가 해제되고<br>' + BRIEF_RECEIVER + ' 본부장 ' + Math.round(BRIEF_RECV_RATE * 100) + '% 브리핑 계약으로 바뀝니다.',
+            showCancelButton: true, confirmButtonText: '브리핑으로 변경', cancelButtonText: '취소', confirmButtonColor: '#d97706' })
+            .then(function (r) {
+                if (!r.isConfirmed) return;
+                currentShareData = []; try { updateShareStatus(); } catch (e) { }
+                _c.dataset.shareOk = '1'; _c.checked = true; briefToggle(); delete _c.dataset.shareOk;
+            });
+        return;
+    }
+    var on = _c.checked;
     var adm = briefIsAdmin();
     document.getElementById('briefFields').classList.toggle('hidden', !(on && adm));
     if (on && adm) {
@@ -13811,11 +13842,11 @@ function briefFillBrokers() {
     var list = briefNames().filter(function (n) { return n !== BRIEF_RECEIVER; });
     var dv = (document.getElementById('dateInput') || {}).value || '';
     var mon = dv.length >= 7 ? dv.substring(0, 7) : currentMonth;
-    var html = '<option value="">선택</option>';
+    var html = '<option value="">섭외자 선택</option>';
     list.forEach(function (n) {
         html += '<option value="' + n + '">' + n + ' (' + Math.round((briefRateAt(n, mon) || 0) * 100) + '%)</option>';
     });
-    if (window.briefBrokers && list.length === 0) html = '<option value="">시트에 등록된 섭외자 없음</option>';
+    if (window.briefBrokers && list.length === 0) html = '<option value="">' + (window.briefLoadError ? '섭외자 목록을 불러오지 못했습니다' : '시트에 등록된 섭외자 없음') + '</option>';
     sel.innerHTML = html;
     if (prev) sel.value = prev;
 }
@@ -13825,7 +13856,12 @@ function briefChanged() {
     if (!document.getElementById('brief_contract').checked) { el.textContent = ''; return; }
     var r = BRIEF_RECV_RATE;
     var n = document.getElementById('briefBroker').value;
-    el.textContent = '(' + (loggedInUser === currentUser ? currentUser : currentUser) + ' ' + Math.round((1 - r) * 100) + '% / ' + BRIEF_RECEIVER + ' ' + Math.round(r * 100) + '%' + (n ? ' · 섭외 ' + n : '') + ')';
+    var dv = (document.getElementById('dateInput') || {}).value || '';
+    var br = n ? Math.min(r, briefRateAt(n, dv.length >= 7 ? dv.substring(0, 7) : currentMonth) || 0) : 0;
+    var p = function (x) { return Math.round(x * 100) + '%'; };
+    el.textContent = n
+        ? '익월분: ' + currentUser + ' ' + p(1 - r) + ' · ' + BRIEF_RECEIVER + ' ' + p(r - br) + ' · ' + n + ' ' + p(br) + '  (13회·유지분은 ' + n + ' 몫이 메인으로)'
+        : '표시: ' + currentUser + ' ' + p(1 - r) + ' / ' + BRIEF_RECEIVER + ' ' + p(r) + ' — 섭외자를 선택하세요';
 }
 function briefReset() {
     var c = document.getElementById('brief_contract');
@@ -13834,6 +13870,7 @@ function briefReset() {
     document.getElementById('briefFields').classList.add('hidden');
     document.getElementById('briefBroker').value = '';
     document.getElementById('briefStatus').textContent = '';
+    delete c.dataset.shareOk;
 }
 // 체크 안됨 → null / 입력 오류 → false / 정상 → briefing 객체
 function briefCollect() {
@@ -13849,7 +13886,9 @@ function briefCollect() {
     var br = name ? (briefRateAt(name, _dv.length >= 7 ? _dv.substring(0, 7) : currentMonth) || 0) : 0;
     if (name && br > recv) { showAlert('warning', '알림', name + ' 쉐어율(' + Math.round(br * 100) + '%)이 본부장 쉐어(' + Math.round(recv * 100) + '%)보다 큽니다. 마스터본부 시트의 쉐어율을 확인해주세요.'); return false; }
     if (currentShareData && currentShareData.length > 0) {
-        currentShareData = []; updateShareStatus();   // 브리핑 계약은 쉐어 설정을 대체
+        // 체크 후 쉐어를 다시 설정한 경우에도 조용히 지우지 않는다
+        showAlert('warning', '쉐어 설정 확인', '브리핑 계약에는 별도 쉐어를 함께 넣을 수 없습니다. 쉐어 설정을 해제하거나 브리핑 체크를 풀어주세요.');
+        return false;
     }
     return { on: true, receiver: BRIEF_RECEIVER, recvRate: recv, briefer: name, brieferRate: br };
 }
@@ -13901,30 +13940,56 @@ function briefCollect() {
         return rows;
     }
 
-    // 총 소득 | 익월소득 한 줄 카드
-    function card2(title, total, next, sub, color, extra) {
-        var lab = 'font-size:clamp(8px,2.3vw,11px)';
-        var val = 'font-size:clamp(10px,3.3vw,20px)';
-        var col = function (label, v, cls) {
-            return '<div class="flex-1 min-w-0"><div class="text-gray-400 mb-0.5 whitespace-nowrap" style="' + lab + '">' + label + '</div>' +
-                '<div class="font-extrabold ' + cls + ' tracking-tight whitespace-nowrap" style="' + val + '">' + fmt(v) + '</div></div>';
-        };
-        var sep = '<div class="w-px bg-gray-200 shrink-0"></div>';
-        return '<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-3 sm:p-4 overflow-hidden"><div class="font-bold text-gray-500 mb-2 whitespace-nowrap" style="font-size:clamp(10px,2.8vw,12px)">' + title + '</div>' +
-            '<div class="flex items-stretch gap-2 sm:gap-5">' +
-            col('총 소득', total, color) + sep + col('익월소득', next, 'text-gray-700') +
-            (extra !== undefined ? sep + col('익월소득의 ' + Math.round(BRIEF_RECV_RATE * 100) + '%', extra, 'text-amber-600') : '') +
-            '</div>' + (sub ? '<div class="text-gray-400 mt-2" style="font-size:clamp(9px,2.5vw,11px)">' + sub + '</div>' : '') + '</div>';
+    // 폰(640px 미만)은 만원 단위, PC는 원 단위
+    var isMobile = function () { return window.matchMedia && window.matchMedia('(max-width: 639px)').matches; };
+    var money = function (v) {
+        v = Math.round(v || 0);
+        if (!isMobile() || Math.abs(v) < 10000) return v.toLocaleString() + '원';
+        if (Math.abs(v) >= 1000000) return Math.round(v / 10000).toLocaleString() + '만원';   // 100만원 이상은 만원 정수
+        return (Math.round(v / 1000) / 10).toLocaleString(undefined, { maximumFractionDigits: 1 }) + '만원';
+    };
+    var num = function (v) { return Math.round(v || 0).toLocaleString(); };
+    var pct = function (x) { return Math.round((x || 0) * 100) + '%'; };
+    // 내용이 같으면 다시 그리지 않음(재로딩 때 카드 등장 애니메이션이 반복되지 않게)
+    var setHTML = function (id, html) { var el = typeof id === 'string' ? document.getElementById(id) : id; if (el && el.__mhq !== html) { el.innerHTML = html; el.__mhq = html; } };
+
+    function stat(label, v, cls) {
+        return '<div class="min-w-0"><div class="text-xs text-gray-600 mb-1 whitespace-nowrap">' + label + '</div>' +
+            '<div class="text-lg sm:text-2xl font-extrabold tracking-tight tabular-nums whitespace-nowrap ' + cls + '">' + money(v) + '</div></div>';
+    }
+    function summaryCard(title, stats, foot) {
+        var cols = stats.length === 3 ? 'grid-cols-3' : 'grid-cols-2';
+        return '<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">' +
+            '<div class="text-sm font-bold text-gray-700 mb-3">' + title + '</div>' +
+            '<div class="grid ' + cols + ' gap-3 divide-x divide-gray-100 [&>*:not(:first-child)]:pl-3">' + stats.join('') + '</div>' +
+            (foot ? '<div class="text-xs text-gray-600 mt-3 pt-3 border-t border-gray-100 tabular-nums">' + foot + '</div>' : '') + '</div>';
+    }
+    function skeleton() {
+        var bar = '<div class="h-7 rounded bg-gray-100 animate-pulse"></div>';
+        var c = '<div class="bg-white rounded-xl border border-gray-200 p-4"><div class="h-4 w-32 rounded bg-gray-100 animate-pulse mb-4"></div><div class="grid grid-cols-2 gap-3">' + bar + bar + '</div></div>';
+        return c + c;
+    }
+    function showAlertBox(msg) {
+        var box = document.getElementById('mhqAlert');
+        if (!msg) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+        box.classList.remove('hidden');
+        box.innerHTML = '<div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3">' +
+            '<div class="text-sm text-red-800"><b>섭외자 목록을 불러오지 못했습니다.</b> 시트 쉐어율 대신 계약 입력 당시 저장된 쉐어율로 계산했습니다.</div>' +
+            '<button type="button" onclick="renderMasterHqPage(false, true)" class="h-9 px-3 rounded-lg bg-red-600 text-white text-sm font-bold hover:bg-red-700">다시 시도</button></div>';
     }
 
     window.renderMasterHqPage = function (monthChanged, manual) {
         var spin = function (on) {
             var ic = document.getElementById('mhqRefreshIcon');
             if (ic) ic.style.animation = on ? 'mhqspin 0.8s linear infinite' : '';
+            var bt = document.getElementById('mhqRefreshBtn'); if (bt) bt.disabled = !!on;
             if (manual) { try { toggleLoading(on); } catch (e) { } }
         };
         if (!document.getElementById('mhqSpinCss')) { var st = document.createElement('style'); st.id = 'mhqSpinCss'; st.textContent = '@keyframes mhqspin{to{transform:rotate(360deg)}}'; document.head.appendChild(st); }
-        if (manual) spin(true);
+        var firstLoad = window.briefBrokers === null;
+        if (manual || firstLoad) spin(true);
+        if (firstLoad) setHTML('mhqSummary', skeleton());
+
         var run = function () {
             var scope = canSee();
             var sel = document.getElementById('mhqMonth');
@@ -13934,22 +13999,34 @@ function briefCollect() {
                 if (currentMonth) months[currentMonth] = 1;
                 var keys = Object.keys(months).sort().reverse();
                 var prev = sel.value;
-                sel.innerHTML = '<option value="">전체 누적</option>' + keys.map(function (m) { return '<option value="' + m + '">' + m + '</option>'; }).join('');
+                sel.innerHTML = '<option value="">전체 누적</option>' + keys.map(function (m) { return '<option value="' + m + '">' + m.replace('-', '년 ') + '월</option>'; }).join('');
                 sel.value = prev || currentMonth || '';
                 if (sel.value !== (prev || currentMonth || '')) sel.value = '';
             }
             var month = sel.value;
-            if (!scope) { document.getElementById('mhqSummary').innerHTML = '<div class="text-sm text-gray-500 p-4">열람 권한이 없습니다.</div>'; document.getElementById('mhqBrokers').innerHTML = ''; document.getElementById('mhqList').innerHTML = ''; return; }
+            var bar = document.getElementById('mhqTotalBar');
+            if (!scope) {
+                showAlertBox('');
+                setHTML('mhqSummary', '<div class="text-sm text-gray-600 p-4">열람 권한이 없습니다.</div>');
+                setHTML('mhqBrokers', ''); setHTML('mhqList', ''); bar.classList.add('hidden');
+                return;
+            }
+            showAlertBox(window.briefLoadError);
             var rows = collect(month).filter(function (r) { return !r.withdrawn; });
 
             var sT = 0, sTN = 0, sR = 0, sRN = 0, sB = 0;
             rows.forEach(function (r) { sT += r.total; sTN += r.totalNext; sR += r.recvReal; sRN += r.recvNext; sB += r.brfInc; });
-            document.getElementById('mhqSummary').innerHTML =
-                card2('① 브리핑 계약 총 수수료', sT, sTN, rows.length + '건 · 쉐어 전 전체 수수료', 'text-indigo-600', Math.round(sTN * BRIEF_RECV_RATE)) +
-                card2('② ' + BRIEF_RECEIVER + ' 본부장 소득', sR, sRN, '쉐어 ' + Math.round(BRIEF_RECV_RATE * 100) + '% 중 섭외자 몫 차감 후', 'text-amber-600');
-            document.getElementById('mhqBrokerTotal').textContent = fmt(sB);
+            var share40 = Math.round(sTN * BRIEF_RECV_RATE);
+            setHTML('mhqSummary',
+                summaryCard('① 브리핑 계약 총 수수료',
+                    [stat('총 소득', sT, 'text-indigo-700'), stat('익월소득', sTN, 'text-gray-800'), stat('익월소득의 ' + pct(BRIEF_RECV_RATE), share40, 'text-gray-800')],
+                    rows.length + '건 · 쉐어 전 전체 수수료') +
+                summaryCard('② ' + BRIEF_RECEIVER + ' 본부장 소득',
+                    [stat('총 소득', sR, 'text-amber-700'), stat('익월소득', sRN, 'text-gray-800')],
+                    '익월 ' + pct(BRIEF_RECV_RATE) + ' ' + money(share40) + ' − 섭외자 ' + money(sB) + ' = <b class="text-gray-800">' + money(share40 - sB) + '</b>'));
+            document.getElementById('mhqBrokerTotal').textContent = money(sB);
 
-            // 섭외자별
+            // 섭외자별 (소득 많은 순)
             var by = {};
             var _rm = month || currentMonth;
             briefNames().forEach(function (n) { by[n] = { rate: briefRateAt(n, _rm), cnt: 0, inc: 0, reg: true }; });
@@ -13958,49 +14035,83 @@ function briefCollect() {
                 if (!by[n]) by[n] = { rate: briefBrokerRate(r.bf, r.month), cnt: 0, inc: 0, reg: false };
                 by[n].cnt++; by[n].inc += r.brfInc;
             });
-            var bn = Object.keys(by);
-            var th = 'border border-gray-300 bg-gray-100 text-gray-600 font-bold px-3 py-2 whitespace-nowrap';
+            var bn = Object.keys(by).sort(function (a, b) { return by[b].inc - by[a].inc || a.localeCompare(b); });
+            var th = 'border border-gray-300 bg-gray-100 text-gray-700 font-bold px-3 py-2 whitespace-nowrap';
             var td = 'border border-gray-300 px-3 py-2';
-            document.getElementById('mhqBrokers').innerHTML = bn.length ? ('<table class="w-full text-xs sm:text-sm border-collapse border border-gray-300"><thead><tr><th class="' + th + ' text-left">섭외자</th><th class="' + th + ' text-right">쉐어율</th><th class="' + th + ' text-right">계약 수</th><th class="' + th + ' text-right">소득</th></tr></thead><tbody>' +
-                bn.map(function (n) {
-                    var b = by[n];
-                    return '<tr class="hover:bg-gray-50"><td class="' + td + ' font-medium">' + esc(n) + (b.reg ? '' : ' <span class="text-[10px] text-gray-400">(시트 미등록)</span>') + '</td><td class="' + td + ' text-right">' + Math.round((b.rate || 0) * 100) + '%</td><td class="' + td + ' text-right">' + b.cnt + '건</td><td class="' + td + ' text-right font-bold text-emerald-600">' + fmt(b.inc) + '</td></tr>';
-                }).join('') + '</tbody></table>') : '<div class="text-xs text-gray-400 py-3">마스터본부 탭에 등록된 섭외자가 없습니다. 구글시트 \'마스터본부\' 탭 A열=섭외자 이름, B열=쉐어율을 입력하세요.</div>';
+            var bEl = document.getElementById('mhqBrokers');
+            if (bn.length) {
+                setHTML(bEl, '<table class="w-full text-sm border-collapse border border-gray-300 tabular-nums"><caption class="sr-only">섭외자별 소득</caption><thead><tr>' +
+                    '<th scope="col" class="' + th + ' text-left">섭외자</th><th scope="col" class="' + th + ' text-right">쉐어율</th><th scope="col" class="' + th + ' text-right">계약 수</th><th scope="col" class="' + th + ' text-right">소득</th></tr></thead><tbody>' +
+                    bn.map(function (n) {
+                        var b = by[n];
+                        return '<tr class="hover:bg-gray-50"><th scope="row" class="' + td + ' text-left font-medium">' + esc(n) + (b.reg ? '' : ' <span class="text-xs font-normal text-gray-600">(시트 미등록)</span>') + '</th><td class="' + td + ' text-right">' + pct(b.rate) + '</td><td class="' + td + ' text-right">' + b.cnt + '건</td><td class="' + td + ' text-right font-bold text-emerald-700">' + money(b.inc) + '</td></tr>';
+                    }).join('') + '</tbody></table>');
+            } else if (window.briefLoadError) {
+                setHTML(bEl, '<div class="text-sm text-gray-600 py-3">섭외자 목록을 불러오지 못해 표시할 수 없습니다.</div>');
+            } else {
+                setHTML(bEl, '<div class="text-sm text-gray-600 py-3">마스터본부 탭에 등록된 섭외자가 없습니다. 구글시트 \'마스터본부\' 탭에 A열 섭외자 이름, B열 쉐어율, C열 적용월(선택)을 입력하세요.</div>');
+            }
 
-            // 브리핑 계약 내역 (줄·칸 표)
+            // 브리핑 계약 내역
             rows.sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
-            var n = function (v) { return (v || 0).toLocaleString(); };
-            var rr = Math.round(BRIEF_RECV_RATE * 100);
-            var sumRow = rows.reduce(function (a, r) { a.prem += r.premium || 0; a.t += r.total; a.m += r.mainInc; a.r += r.recvReal; a.b += r.brfInc; return a; }, { prem: 0, t: 0, m: 0, r: 0, b: 0 });
-            document.getElementById('mhqList').innerHTML = rows.length ? ('<table class="w-full min-w-[980px] text-xs border-collapse border border-gray-300"><thead class="sticky top-0"><tr>' +
-                ['일자', '회사', '메인', '계약자', '상품', '보험료', '쉐어(메인/본부장)', '섭외자', '총 수수료', '메인 소득', BRIEF_RECEIVER + ' 소득', '섭외자 소득'].map(function (t, i) {
-                    return '<th class="' + th + (i >= 5 && i !== 6 && i !== 7 ? ' text-right' : ' text-center') + '">' + t + '</th>';
-                }).join('') + '</tr></thead><tbody>' +
-                rows.map(function (r, i) {
-                    var rate = Math.round((parseFloat(r.bf.recvRate) || 0) * 100);
-                    return '<tr class="' + (i % 2 ? 'bg-gray-50' : 'bg-white') + ' hover:bg-amber-50">' +
-                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(String(r.date || '').substring(5)) + '</td>' +
-                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.company || '-') + '</td>' +
-                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.owner) + '</td>' +
-                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.contractor || '-') + '</td>' +
-                        '<td class="' + td + ' min-w-[180px] break-words">' + esc(r.name) + '</td>' +
-                        '<td class="' + td + ' text-right whitespace-nowrap">' + n(r.premium) + '</td>' +
-                        '<td class="' + td + ' text-center whitespace-nowrap">' + (100 - rate) + ' / ' + rate + '</td>' +
-                        '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.bf.briefer) + ' <span class="text-gray-400">' + Math.round((briefBrokerRate(r.bf, r.month) || 0) * 100) + '%</span></td>' +
-                        '<td class="' + td + ' text-right whitespace-nowrap font-bold">' + n(r.total) + '</td>' +
-                        '<td class="' + td + ' text-right whitespace-nowrap">' + n(r.mainInc) + '</td>' +
-                        '<td class="' + td + ' text-right whitespace-nowrap text-amber-700">' + n(r.recvReal) + '</td>' +
-                        '<td class="' + td + ' text-right whitespace-nowrap text-emerald-600 font-bold">' + n(r.brfInc) + '</td></tr>';
-                }).join('') +
-                '<tr class="bg-indigo-50 font-bold"><td class="' + td + ' text-center" colspan="5">합계 (' + rows.length + '건)</td><td class="' + td + ' text-right">' + n(sumRow.prem) + '</td><td class="' + td + '"></td><td class="' + td + '"></td><td class="' + td + ' text-right">' + n(sumRow.t) + '</td><td class="' + td + ' text-right">' + n(sumRow.m) + '</td><td class="' + td + ' text-right text-amber-700">' + n(sumRow.r) + '</td><td class="' + td + ' text-right text-emerald-600">' + n(sumRow.b) + '</td></tr>' +
-                '</tbody></table>') : '<div class="text-xs text-gray-400 py-3">브리핑 계약이 없습니다.</div>';
+            var sum = rows.reduce(function (a, r) { a.prem += r.premium || 0; a.t += r.total; a.m += r.mainInc; a.r += r.recvReal; a.b += r.brfInc; return a; }, { prem: 0, t: 0, m: 0, r: 0, b: 0 });
+            var lEl = document.getElementById('mhqList');
+            if (!rows.length) {
+                setHTML(lEl, '<div class="text-sm text-gray-600 py-3">' + (month ? month.replace('-', '년 ') + '월' : '전체 기간') + ' 브리핑 계약이 없습니다.</div>');
+                bar.classList.add('hidden');
+            } else {
+                // PC: 표
+                var heads = ['일자', '회사', '메인', '계약자', '상품', '보험료', '섭외자', '총 소득', '메인 소득', BRIEF_RECEIVER + ' 소득', '섭외자 소득'];
+                var table = '<div class="hidden sm:block overflow-x-auto"><table class="w-full min-w-[900px] text-xs border-collapse border border-gray-300 tabular-nums"><caption class="sr-only">브리핑 계약 내역</caption><thead><tr>' +
+                    heads.map(function (t, i) { return '<th scope="col" class="' + th + (i >= 5 && i !== 6 ? ' text-right' : ' text-center') + '">' + t + '</th>'; }).join('') + '</tr></thead><tbody>' +
+                    rows.map(function (r, i) {
+                        return '<tr class="' + (i % 2 ? 'bg-gray-50' : 'bg-white') + ' hover:bg-amber-50">' +
+                            '<td class="' + td + ' text-center whitespace-nowrap">' + esc(String(r.date || '').substring(5)) + '</td>' +
+                            '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.company || '-') + '</td>' +
+                            '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.owner) + '</td>' +
+                            '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.contractor || '-') + '</td>' +
+                            '<td class="' + td + ' min-w-[180px]">' + esc(r.name) + '</td>' +
+                            '<td class="' + td + ' text-right whitespace-nowrap">' + num(r.premium) + '</td>' +
+                            '<td class="' + td + ' text-center whitespace-nowrap">' + esc(r.bf.briefer || '-') + (r.bf.briefer ? ' <span class="text-gray-600">' + pct(briefBrokerRate(r.bf, r.month)) + '</span>' : '') + '</td>' +
+                            '<td class="' + td + ' text-right whitespace-nowrap font-bold">' + num(r.total) + '</td>' +
+                            '<td class="' + td + ' text-right whitespace-nowrap">' + num(r.mainInc) + '</td>' +
+                            '<td class="' + td + ' text-right whitespace-nowrap text-amber-700">' + num(r.recvReal) + '</td>' +
+                            '<td class="' + td + ' text-right whitespace-nowrap text-emerald-700 font-bold">' + num(r.brfInc) + '</td></tr>';
+                    }).join('') +
+                    '<tr class="bg-indigo-50 font-bold"><th scope="row" class="' + td + ' text-center" colspan="5">합계 (' + rows.length + '건)</th><td class="' + td + ' text-right">' + num(sum.prem) + '</td><td class="' + td + '"></td><td class="' + td + ' text-right">' + num(sum.t) + '</td><td class="' + td + ' text-right">' + num(sum.m) + '</td><td class="' + td + ' text-right text-amber-700">' + num(sum.r) + '</td><td class="' + td + ' text-right text-emerald-700">' + num(sum.b) + '</td></tr>' +
+                    '</tbody></table></div>';
+                // 폰: 계약별 카드
+                var cell = function (label, v, cls) { return '<div class="min-w-0"><div class="text-[11px] text-gray-600">' + label + '</div><div class="text-sm font-bold tabular-nums whitespace-nowrap ' + cls + '">' + money(v) + '</div></div>'; };
+                var cards = '<ul class="sm:hidden divide-y divide-gray-100 -mx-1">' + rows.map(function (r) {
+                    return '<li class="px-1 py-3">' +
+                        '<div class="flex items-center justify-between text-xs text-gray-600 mb-0.5"><span class="tabular-nums">' + esc(String(r.date || '').substring(5).replace('-', '/')) + ' · ' + esc(r.company || '-') + '</span><span>' + esc(r.owner) + ' → ' + esc(r.contractor || '-') + '</span></div>' +
+                        '<div class="text-sm text-gray-800 font-medium line-clamp-2 mb-2">' + esc(r.name) + ' <span class="text-xs font-normal text-gray-600 tabular-nums">' + money(r.premium) + '</span></div>' +
+                        '<div class="grid grid-cols-3 gap-2 rounded-lg bg-gray-50 px-2.5 py-2">' +
+                        cell('총 소득', r.total, 'text-gray-900') + cell(BRIEF_RECEIVER, r.recvReal, 'text-amber-700') +
+                        cell((r.bf.briefer || '섭외자') + ' ' + (r.bf.briefer ? pct(briefBrokerRate(r.bf, r.month)) : ''), r.brfInc, 'text-emerald-700') +
+                        '</div></li>';
+                }).join('') + '</ul>';
+                setHTML(lEl, table + cards);
+                bar.classList.remove('hidden');
+                setHTML(bar, '<div class="rounded-xl bg-gray-900 text-white shadow-lg px-4 py-2.5 grid grid-cols-3 gap-2 tabular-nums">' +
+                    '<div class="min-w-0"><div class="text-[11px] text-gray-300">합계 ' + rows.length + '건</div><div class="text-sm font-bold whitespace-nowrap">' + money(sum.t) + '</div></div>' +
+                    '<div class="min-w-0"><div class="text-[11px] text-gray-300">' + BRIEF_RECEIVER + '</div><div class="text-sm font-bold whitespace-nowrap text-amber-300">' + money(sum.r) + '</div></div>' +
+                    '<div class="min-w-0"><div class="text-[11px] text-gray-300">섭외자</div><div class="text-sm font-bold whitespace-nowrap text-emerald-300">' + money(sum.b) + '</div></div></div>');
+            }
         };
+        window._mhqLastRun = run;
         var _t0 = Date.now();
-        var _done = function () { if (manual) setTimeout(function () { spin(false); }, Math.max(0, 700 - (Date.now() - _t0))); };
-        if (window.briefBrokers === null) { briefLoadBrokers(function () { run(); _done(); }); }
+        var _done = function () { setTimeout(function () { spin(false); }, Math.max(0, 600 - (Date.now() - _t0))); };
+        if (firstLoad) { briefLoadBrokers(function () { run(); _done(); }); }
         else if (monthChanged) { run(); }
-        else { run(); briefLoadBrokers(function () { run(); _done(); }); }
+        else { run(); briefLoadBrokers(function () { run(); if (manual) _done(); }); }
     };
+    // 폰 ↔ PC 폭이 바뀌면 금액 단위를 다시 계산
+    if (window.matchMedia) {
+        var _mq = window.matchMedia('(max-width: 639px)');
+        var _onMq = function () { var pg = document.getElementById('page-master-hq'); if (pg && !pg.classList.contains('hidden') && window._mhqLastRun) window._mhqLastRun(); };
+        if (_mq.addEventListener) _mq.addEventListener('change', _onMq); else if (_mq.addListener) _mq.addListener(_onMq);
+    }
 
     // 메뉴 노출 제어 (로그인 후 시트 로드 → 권한 확인)
     function applyMenu() {

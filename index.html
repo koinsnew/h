@@ -566,6 +566,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     }
     /* 메뉴가 길어 아래가 가려질 때 아래쪽을 흐리게 */
     #sidebarScroll.y-more{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 40px),transparent)}
+    /* 특별 프로모션 메뉴 제거: 목록의 합산 체크도 숨김 */
+    .promo-chk{display:none!important}
     /* 표 안 빈 상태·로딩 문구: 표가 화면보다 넓어도 보이는 영역 가운데에 표시 */
     .tbl-msg{position:sticky;left:0;max-width:calc(100vw - 3rem);margin:0 auto 0 0;text-align:center}
     @media (min-width:640px){.tbl-msg{max-width:none;margin:0 auto}}
@@ -691,7 +693,6 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <li role="presentation" class="px-5 pt-4 pb-1 text-xs font-bold text-gray-500 tracking-wide">지사</li>
                 <li><button onclick="navigateTo('orgchart')" data-nav="orgchart" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🏢</span><span>조직도</span></button></li>
                 <li><button onclick="navigateTo('contact')" data-nav="contact" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">👥</span><span>헤리티지 연락망</span></button></li>
-                <li><button onclick="navigateTo('global-ranking')" data-nav="global-ranking" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🏆</span><span>직영채널 순위</span></button></li>
                 <li id="menuBranchIncome" class="hidden"><button onclick="navigateTo('branch-income')" data-nav="branch-income" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">💰</span><span>지사 소득</span></button></li>
                 <li><button onclick="navigateTo('recruiting')" data-nav="recruiting" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🤝</span><span>리크루팅 현황</span></button></li>
                 <li id="menuFcRegister" class="hidden"><button onclick="navigateTo('fc-register')" data-nav="fc-register" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📝</span><span>FC 신규등록</span></button></li>
@@ -699,7 +700,6 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <li role="presentation" class="px-5 pt-4 pb-1 text-xs font-bold text-gray-500 tracking-wide">정보·자료</li>
                 <li><button onclick="navigateTo('board')" data-nav="board" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📋</span><span>정보 게시판</span></button></li>
                 <li><button onclick="navigateTo('life')" data-nav="life" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📂</span><span>시책 확인</span></button></li>
-                <li id="menuPromotion"><button onclick="navigateTo('promotion')" data-nav="promotion" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🏖️</span><span>특별 프로모션</span></button></li>
                 <li><button onclick="navigateTo('schedule')" data-nav="schedule" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📅</span><span>교육일정</span></button></li>
                 <li><button onclick="navigateTo('gallery')" data-nav="gallery" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📸</span><span>사진첩</span></button></li>
             </ul>

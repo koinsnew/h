@@ -27,16 +27,24 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     fetch(window.HERITAGE_API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // preflight 회피
-                        body: JSON.stringify({ fn: prop, args: args })
+                        body: JSON.stringify({ fn: prop, args: args, token: window.__hpToken || '' })
                     }).then(function (r) { return r.json(); }).then(function (j) {
                         if (j && j.ok) { if (ok) ok(j.result, uo); }
-                        else { var e = new Error((j && j.error) || '서버 오류'); if (fail) fail(e, uo); else console.error(prop, e); }
+                        else {
+                            var e = new Error((j && j.error) || '서버 오류');
+                            if (window.__hpToken && /로그인이 필요/.test(e.message) && !window.__hpExpiredShown) {
+                                window.__hpExpiredShown = true;
+                                try { Swal.fire({ icon: 'info', title: '다시 로그인해주세요', text: '로그인한 지 오래되어 보안을 위해 연결이 끊겼습니다.', confirmButtonText: '로그인 화면으로', allowOutsideClick: false }).then(function () { location.reload(); }); } catch (x) { location.reload(); }
+                            }
+                            if (fail) fail(e, uo); else console.error(prop, e);
+                        }
                     }).catch(function (err) { if (fail) fail(err, uo); else console.error(prop, err); });
                 };
             }
         });
     }
     window.google = { script: { run: makeRunner(null, null, undefined) } };
+    window.__hpRemote = true;   // GitHub Pages + API 모드: 로그인 전에는 서버 데이터를 받지 않음
 })();
 </script>
 
@@ -642,11 +650,11 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 
                 <input type="password" id="loginPwInput" aria-label="주민번호 뒷자리 7자리" inputmode="numeric" maxlength="7" autocomplete="current-password" placeholder="주민번호 뒷자리 (7자리)" 
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-center text-lg font-bold tracking-widest"
-                    onkeypress="if(event.key === 'Enter') handleLogin()"
+                    onkeypress="if(event.key === 'Enter') secureLogin()"
                     oninput="document.getElementById('loginErrorMsg').classList.add('hidden')"
                     autocomplete="off">
 
-                <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition shadow-lg transform active:scale-95">
+                <button id="btnLogin" onclick="secureLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition shadow-lg transform active:scale-95">
                     접속하기
                 </button>
                 <p id="loginErrorMsg" class="text-red-500 text-sm font-bold hidden animate-pulse"></p>
@@ -2574,8 +2582,8 @@ fp = flatpickr("#dateInput", {
     // 초기 히스토리 상태 설정
     history.replaceState({ page: 'home', modal: null }, 'home', '');
 
-    loadUserInfo();
-    preloadBoardData();
+    // [보안] API 모드에서는 로그인(토큰) 후에 사용자·자료를 불러온다
+    if (!window.__hpRemote || typeof google === 'undefined') { loadUserInfo(); if (typeof google !== 'undefined') preloadBoardData(); }
     startFlAnim();
 
     document.getElementById('loginNameInput').value = "";
@@ -2600,6 +2608,7 @@ fp = flatpickr("#dateInput", {
             loadSheetData(); 
         }).withFailureHandler(function(err) {
             toggleLoading(false);
+            window.__afterBoot = null;
             showAlert('error', '사용자 정보 로드 실패', err);
         }).getUserInfo(currentMonth);  // [월별 사용자정보] 2026-09부터는 '사용자 정보 2609' 탭 사용
     }
@@ -2611,6 +2620,7 @@ function loadBranchGoalThenFinish() {
         applyBranchGoalForMonth();
         toggleLoading(false);
         updateFormUI();
+        if (window.__afterBoot) { var f = window.__afterBoot; window.__afterBoot = null; try { f(); } catch (e) { console.error(e); } }
     };
     if (typeof google === 'undefined' || typeof google.script === 'undefined' || !google.script.run) { done(); return; }
     google.script.run
@@ -12408,17 +12418,17 @@ function renderIncomeHeader() {
     const cols = [
         { key: null,       label: '순위',      align: 'text-center' },
         { key: null,       label: '성명',      align: 'text-left'   },
-        { key: 'p',        label: '환산P',     align: 'text-right', color: 'text-blue-500'   },
-        { key: 'next',     label: '익월수수료', align: 'text-right', color: 'text-indigo-600' },
-        { key: 'bonus',    label: '익월시책',  align: 'text-right', color: 'text-pink-600'   },
-        { key: 'expected', label: '예상수수료', align: 'text-right', color: 'text-orange-600' },
+        { key: 'p',        label: '환산P',     align: 'text-right', color: 'text-gray-600' },
+        { key: 'next',     label: '익월수수료', align: 'text-right', color: 'text-gray-600' },
+        { key: 'bonus',    label: '익월시책',  align: 'text-right', color: 'text-gray-600' },
+        { key: 'expected', label: '예상수수료', align: 'text-right', color: 'text-gray-600' },
     ];
 
     const getArrow = (key) => {
-        if (!key || incomeSortKey !== key) return '<span class="text-gray-400 ml-1">↕</span>';
+        if (!key || incomeSortKey !== key) return '<span class="text-gray-500 ml-1" aria-hidden="true">↕</span>';
         return incomeSortOrder === 'asc'
-            ? '<span class="text-pink-500 font-black ml-1">↑</span>'
-            : '<span class="text-pink-500 font-black ml-1">↓</span>';
+            ? '<span class="text-indigo-700 font-black ml-1" aria-label="오름차순">↑</span>'
+            : '<span class="text-indigo-700 font-black ml-1" aria-label="내림차순">↓</span>';
     };
 
     let html = '<tr>';
@@ -12487,15 +12497,15 @@ function renderIncomeTable(data) {
         const badge  = rank && rank <= 3 ? rankStyles[rank - 1] : 'bg-gray-100 text-gray-500';
         const crown  = rank && crownMap[rank] ? `<span class="text-sm mr-1">${crownMap[rank]}</span>` : '';
         const isMe   = (u.name === loggedInUser);
-        const rowBg  = !hasActivity ? 'bg-gray-50 opacity-60' : isMe ? 'bg-pink-50' : 'hover:bg-gray-50';
+        const rowBg  = !hasActivity ? 'bg-gray-50 opacity-60' : isMe ? 'bg-indigo-50' : 'hover:bg-gray-50';
         const uInfo  = userDB.find(u2 => u2.name === u.name);
         const branch = uInfo ? uInfo.branch : '';
         const role   = uInfo ? uInfo.role : '';
 
-        const hlP        = incomeSortKey === 'p'        ? 'font-extrabold text-blue-700'   : 'text-blue-500';
-        const hlNext     = incomeSortKey === 'next'     ? 'font-extrabold text-indigo-700' : 'text-indigo-500';
-        const hlBonus    = incomeSortKey === 'bonus'    ? 'font-extrabold text-pink-700'   : 'text-pink-500';
-        const hlExpected = incomeSortKey === 'expected' ? 'font-extrabold text-orange-600' : 'font-bold text-orange-500';
+        const hlP        = incomeSortKey === 'p'        ? 'font-extrabold text-gray-900' : 'text-gray-700';
+        const hlNext     = incomeSortKey === 'next'     ? 'font-extrabold text-gray-900' : 'text-gray-700';
+        const hlBonus    = incomeSortKey === 'bonus'    ? 'font-extrabold text-gray-900' : 'text-gray-700';
+        const hlExpected = incomeSortKey === 'expected' ? 'font-extrabold text-indigo-700' : 'font-bold text-gray-900';
 
         html += `
             <tr class="${rowBg} transition border-b border-gray-100">
@@ -12510,7 +12520,7 @@ function renderIncomeTable(data) {
                         <div>
                             <div class="flex items-center gap-1">
                                 <span class="font-bold text-gray-800 text-sm">${u.name}</span>
-                                ${isMe ? '<span class="text-xs bg-pink-100 text-pink-600 px-1.5 rounded font-bold border border-pink-200">나</span>' : ''}
+                                ${isMe ? '<span class="text-xs bg-indigo-100 text-indigo-700 px-1.5 rounded font-bold border border-indigo-200">나</span>' : ''}
                             </div>
                             <div class="text-xs text-gray-500 mt-0.5">${branch} · ${role}</div>
                         </div>
@@ -14285,7 +14295,11 @@ function briefCollect() {
             var sT = 0, sTN = 0, sR = 0, sRN = 0, sB = 0;
             rows.forEach(function (r) { sT += r.total; sTN += r.totalNext; sR += r.recvReal; sRN += r.recvNext; sB += r.brfInc; });
             var share40 = Math.round(sTN * BRIEF_RECV_RATE);
-            setHTML('mhqSummary',
+            if (!rows.length) setHTML('mhqSummary', '<div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm p-6 text-center">'
+                + '<div class="text-base font-bold text-gray-800 mb-1">' + (month ? month.replace('-', '년 ') + '월 ' : '') + '브리핑 계약이 아직 없습니다</div>'
+                + '<div class="text-sm text-gray-600 mb-4">청약 입력에서 \'브리핑\'을 체크해 추가하면 수수료와 본부장·섭외자 소득이 여기에 자동으로 모입니다.</div>'
+                + '<button type="button" onclick="navigateTo(\'home\'); setTimeout(function(){ try{ openEntryPanel(); }catch(e){} }, 150);" class="h-11 px-5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold">청약 입력으로 가기</button></div>');
+            else setHTML('mhqSummary',
                 summaryCard('① 브리핑 계약 총 수수료',
                     [stat('총 소득', sT, 'text-indigo-700'), stat('익월소득', sTN, 'text-gray-800'), stat('익월소득의 ' + pct(BRIEF_RECV_RATE), share40, 'text-gray-600', true)],
                     rows.length + '건 · 쉐어 전 전체 수수료') +
@@ -15129,6 +15143,34 @@ function briefCollect() {
   },{passive:true});
   // 다른 페이지로 이동하면 닫기
   var _nav=window.navigateTo; if(typeof _nav==='function'){ window.navigateTo=function(){ closeEntryPanel(); return _nav.apply(this,arguments); }; }
+})();
+</script>
+<script>
+/* [보안 로그인] 주민번호 확인은 서버(apiLogin)에서만 한다. 성공하면 토큰을 받아 자료를 불러온 뒤 화면을 연다. */
+(function(){
+  var busy = false;
+  function err(msg){ var el=document.getElementById('loginErrorMsg'); if(!el) return; el.innerText = msg; el.classList.remove('hidden'); }
+  function setBusy(on){ busy = on; var b=document.getElementById('btnLogin'); if(b){ b.disabled = on; b.classList.toggle('opacity-60', on); b.setAttribute('aria-busy', on?'true':'false'); } }
+  window.secureLogin = function(){
+    if (busy) return;
+    if (!window.__hpRemote || typeof google === 'undefined') { handleLogin(); return; }   // 로컬 테스트·Apps Script 내부 실행은 기존 방식
+    var nameEl=document.getElementById('loginNameInput'), pwEl=document.getElementById('loginPwInput');
+    var name=(nameEl.value||'').trim(), pw=(pwEl.value||'').trim();
+    var el=document.getElementById('loginErrorMsg'); if(el){ el.classList.add('hidden'); el.innerText=''; }
+    if (!name) { showAlert('warning','입력 필요','성명을 입력해주세요.'); return; }
+    setBusy(true); toggleLoading(true);
+    var boot = function(){ window.__afterBoot = function(){ setBusy(false); try { preloadBoardData(); } catch(e){} handleLogin(); }; loadUserInfo(); };
+    google.script.run.withSuccessHandler(function(res){
+      window.__hpToken = res && res.token;
+      boot();
+    }).withFailureHandler(function(e){
+      var m = String((e && e.message) || e || '');
+      if (/허용되지 않은 호출/.test(m)) { boot(); return; }   // 서버(code.gs)가 아직 예전 버전이면 기존 방식으로 진행
+      toggleLoading(false); setBusy(false);
+      err(m.replace(/^Error:\s*/,'') || '로그인에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      if (/주민등록번호/.test(m)) { pwEl.value=''; pwEl.focus(); }
+    }).apiLogin(name, pw, (typeof currentMonth==='string'?currentMonth:''));
+  };
 })();
 </script>
 </body>

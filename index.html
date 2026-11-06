@@ -589,7 +589,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
       .fold-btn svg{transition:transform .2s cubic-bezier(.2,.8,.2,1)}
       .fold-card.is-open .fold-btn svg{transform:rotate(180deg)}
     }
-    .fold-sum{margin-left:auto;font-size:.875rem;font-weight:600;color:#374151;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .fold-sum{margin-left:auto;padding-left:.5rem;flex:none;font-size:.8125rem;font-weight:600;color:#374151;font-variant-numeric:tabular-nums;white-space:nowrap}
     @media (min-width:1280px){.fold-sum{display:none}}
     /* 홈 리스트 카드: 손가락 크기 */
     @media screen{
@@ -963,19 +963,19 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
             <!-- 중간 섹션 -->
             <div class="xl:col-span-4 space-y-4 no-print order-3">
                 <div id="longTermCard" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
-                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center"><span class="w-1.5 h-5 sm:h-6 bg-blue-500 rounded-full mr-2"></span>장기근속 성장지원금</h2>
+                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center whitespace-nowrap min-w-0"><span class="w-1.5 h-5 sm:h-6 bg-blue-500 rounded-full mr-2 shrink-0"></span><span class="truncate">장기근속 성장지원금</span></h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="text-center p-2 bg-blue-50 rounded-lg">
                             <p class="text-xs text-gray-500 mb-1">이번 달 (월초P)</p>
-                            <p class="text-lg sm:text-xl font-extrabold text-blue-600 tracking-tight" id="longTermBonusDisplay">0원</p>
+                            <p class="text-lg sm:text-xl font-extrabold text-blue-600 tracking-tight whitespace-nowrap tabular-nums" id="longTermBonusDisplay">0원</p>
                         </div>
                         <div class="text-center p-2 bg-indigo-50 rounded-lg">
                             <p class="text-xs text-gray-500 mb-1">누적 (1년 이상)</p>
-                            <p class="text-lg sm:text-xl font-extrabold text-indigo-600 tracking-tight" id="cumulativeBonusDisplay">0원</p>
+                            <p class="text-lg sm:text-xl font-extrabold text-indigo-600 tracking-tight whitespace-nowrap tabular-nums" id="cumulativeBonusDisplay">0원</p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 text-center mt-2">* 1월/7월에 지급 및 리셋 (직전 1년+ 합산)</p>
-                    <p class="text-xs text-gray-500 text-center mt-1">쉐어계약은 메인에게 모두 지급, 편의상 쉐어율 적용</p>
+                    <p class="text-xs text-gray-500 text-center mt-2 whitespace-nowrap">* 1월/7월에 지급 및 리셋 (직전 1년+ 합산)</p>
+                    <p class="text-xs text-gray-500 text-center mt-1 whitespace-nowrap">쉐어계약은 메인에게 모두 지급, 편의상 쉐어율 적용</p>
                 </div>
 
                 <div id="rookieCard" class="bg-white rounded-xl shadow-sm border border-green-100 p-4 sm:p-6 hidden bg-gradient-to-br from-white to-green-50">
@@ -1142,12 +1142,6 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                                 </tr>
                             </tfoot>
                         </table>
-                    </div>
-                    <div class="no-print px-4 py-2 border-t border-gray-100 bg-gray-50">
-                        <p class="text-xs text-gray-600 leading-relaxed">
-                            ⓘ 손해보험은 담보 및 수정률에 따라 익월 수수료율이 달라서 580% 로 통일하여 표기합니다. 실제 익월 수수료와 다를 수 있습니다.<br>
-                            ⓘ 생명보험은 몇몇 회사의 경우 특약 내용에 따라 실제 익월 수수료와 다를 수 있습니다.
-                        </p>
                     </div>
                     <div id="printOnlyBonusSection" class="hidden p-4">
                         <h3 class="font-bold text-gray-800 mb-2 border-b pb-1">장기근속 성장지원금 현황</h3>
@@ -15078,7 +15072,7 @@ function briefCollect() {
 /* [홈] 1280px 미만에서 아래 카드 접기 + 한 줄 요약, 홈 로딩 문구 시간 제한 */
 (function(){
   var chev='<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>';
-  var cfg=[['longTermCard','longTermBonusDisplay','이번 달 '],['recruitBonusCard',null,''],['overridingCard',null,''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
+  var cfg=[['longTermCard','longTermBonusDisplay',''],['recruitBonusCard',null,''],['overridingCard',null,''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
   function setup(){
     cfg.forEach(function(c){
       var card=document.getElementById(c[0]); if(!card||card.classList.contains('fold-card')) return;
@@ -15088,7 +15082,7 @@ function briefCollect() {
       var title=(h.textContent||'').trim().split(/\s{2,}|\n/)[0];
       if(c[1]){
         var src=document.getElementById(c[1]); var sum=document.createElement('span'); sum.className='fold-sum';
-        var upd=function(){ sum.textContent=c[2]+((src&&src.textContent)||'').trim(); };
+        var upd=function(){ var t=((src&&src.textContent)||'').trim(), n=Number(t.replace(/[^0-9-]/g,'')); if(/원$/.test(t) && Math.abs(n)>=10000000) t=Math.round(n/10000).toLocaleString()+'만원'; sum.textContent=c[2]+t; };
         upd(); if(src) new MutationObserver(upd).observe(src,{childList:true,characterData:true,subtree:true});
         h.appendChild(sum);
       }

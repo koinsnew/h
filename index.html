@@ -817,6 +817,18 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .hl-text{font-size:1.05rem!important;color:#1B64DA!important}
   .hl-bar{background:#3182F6!important}
   .sb-home{background:#1E6EE8;color:#fff}.sb-home:hover{background:#1B64DA}.sb-home .ts-ico{color:#fff}
+  /* 맨 위 쉐어 알림 */
+  .sn-item{scroll-snap-align:start;flex:none;display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:12px 14px;min-height:72px}
+  .sn-item.is-paid{opacity:.55}
+  .sn-head{font-size:12px;color:#6B7684;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sn-dot{width:6px;height:6px;border-radius:999px;background:#3182F6;flex:none}
+  .sn-dot.sn-give{background:#F04452}
+  .sn-body{margin-top:3px;font-size:14px;line-height:1.45;color:#333D4B;word-break:keep-all}
+  .sn-body b{font-weight:700;color:#191F28}.sn-body .sn-blue{color:#1B64DA}
+  .sn-paid{margin-left:6px;font-size:12px;font-weight:700;color:#15803D}
+  .sn-btn{height:36px;padding:0 14px;border-radius:10px;background:#1E6EE8;color:#fff;font-size:13px;font-weight:700;white-space:nowrap}
+  .sn-btn:hover{background:#1B64DA}.sn-btn-gray{background:#F2F4F6;color:#4E5968}.sn-btn-gray:hover{background:#E5E8EB}
+  #shareNotificationArea.sn-more{-webkit-mask-image:linear-gradient(#000 calc(100% - 14px),transparent);mask-image:linear-gradient(#000 calc(100% - 14px),transparent)}
   :focus-visible{outline-color:#1E6EE8!important}
   /* 제목 앞 색 막대: 파랑 하나로 */
   h2 span.w-1\.5, h3 span.w-1\.5{background:#3182F6!important}
@@ -993,7 +1005,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     <main id="mainContent" tabindex="-1" class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-8 outline-none">
       <!-- 홈 페이지 -->
       <div id="page-home" class="page-section px-2 sm:px-0">
-        <div id="shareNotificationArea" class="mb-4 space-y-2 no-print max-h-[260px] overflow-y-auto custom-scrollbar pr-1"></div>
+        <div id="shareNotificationArea" class="mb-3 no-print overflow-y-auto custom-scrollbar flex flex-col gap-2" style="scroll-snap-type:y mandatory;overscroll-behavior:contain"></div>
 
         <h1 class="sr-only">홈</h1>
         <section id="homeHero" class="ts-card mb-3 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -1162,7 +1174,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     <div id="myGoalBody"></div>
                 </div>
                 <div id="longTermCard" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
-                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center whitespace-nowrap min-w-0"><span class="w-1.5 h-5 sm:h-6 bg-blue-500 rounded-full mr-2 shrink-0"></span><span class="truncate">장기근속 성장지원금</span></h2>
+                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center whitespace-nowrap"><span class="w-1.5 h-5 sm:h-6 bg-blue-500 rounded-full mr-2 shrink-0"></span><span class="shrink-0">장기근속 성장지원금</span></h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="text-center p-2 bg-blue-50 rounded-lg">
                             <p class="text-xs text-gray-500 mb-1">이번 달 (월초P)</p>
@@ -1173,9 +1185,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                             <p class="text-lg sm:text-xl font-extrabold text-indigo-600 tracking-tight whitespace-nowrap tabular-nums" id="cumulativeBonusDisplay">0원</p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 text-center mt-2">* 26년 6월 계약까지만 적립 · 27년 1월에 한 번에 지급</p>
+                    <p class="text-xs text-gray-500 text-center mt-2 whitespace-nowrap">* 26년 6월까지 계약 → 27년 1월에 한 번에 지급</p>
                     <p class="text-xs text-gray-500 text-center mt-1">쉐어계약은 메인에게 모두 지급, 편의상 쉐어율 적용</p>
-                    <p id="ltHanbogumNote" class="hidden mt-3 rounded-xl bg-blue-50 px-3 py-2.5 text-sm font-semibold text-blue-700 text-center break-keep">26년 7월 계약부터는 한보금ON에서 확인해 주세요.</p>
+                    <p id="ltHanbogumNote" class="hidden mt-3 rounded-xl bg-blue-50 px-3 py-2.5 text-sm font-semibold text-blue-700 text-center whitespace-nowrap">26년 7월 계약부터는 한보금ON에서 확인</p>
                 </div>
 
                 <div id="rookieCard" class="bg-white rounded-xl shadow-sm border border-green-100 p-4 sm:p-6 hidden bg-gradient-to-br from-white to-green-50">
@@ -5242,14 +5254,12 @@ function updateSummary(premium, p, next, bonus, total) {
             else if (n.type === 'bonus13') { title = "쉐어 13회 시책 알림"; color = "text-purple-700"; }
             else { title = "쉐어 장기근속 성장지원금 알림"; color = "text-blue-700"; }
             
-            msg = `<p class="font-bold text-sm ${color}">🔔 [${n.perfMonth}] ${title}</p>
-                   <p class="text-xs text-gray-700 mt-1">'${n.receiver}' 님에게 <span class="font-bold">${n.amount.toLocaleString()}원</span>을 <br>${n.payDateText}에 지급하세요.</p>`;
+            msg = `<p class="sn-head"><span class="sn-dot sn-give"></span>${title.replace('쉐어 ','쉐어 ').replace(' 알림','')} · ${n.perfMonth.replace('-', '.')} 실적</p>
+                   <p class="sn-body"><b>${n.receiver}</b>님에게 <b class="tabular-nums">${n.amount.toLocaleString()}원</b> 지급 · ${n.payDateText}</p>`;
             if (n.isPaid) {
-                    actionBtn = `<button onclick="togglePaymentStatus('${n.perfMonth}', '${n.receiver}', '${n.type}', 'paid')" 
-                                class="bg-gray-400 hover:bg-red-500 text-white text-xs px-3 py-2 rounded shadow-sm font-bold transition whitespace-nowrap">지급 취소</button>`;
+                    actionBtn = `<button onclick="togglePaymentStatus('${n.perfMonth}', '${n.receiver}', '${n.type}', 'paid')" class="sn-btn sn-btn-gray">지급 취소</button>`;
             } else {
-                    actionBtn = `<button onclick="togglePaymentStatus('${n.perfMonth}', '${n.receiver}', '${n.type}', 'unpaid')" 
-                                class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-2 rounded shadow-md font-bold transition whitespace-nowrap">지급</button>`;
+                    actionBtn = `<button onclick="togglePaymentStatus('${n.perfMonth}', '${n.receiver}', '${n.type}', 'unpaid')" class="sn-btn">지급</button>`;
             }
         } else {
             let title = "";
@@ -5258,14 +5268,24 @@ function updateSummary(premium, p, next, bonus, total) {
             else title = "쉐어 장기근속 성장지원금 알림";
             
             const color = "text-gray-700";
-            const statusText = n.isPaid ? "<span class='text-green-600 font-bold ml-1'>(지급완료됨)</span>" : "";
-            msg = `<p class="font-bold text-sm ${color}">💰 [${n.perfMonth}] ${title}</p>
-                   <p class="text-xs text-gray-600 mt-1">'${n.giver}' 님으로부터 <span class="font-bold text-indigo-600">${n.amount.toLocaleString()}원</span>을 <br>${n.payDateText}에 수령 예정입니다.${statusText}</p>`;
+            const statusText = n.isPaid ? "<span class='sn-paid'>지급 완료</span>" : "";
+            msg = `<p class="sn-head"><span class="sn-dot"></span>${title.replace(' 알림','')} · ${n.perfMonth.replace('-', '.')} 실적</p>
+                   <p class="sn-body"><b>${n.giver}</b>님에게서 <b class="tabular-nums sn-blue">${n.amount.toLocaleString()}원</b> 수령 예정 · ${n.payDateText}${statusText}</p>`;
         }
         const div = document.createElement('div');
-        div.className = `p-3 rounded-lg border shadow-sm border-l-4 flex justify-between items-center animate-fade-in ${opacityClass} ${isGiver ? "border-l-red-500" : "border-l-blue-500"}`;
-        div.innerHTML = `<div>${msg}</div><div class="ml-2">${actionBtn}</div>`;
+        div.className = `sn-item ${n.isPaid ? 'is-paid' : ''}`;
+        div.innerHTML = `<div class="min-w-0 flex-1">${msg}</div>${actionBtn ? `<div class="shrink-0">${actionBtn}</div>` : ''}`;
         area.appendChild(div);
+    });
+    // 알림은 2개만 보이고 나머지는 스크롤
+    requestAnimationFrame(function () {
+        var it = area.children, lab = document.getElementById('snCount');
+        if (!lab) { lab = document.createElement('p'); lab.id = 'snCount'; lab.className = 'no-print text-xs font-semibold text-gray-500 mb-1.5 px-1'; area.parentNode.insertBefore(lab, area); }
+        lab.style.display = it.length > 2 ? '' : 'none'; lab.textContent = '쉐어 알림 ' + it.length + '건 · 아래로 밀어 더 보기';
+        if (!it.length) { area.style.maxHeight = ''; return; }
+        if (it.length <= 2) { area.style.maxHeight = ''; area.classList.remove('sn-more'); return; }
+        var h = it[0].offsetHeight + it[1].offsetHeight + 8;
+        area.style.maxHeight = h + 'px'; area.classList.add('sn-more');
     });
 }
 
@@ -15290,7 +15310,7 @@ function briefCollect() {
 /* [홈] 1280px 미만에서 아래 카드 접기 + 한 줄 요약, 홈 로딩 문구 시간 제한 */
 (function(){
   var chev='<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>';
-  var cfg=[['longTermCard','cumulativeBonusDisplay','27.1 지급 '],['recruitBonusCard',null,''],['overridingCard',null,''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
+  var cfg=[['longTermCard','cumulativeBonusDisplay',''],['recruitBonusCard',null,''],['overridingCard',null,''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
   function setup(){
     cfg.forEach(function(c){
       var card=document.getElementById(c[0]); if(!card||card.classList.contains('fold-card')) return;

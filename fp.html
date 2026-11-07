@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>헤리티지금융 재무컨설팅</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    :root{
+      --primary:#1E6EE8; --primary-ink:#1B64DA; --primary-soft:#E8F3FF;
+      --ink:#191F28; --ink-2:#333D4B; --ink-3:#4E5968; --ink-4:#6B7684; --ink-5:#8B95A1;
+      --line:#E5E8EB; --fill:#F2F4F6; --bg:#F2F4F6; --white:#fff;
+      --danger:#E42939; --ok:#0E8A4F; --radius:20px;
+    }
+    *{box-sizing:border-box;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent}
+    html{background:var(--bg)}
+    body{background:var(--bg);margin:0;padding:0;color:var(--ink);line-height:1.55;font-size:16px;letter-spacing:-0.01em;-webkit-font-smoothing:antialiased}
+    ::selection{background:#CFE3FF;color:var(--ink)}
+    input,select,button{caret-color:var(--primary)}
+    :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+    .container{max-width:600px;margin:0 auto;min-height:100vh;padding-bottom:40px}
+    .header{padding:22px 64px 6px 20px}
+    .header h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-0.03em;color:var(--ink)}
+    .header p{margin:4px 0 0;font-size:14px;color:var(--ink-3)}
+    .content{padding:12px 16px}
+
+    .form-section{background:var(--white);border-radius:var(--radius);padding:20px 18px 6px;margin-bottom:12px}
+    .section-label{font-size:17px;font-weight:700;color:var(--ink);margin:0 0 14px}
+    .input-group{margin-bottom:18px}
+    .input-group > label{display:block;font-size:13px;color:var(--ink-3);margin-bottom:6px;font-weight:600}
+    input[type="text"],select{width:100%;height:50px;padding:0 14px;border:1px solid transparent;border-radius:12px;font-size:16px;color:var(--ink);background:var(--fill);transition:background .15s,border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none}
+    input::placeholder{color:#8B95A1}
+    input[type="text"]:focus,select:focus{outline:none;background:#fff;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,110,232,.14)}
+
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{flex:1 1 auto;min-width:64px;height:44px;padding:0 14px;border:1px solid transparent;border-radius:12px;background:var(--fill);color:var(--ink-3);font-size:15px;font-weight:600;cursor:pointer;transition:background .15s,color .15s}
+    .chip[aria-pressed="true"]{background:var(--primary-soft);color:var(--primary-ink);border-color:#B5D3FF}
+    .chip:active{transform:scale(.98)}
+    .radio-box{display:flex;gap:8px}
+    .radio-box label{flex:1;display:flex;align-items:center;justify-content:center;height:44px;background:var(--fill);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;color:var(--ink-3);border:1px solid transparent}
+    .radio-box input{position:absolute;opacity:0;pointer-events:none}
+    .radio-box input:checked + label{background:var(--primary-soft);color:var(--primary-ink);border-color:#B5D3FF}
+    .radio-box input:focus-visible + label{outline:2px solid var(--primary);outline-offset:2px}
+
+    .expense-field{width:100%;height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border:1px solid transparent;border-radius:12px;background:var(--fill);cursor:pointer;font-size:16px;color:var(--ink)}
+    .expense-field .ef-val{font-weight:600;font-variant-numeric:tabular-nums}
+    .expense-field .ef-val.empty{color:#8B95A1;font-weight:400}
+    .expense-field .ef-act{display:flex;align-items:center;gap:2px;font-size:14px;font-weight:600;color:var(--primary-ink)}
+    .hint{font-size:12.5px;color:var(--ink-4);margin:6px 2px 0;word-break:keep-all}
+
+    .actions{padding:4px 0 6px}
+    .btn-main{width:100%;height:56px;background:var(--primary);color:#fff;border:none;border-radius:16px;font-size:17px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s}
+    .btn-main:hover{background:#1A63D4}
+    .btn-main:active{transform:scale(.985)}
+    .btn-main:disabled{background:#C9D2DC;cursor:not-allowed}
+    .btn-optimize{width:100%;height:52px;margin-top:8px;background:var(--primary-soft);color:var(--primary-ink);border:none;border-radius:16px;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s,transform .1s}
+    .btn-optimize:hover{background:#DCEBFF}
+    .btn-optimize:active{transform:scale(.985)}
+
+    .result-container{display:none;margin-top:8px;scroll-margin-top:8px}
+    .result-container.show{display:block;animation:rise .45s cubic-bezier(.16,1,.3,1)}
+    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+    @media (prefers-reduced-motion:reduce){.result-container.show,.modal-box{animation:none!important}}
+
+    .summary-card{background:#fff;border-radius:var(--radius);padding:22px 20px 18px;margin-bottom:12px}
+    .summary-card .s-who{font-size:14px;color:var(--ink-3);margin:0}
+    .summary-card .s-label{font-size:14px;color:var(--ink-3);margin:12px 0 0}
+    .summary-card .s-amt{font-size:30px;font-weight:800;letter-spacing:-0.03em;margin:0;font-variant-numeric:tabular-nums}
+    .alloc-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:16px 0 14px;background:var(--fill);gap:2px}
+    .alloc-bar span{display:block;height:100%}
+    .alloc-legend{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .alloc-legend div{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink-3)}
+    .alloc-legend i{flex:none;width:10px;height:10px;border-radius:3px;margin-top:5px}
+    .alloc-legend b{display:block;font-size:15px;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+
+    .report-card{background:#fff;border-radius:var(--radius);padding:22px 16px;margin-bottom:12px}
+    .report-title{font-size:18px;font-weight:700;color:var(--ink);margin:0 0 10px;letter-spacing:-0.02em}
+    .analysis-text{font-size:15px;color:var(--ink-2);line-height:1.7;margin-bottom:30px;word-break:keep-all}
+    .analysis-text strong{color:var(--primary-ink);font-weight:700}
+
+    .strategy-table{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:30px;font-size:14px;table-layout:fixed;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    .strategy-table th{background:#F9FAFB;color:var(--ink-4);font-weight:600;padding:9px 4px;border-bottom:1px solid var(--line);text-align:center;font-size:12.5px}
+    .strategy-table th:nth-child(1){width:23%}.strategy-table th:nth-child(2){width:14%}.strategy-table th:nth-child(3){width:63%}
+    .strategy-table td{padding:12px 6px;border-bottom:1px solid var(--line);vertical-align:top;word-break:keep-all;color:var(--ink-2);font-size:13.5px;line-height:1.5}
+    .strategy-table tr:last-child td{border-bottom:0}
+    .strategy-table td:first-child{font-weight:700;color:var(--ink);text-align:center;vertical-align:middle}
+    .strategy-table td:nth-child(2){text-align:center;font-weight:700;color:var(--primary-ink);vertical-align:middle;font-variant-numeric:tabular-nums}
+    .amount-display{display:block;font-size:12px;color:var(--ink-4);font-weight:500;margin-top:2px;font-variant-numeric:tabular-nums}
+    .strategy-list{list-style:none;padding:0;margin:0}
+    .strategy-list li{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #F2F4F6}
+    .strategy-list li:last-child{margin-bottom:0;border-bottom:none;padding-bottom:0}
+    .item-row{display:flex;justify-content:space-between;align-items:flex-start;font-size:13px;margin-top:3px}
+    .item-row.indent{padding-left:2px}
+    .item-name{color:var(--ink-2);flex:1;font-size:13px}
+    .item-amt{font-weight:700;color:var(--ink);font-size:13px;white-space:nowrap;margin-left:4px;font-variant-numeric:tabular-nums}
+    .insurance-main{font-weight:600;color:var(--ink-2);margin-bottom:3px;font-size:13.5px}
+    .insurance-sub{font-size:13px;color:var(--ink);font-weight:700}
+
+    .recommend-box{background:#F9FAFB;border-radius:14px;padding:14px 14px 8px;margin-bottom:10px}
+    .recommend-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:8px;display:flex;flex-direction:column;gap:2px}
+    .recommend-title span{font-size:12px;color:var(--ink-4);font-weight:500}
+    .recommend-item{font-size:13px;margin-bottom:8px;padding-left:10px;position:relative;color:var(--ink-4);line-height:1.45}
+    .recommend-item::before{content:'';position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:var(--primary)}
+    .recommend-item strong{color:var(--ink);display:block;margin-top:1px;font-weight:700;font-size:14px}
+
+    .tag{display:inline-block;padding:2px 7px;border-radius:6px;font-size:11.5px;font-weight:700;margin-bottom:4px}
+    .tag.short{background:var(--primary-soft);color:var(--primary-ink)}
+    .tag.mid{background:#F0EDFF;color:#5B47C9}
+    .tag.long{background:#E5F7EE;color:var(--ok)}
+
+    .closing{text-align:center;color:var(--ink-4);font-size:14px;margin:18px 0 6px;line-height:1.6}
+    .closing strong{color:var(--ink)}
+    .btn-download{display:none;width:100%;height:56px;background:var(--ink);color:#fff;border:none;border-radius:16px;font-size:17px;font-weight:700;margin-top:16px;cursor:pointer}
+    .btn-download:disabled{background:#C9D2DC}
+    .mobile-note{display:none;font-size:12.5px;color:var(--ink-4);margin:10px 4px 0;text-align:center;word-break:keep-all;line-height:1.5}
+    .mobile-note.show{display:block}
+
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;justify-content:center;align-items:flex-end}
+    .modal-overlay.active{display:flex}
+    .modal-box{background:#fff;width:100%;max-width:480px;max-height:88vh;border-radius:24px 24px 0 0;display:flex;flex-direction:column;animation:sheet .32s cubic-bezier(.16,1,.3,1)}
+    @keyframes sheet{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+    @media (min-width:600px){.modal-overlay{align-items:center}.modal-box{border-radius:24px}}
+    .modal-header{padding:20px 14px 8px 20px;display:flex;justify-content:space-between;align-items:center;font-size:19px;font-weight:700}
+    .modal-header button{width:44px;height:44px;border:0;border-radius:12px;background:transparent;color:var(--ink-4);cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .modal-header button:hover{background:var(--fill)}
+    .modal-body{padding:6px 20px 16px;overflow-y:auto}
+    .expense-row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:54px;border-bottom:1px solid #F2F4F6}
+    .expense-row label{font-size:15px;color:var(--ink-2)}
+    .expense-row input{width:136px;height:42px;padding:0 12px;text-align:right;font-size:16px;border:1px solid transparent;border-radius:10px;background:var(--fill);font-variant-numeric:tabular-nums}
+    .expense-row input:focus{outline:none;background:#fff;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,110,232,.14)}
+    .modal-footer{padding:14px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid #F2F4F6}
+    .modal-footer .total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;font-size:14px;color:var(--ink-3)}
+    .modal-footer .total b{font-size:20px;color:var(--ink);font-variant-numeric:tabular-nums}
+    .custom-expense-row{border-bottom:0;background:var(--primary-soft);border-radius:14px;padding:6px 6px 6px 12px;margin:0 0 6px}
+    .custom-expense-row .custom-label-input{flex:1;min-width:0;width:auto;height:42px;padding:0 4px;font-size:15px;font-weight:600;border:0;background:transparent;color:var(--primary-ink);text-align:left;box-shadow:none!important}
+    .custom-expense-row .custom-label-input::placeholder{color:var(--primary-ink)}
+    .custom-expense-row input.sub-expense{background:#fff}
+    .opt-avail{background:var(--fill);border-radius:14px;padding:14px 16px;margin-bottom:6px;font-size:14px;color:var(--ink-3)}
+    .opt-avail strong{display:block;font-size:22px;color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums}
+    .opt-sum{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;font-size:14px;color:var(--ink-3)}
+    .opt-sum strong{font-size:18px;font-variant-numeric:tabular-nums}
+    #optMatchMsg{font-size:13px;font-weight:600;margin-top:4px;text-align:right}
+
+    .loading-overlay{display:none;position:fixed;inset:0;background:rgba(242,244,246,.94);z-index:900;flex-direction:column;justify-content:center;align-items:center;gap:14px;font-size:15px;font-weight:600;color:var(--ink-3)}
+    .loading-spinner{width:36px;height:36px;border:3px solid #DCE3EA;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);width:max-content;max-width:calc(100% - 32px);padding:13px 18px;border-radius:14px;background:rgba(25,31,40,.92);color:#fff;font-size:14.5px;font-weight:500;line-height:1.45;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .3s cubic-bezier(.16,1,.3,1);z-index:2000;word-break:keep-all}
+    .toast.on{opacity:1;transform:translate(-50%,0)}
+    .field-err{border-color:var(--danger)!important;background:#FFF5F6!important}
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>재무설계</h1>
+      <p>고객 정보를 넣으면 맞춤 설계안을 만들어 드려요</p>
+    </div>
+
+    <div class="content">
+      <form id="financialForm">
+        <div class="form-section">
+          <h2 class="section-label">기본 정보</h2>
+          <div class="input-group">
+            <label for="name">성함</label>
+            <input type="text" id="name" placeholder="홍길동" autocomplete="off" required>
+          </div>
+          <div class="input-group">
+            <label for="birthDate">생년월일 8자리</label>
+            <input type="text" id="birthDate" placeholder="19900515" maxlength="8" inputmode="numeric" required>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="section-label">재무 현황</h2>
+          <div class="input-group">
+            <label for="salary">세후 월 급여 (원)</label>
+            <input type="text" id="salary" class="num-format" placeholder="0" inputmode="numeric" required>
+          </div>
+          <div class="input-group">
+            <label>결혼 여부</label>
+            <div class="radio-box">
+              <input type="radio" id="single" name="marriage" value="미혼" checked>
+              <label for="single">미혼</label>
+              <input type="radio" id="married" name="marriage" value="기혼">
+              <label for="married">기혼</label>
+            </div>
+          </div>
+          <div class="input-group">
+            <label id="lb-children">자녀 수</label>
+            <div class="chips" data-for="children" role="group" aria-labelledby="lb-children"></div>
+            <select id="children" hidden>
+              <option value="없음">없음</option>
+              <option value="1명">1명</option>
+              <option value="2명">2명</option>
+              <option value="3명">3명 이상</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label id="lb-housing">주거 형태</label>
+            <div class="chips" data-for="housing" role="group" aria-labelledby="lb-housing"></div>
+            <select id="housing" hidden>
+              <option value="자가">자가</option>
+              <option value="전세">전세</option>
+              <option value="월세">월세</option>
+              <option value="부모님댁">부모님댁</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label id="lb-goal">재무 목표</label>
+            <div class="chips" data-for="goal" role="group" aria-labelledby="lb-goal"></div>
+            <select id="goal" hidden>
+              <option value="목돈마련">목돈마련</option>
+              <option value="결혼자금">결혼자금</option>
+              <option value="주택자금">주택자금</option>
+              <option value="노후준비">노후준비</option>
+              <option value="대출상환">대출상환</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>월 고정지출 (합계)</label>
+            <input type="hidden" id="expense" value="">
+            <button type="button" class="expense-field" id="expenseField" onclick="openModal()">
+              <span class="ef-val empty" id="expenseView">항목별로 입력하기</span>
+              <span class="ef-act">입력<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+            </button>
+            <p class="hint">월세·통신비·대출이자 등. 총액만 알아도 맨 위 칸에 바로 넣을 수 있어요.</p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-main" id="submitBtn">재무설계 실행</button>
+        
+        <button type="button" class="btn-optimize" onclick="openOptimizeModal()">금액을 직접 나눠서 설계</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="result-container" id="resultSection">
+      <div class="content" style="padding-top:0">
+        <div id="displayArea"></div>
+        <button type="button" class="btn-download" id="downloadBtn" onclick="downloadPDF()">PDF 리포트 저장</button>
+        <p class="mobile-note" id="mobileNote">휴대폰에서 저장이 안 되면 앱 주소를 사파리·크롬 주소창에 붙여넣어 연 뒤 다시 눌러 주세요.</p>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="loading-overlay" id="loading">
+    <div class="loading-spinner"></div>
+    <div>설계안을 만드는 중이에요</div>
+  </div>
+
+  
+  <div class="modal-overlay" id="expenseModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span>월 고정지출</span>
+        <button type="button" onclick="closeModal()" aria-label="닫기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div id="expenseInputs"></div>
+      </div>
+      <div class="modal-footer">
+        <div class="total"><span>합계</span><b><span id="modalTotal">0</span>원</b></div>
+        <button class="btn-main" onclick="confirmExpense()">입력 완료</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal-overlay" id="optimizeModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span>금액 직접 나누기</span>
+        <button type="button" onclick="closeOptimizeModal()" aria-label="닫기"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div class="opt-avail">나눌 수 있는 돈 (급여 − 고정지출)<strong><span id="optAvailable">0</span>원</strong></div>
+        <div class="expense-row">
+          <label>생활비</label>
+          <input type="text" id="optLiving" class="num-format opt-input" placeholder="0" inputmode="numeric">
+        </div>
+        <div class="expense-row">
+          <label>저축/투자</label>
+          <input type="text" id="optSaving" class="num-format opt-input" placeholder="0" inputmode="numeric">
+        </div>
+        <div class="expense-row">
+          <label>비상금</label>
+          <input type="text" id="optEmergency" class="num-format opt-input" placeholder="0" inputmode="numeric">
+        </div>
+        <div class="expense-row">
+          <label>보장자산(보험)</label>
+          <input type="text" id="optInsurance" class="num-format opt-input" placeholder="0" inputmode="numeric">
+        </div>
+        <div class="opt-sum"><span>입력 합계</span><strong><span id="optCurrentTotal">0</span>원</strong></div>
+        <div id="optMatchMsg"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-main" id="btnSubmitOpt" onclick="submitOptimized()">이 배분으로 설계안 만들기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    let currentResponse = null;
+    function toast(msg){ let t=document.getElementById('toast'); if(!t){t=document.createElement('div');t.id='toast';t.className='toast';t.setAttribute('role','status');document.body.appendChild(t);} t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2600); }
+    window.alert = function(m){ toast(String(m||'')); };
+    function markErr(id){ const el=document.getElementById(id); if(!el) return; el.classList.add('field-err'); el.focus&&el.focus(); el.addEventListener('input',()=>el.classList.remove('field-err'),{once:true}); }
+    document.querySelectorAll('.chips[data-for]').forEach(box=>{
+      const sel=document.getElementById(box.dataset.for);
+      [...sel.options].forEach(op=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=op.textContent; b.setAttribute('aria-pressed', String(sel.value===op.value));
+        b.onclick=()=>{ sel.value=op.value; box.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); };
+        box.appendChild(b); });
+    });
+    const formatNum = (str) => str.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const parseNum  = (str) => parseInt(str.replace(/,/g, '') || 0);
+
+    
+    document.querySelectorAll('.num-format').forEach(el => {
+      el.addEventListener('input', (e) => e.target.value = formatNum(e.target.value));
+    });
+
+    
+    const expenseItems = ['월세','관리비','공과금(전기/수도)','대출이자','통신(TV/인터넷)','구독료(OTT 등)','핸드폰 요금','차량(할부/렌트)','주차비','유류비','대중교통비','각종 회비','부모님 용돈','기부금'];
+    const expenseContainer = document.getElementById('expenseInputs');
+
+    expenseItems.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'expense-row';
+      div.innerHTML = `<label>${item}</label><input type="text" class="sub-expense" placeholder="0" inputmode="numeric">`;
+      expenseContainer.appendChild(div);
+    });
+
+    // ✅ [추가] 총액 간편 입력 칸
+    const customDiv = document.createElement('div');
+    customDiv.className = 'expense-row custom-expense-row';
+    customDiv.innerHTML = `
+      <input type="text" class="custom-label-input" placeholder="총액으로 한 번에 입력">
+      <input type="text" class="sub-expense" placeholder="0" inputmode="numeric">
+    `;
+    expenseContainer.insertBefore(customDiv, expenseContainer.firstChild);
+
+    document.querySelectorAll('.sub-expense').forEach(el => {
+      el.addEventListener('input', (e) => {
+        e.target.value = formatNum(e.target.value);
+        updateModalTotal();
+      });
+    });
+
+    function updateModalTotal() {
+      let total = 0;
+      document.querySelectorAll('.sub-expense').forEach(el => total += parseNum(el.value));
+      document.getElementById('modalTotal').textContent = total.toLocaleString();
+    }
+    function openModal()  { document.getElementById('expenseModal').classList.add('active'); }
+    function closeModal() { document.getElementById('expenseModal').classList.remove('active'); }
+    function confirmExpense() {
+      const v = document.getElementById('modalTotal').textContent;
+      document.getElementById('expense').value = v;
+      const view = document.getElementById('expenseView');
+      if (parseNum(v) > 0) { view.textContent = v + '원'; view.classList.remove('empty'); }
+      else { view.textContent = '0원 (고정지출 없음)'; view.classList.remove('empty'); }
+      document.getElementById('expenseField').classList.remove('field-err');
+      closeModal();
+    }
+
+    
+    function getFormData() {
+      return {
+        name:      document.getElementById('name').value,
+        birthDate: document.getElementById('birthDate').value,
+        salary:    document.getElementById('salary').value,
+        marriage:  document.querySelector('input[name="marriage"]:checked').value,
+        children:  document.getElementById('children').value,
+        housing:   document.getElementById('housing').value,
+        goal:      document.getElementById('goal').value,
+        expense:   document.getElementById('expense').value
+      };
+    }
+
+    
+    function getExpenseDetails() {
+      const rows  = document.querySelectorAll('#expenseInputs .expense-row');
+      const items = [];
+      rows.forEach(row => {
+        const labelEl      = row.querySelector('label');
+        const customLabelEl = row.querySelector('.custom-label-input');
+        const amtEl        = row.querySelector('.sub-expense');
+        const label  = labelEl ? labelEl.textContent.trim()
+                               : (customLabelEl && customLabelEl.value.trim() ? customLabelEl.value.trim() : '');
+        const amount = parseNum(amtEl ? amtEl.value : '0');
+        if (amount > 0 && label) items.push({ label, amount });
+      });
+      return items;
+    }
+
+    
+    const optInputs = ['optLiving', 'optSaving', 'optEmergency', 'optInsurance'];
+    optInputs.forEach(id => {
+      document.getElementById(id).addEventListener('input', updateOptTotal);
+    });
+
+    function updateOptTotal() {
+      const living    = parseNum(document.getElementById('optLiving').value);
+      const saving    = parseNum(document.getElementById('optSaving').value);
+      const emergency = parseNum(document.getElementById('optEmergency').value);
+      const insurance = parseNum(document.getElementById('optInsurance').value);
+      const total     = living + saving + emergency + insurance;
+
+      const available = parseNum(document.getElementById('optAvailable').textContent);
+      const diff      = available - total;
+
+      const totalEl = document.getElementById('optCurrentTotal');
+      const msgEl   = document.getElementById('optMatchMsg');
+      const btn     = document.getElementById('btnSubmitOpt');
+
+      totalEl.textContent = total.toLocaleString();
+
+      if (diff === 0) {
+        totalEl.style.color = '#0E8A4F';
+        msgEl.textContent   = '딱 맞게 나눴어요';
+        msgEl.style.color   = '#0E8A4F';
+        btn.disabled = false;
+      } else {
+        totalEl.style.color = '#E42939';
+        const diffStr = diff > 0 ? '+' : '';
+        msgEl.textContent = diff > 0 ? `${diff.toLocaleString()}원이 남아요. 합계를 맞춰 주세요.` : `${(-diff).toLocaleString()}원 넘었어요. 합계를 맞춰 주세요.`;
+        msgEl.style.color = '#E42939';
+        btn.disabled = true;
+      }
+    }
+
+    function openOptimizeModal() {
+      const fd = getFormData();
+      if (!fd.salary || !fd.expense || fd.birthDate.length !== 8) {
+        if (fd.birthDate.length !== 8) markErr('birthDate'); else if (!fd.salary) markErr('salary'); else document.getElementById('expenseField').classList.add('field-err');
+        toast('생년월일·급여·고정지출을 먼저 입력해 주세요.');
+        return;
+      }
+      const available = parseNum(fd.salary) - parseNum(fd.expense);
+      document.getElementById('optAvailable').textContent = available.toLocaleString();
+
+      const rLiving    = Math.round(available * 0.3);
+      const rSaving    = Math.round(available * 0.5);
+      const rEmergency = Math.round(available * 0.05);
+      const rInsurance = available - rLiving - rSaving - rEmergency;
+
+      document.getElementById('optLiving').value    = formatNum(rLiving.toString());
+      document.getElementById('optSaving').value    = formatNum(rSaving.toString());
+      document.getElementById('optEmergency').value = formatNum(rEmergency.toString());
+      document.getElementById('optInsurance').value = formatNum(rInsurance.toString());
+
+      updateOptTotal();
+      document.getElementById('optimizeModal').classList.add('active');
+    }
+
+    function closeOptimizeModal() {
+      document.getElementById('optimizeModal').classList.remove('active');
+    }
+
+    function submitOptimized() {
+      const formData = getFormData();
+      formData.customLiving    = parseNum(document.getElementById('optLiving').value);
+      formData.customSaving    = parseNum(document.getElementById('optSaving').value);
+      formData.customEmergency = parseNum(document.getElementById('optEmergency').value);
+      formData.customInsurance = parseNum(document.getElementById('optInsurance').value);
+      closeOptimizeModal();
+      runPlanning(formData);
+    }
+
+    
+    document.getElementById('financialForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = getFormData();
+      if (formData.birthDate.length !== 8) { markErr('birthDate'); toast('생년월일 8자리를 확인해 주세요. 예) 19900515'); return; }
+      if (!formData.salary) { markErr('salary'); toast('세후 월 급여를 입력해 주세요.'); return; }
+      if (!formData.expense) { document.getElementById('expenseField').classList.add('field-err'); toast('월 고정지출을 입력해 주세요. 없으면 0원으로 완료를 눌러 주세요.'); return; }
+      runPlanning(formData);
+    });
+
+    
+    function runPlanning(formData) {
+      document.getElementById('loading').style.display = 'flex';
+
+      
+      
+      if (window.parent && window.parent.runFinancialCalc) {
+        window.parent.runFinancialCalc(formData);
+      } else {
+        google.script.run
+          .withSuccessHandler(showResult)
+          .withFailureHandler(err => {
+            alert('오류 발생: ' + err.message);
+            document.getElementById('loading').style.display = 'none';
+          })
+          .processFinancialPlanning(formData);
+      }
+    }
+
+    
+    function showResult(response) {
+      document.getElementById('loading').style.display = 'none';
+      if (!response.success) { alert(response.error); return; }
+
+      currentResponse = response;
+      const data   = response.data;
+      const info   = response.userInfo;
+      const detail = data.allocation.detail;
+
+      
+      const available   = Math.max(Number(info.salary) - Number(info.expense), 1);
+      const pctLiving   = Math.round((data.allocation.living    / available) * 100) || 0;
+      const pctSaving   = Math.round((data.allocation.saving    / available) * 100) || 0;
+      const pctEmergency = Math.round((data.allocation.emergency / available) * 100) || 0;
+      const pctInsurance = Math.round((data.allocation.insurance / available) * 100) || 0;
+
+      const now        = new Date();
+      const dateString = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 기준`;
+
+      
+      const expenseDetails = getExpenseDetails();
+      let expenseTableHtml = '';
+      if (expenseDetails.length > 0) {
+        const totalExp = expenseDetails.reduce((s, i) => s + i.amount, 0);
+        const expRows  = expenseDetails.map(item => {
+          const pct = totalExp > 0 ? Math.round(item.amount / totalExp * 100) : 0;
+          return `<tr>
+            <td style="padding:8px 8px; border-bottom:1px solid #e5e7eb;">${item.label}</td>
+            <td style="padding:8px 4px; border-bottom:1px solid #e5e7eb; text-align:right; font-weight:600; color:#191F28;">${item.amount.toLocaleString()}원</td>
+            <td style="padding:8px 6px; border-bottom:1px solid #e5e7eb; text-align:right; color:#6b7280;">${pct}%</td>
+          </tr>`;
+        }).join('');
+        expenseTableHtml = `
+          <div class="report-title" style="margin-top:4px;">월 고정지출 상세</div>
+          <table style="width:100%; border-collapse:collapse; font-size:0.85rem; border:1px solid #e5e7eb; margin-bottom:25px;">
+            <thead>
+              <tr>
+                <th style="background:#F9FAFB; color:#6B7684; font-weight:700; padding:8px 8px; border-bottom:2px solid #e2e8f0; text-align:left; width:50%;">항목</th>
+                <th style="background:#F9FAFB; color:#6B7684; font-weight:700; padding:8px 4px; border-bottom:2px solid #e2e8f0; text-align:right; width:30%;">금액</th>
+                <th style="background:#F9FAFB; color:#6B7684; font-weight:700; padding:8px 6px; border-bottom:2px solid #e2e8f0; text-align:right; width:20%;">비율</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${expRows}
+              <tr style="background:#F2F4F6;">
+                <td style="padding:10px 8px; font-weight:700; color:#191F28;">합 계</td>
+                <td style="padding:10px 4px; text-align:right; font-weight:700; color:#191F28;">${totalExp.toLocaleString()}원</td>
+                <td style="padding:10px 6px; text-align:right; font-weight:700; color:#191F28;">100%</td>
+              </tr>
+            </tbody>
+          </table>`;
+      }
+
+      const segs = [
+        ['생활비', data.allocation.living, '#1E6EE8'],
+        ['저축·투자', data.allocation.saving, '#0B3D91'],
+        ['비상금', data.allocation.emergency, '#8FBFFF'],
+        ['보장자산', data.allocation.insurance, '#B0B8C1']
+      ];
+      const segSum = segs.reduce((a,b)=>a+(Number(b[1])||0),0) || 1;
+      const pcts = [pctLiving,pctSaving,pctEmergency,pctInsurance];
+      const summaryHtml = `
+        <div class="summary-card">
+          <p class="s-who">${info.name} 고객님 · ${info.goal}</p>
+          <p class="s-label">매달 나눌 수 있는 돈</p>
+          <p class="s-amt">${available.toLocaleString()}원</p>
+          <div class="alloc-bar" role="img" aria-label="배분 비율">${segs.map(x=>`<span style="width:${(Number(x[1])||0)/segSum*100}%;background:${x[2]}"></span>`).join('')}</div>
+          <div class="alloc-legend">${segs.map((x,k)=>`<div><i style="background:${x[2]}"></i><span>${x[0]} ${pcts[k]}%<b>${(Number(x[1])||0).toLocaleString()}원</b></span></div>`).join('')}</div>
+        </div>`;
+      const displayHtml = summaryHtml + `
+        <div class="report-card">
+          <div id="report-part-1">
+            <div class="report-title">1. 재무 현황 분석</div>
+            <div class="analysis-text">${data.analysis}</div>
+
+            ${expenseTableHtml}
+
+            <div class="report-title">2. 포트폴리오 배분 및 전략</div>
+            <table class="strategy-table">
+              <thead>
+                <tr><th>구분</th><th>비율</th><th>전략 및 실행 방안</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>생활비<span class="amount-display">(${data.allocation.living.toLocaleString()})</span></td>
+                  <td>${pctLiving}%</td>
+                  <td style="line-height:1.5;">
+                    소비 통장 별도 분리 및 체크카드 사용<br>
+                    <span style="font-weight:700; color:#1B64DA;">뱅크샐러드 가계부</span> 로 지출통제
+                  </td>
+                </tr>
+                <tr>
+                  <td>저축/투자<span class="amount-display">(${data.allocation.saving.toLocaleString()})</span></td>
+                  <td>${pctSaving}%</td>
+                  <td>
+                    <ul class="strategy-list">
+                      <li>
+                        <span class="tag short">단기(1~3년)</span>
+                        <div class="item-row indent"><span class="item-name">• 은행적금</span><span class="item-amt">${detail.bank.toLocaleString()}원</span></div>
+                        <div class="item-row indent"><span class="item-name">• 적립식펀드 / 주식모으기</span><span class="item-amt">${detail.fund.toLocaleString()}원</span></div>
+                      </li>
+                      <li>
+                        <span class="tag mid">중기(5년이상)</span>
+                        <div class="item-header indent item-name">• 변액저축 (주식형/ETF)</div>
+                        <div class="item-header indent item-name">• 적립식 달러투자</div>
+                        <div class="item-row indent"><span></span><span class="item-amt">${detail.midTerm.toLocaleString()}원</span></div>
+                      </li>
+                      <li>
+                        <span class="tag long">장기(10년이상)</span>
+                        <div class="item-header indent item-name">• 비과세 변액연금</div>
+                        <div class="item-header indent item-name">• 비과세 확정연금</div>
+                        <div class="item-row indent"><span></span><span class="item-amt">${detail.longTerm.toLocaleString()}원</span></div>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <td>비상금<span class="amount-display">(${data.allocation.emergency.toLocaleString()})</span></td>
+                  <td>${pctEmergency}%</td>
+                  <td style="line-height:1.5;">
+                    CMA/파킹통장 (경조사 등 대비)<br>
+                    <span style="font-size:0.75rem; color:#6b7280;">이자 하루하루 발생 / 목돈 되면 재투자</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>보장자산<span class="amount-display">(${data.allocation.insurance.toLocaleString()})</span></td>
+                  <td>${pctInsurance}%</td>
+                  <td>
+                    <div class="insurance-main">실손의료비 / 3대질병</div>
+                    <div class="insurance-sub" style="font-weight:800; color:#1f2937;">수술 / 입원 / 사망 / 기타</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="report-title">3. 리스크 관리</div>
+            <div class="analysis-text" style="margin-bottom:30px;">${data.risk}</div>
+          </div>
+
+          <div id="report-part-2">
+            <div class="report-title">4. 추천 금융상품</div>
+            <div class="recommend-box">
+              <div class="recommend-title">단기 상품 (1~3년)<span>| ${dateString}</span></div>
+              <div class="recommend-item">은행 적금: <strong>세람저축은행 펫밀리 정기적금 (최고 연 5.0%)</strong></div>
+              <div class="recommend-item">국내 펀드: <strong>키움 차세대 모빌리티 증권 자투자신탁 제1호</strong></div>
+              <div class="recommend-item">해외 펀드: <strong>피델리티 글로벌 테크놀로지 증권 자투자신탁</strong></div>
+            </div>
+            <div class="recommend-box">
+              <div class="recommend-title">중기 상품 (5년 이상)<span>| ${dateString}</span></div>
+              <div class="recommend-item"><strong>카디프생명 시그니처ETF변액저축보험</strong></div>
+              <div class="recommend-item"><strong>메트라이프 백만인을 위한 달러종신보험Plus</strong></div>
+            </div>
+            <div class="recommend-box">
+              <div class="recommend-title">장기 상품 (10년 이상)<span>| ${dateString}</span></div>
+              <div class="recommend-item"><strong>iM라이프 마이솔루션AI변액연금S</strong></div>
+              <div class="recommend-item"><strong>IBK 연금액평생보증받는 변액연금보험</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="closing">
+          위 설계안은 ${info.name} 고객님의 성공적인 <strong>${info.goal}</strong> 달성을 응원합니다.<br>
+          - 헤리티지금융 -
+        </div>
+      `;
+
+      document.getElementById('displayArea').innerHTML = displayHtml;
+      document.getElementById('resultSection').classList.add('show');
+      document.getElementById('downloadBtn').style.display = 'block';
+      document.getElementById('mobileNote').classList.add('show');
+      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    
+    async function downloadPDF() {
+      if (!currentResponse) return;
+
+      const btn = document.getElementById('downloadBtn');
+      const originalText = btn.textContent;
+      btn.textContent = 'PDF 생성 중...';
+      btn.disabled = true;
+
+      const part1Content = document.getElementById('report-part-1').innerHTML;
+      const part2Content = document.getElementById('report-part-2').innerHTML;
+      const info = currentResponse.userInfo;
+
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const scale = isMobile ? 1.5 : 2;
+
+      const pdfWrap = document.createElement('div');
+      pdfWrap.style.cssText = 'width:760px; padding:30px; box-sizing:border-box; background:white; position:fixed; top:0; left:0; z-index:-9999;';
+
+      const styleBlock = `
+        <style>
+          .strategy-table { width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed; }
+          .strategy-table th, .strategy-table td { padding:8px 4px; border:1px solid #e5e7eb; word-wrap:break-word; }
+          .strategy-table th { background-color:#f8fafc; color:#333; }
+          .strategy-list li { margin-bottom:5px; list-style:none; }
+          .item-row { font-size:12px; display:flex; justify-content:space-between; margin-bottom:2px; }
+          .tag { padding:2px 4px; font-size:10px; font-weight:bold; border-radius:4px; display:inline-block; margin-bottom:4px; }
+          .tag.short { background:#dbeafe; color:#1e40af; }
+          .tag.mid   { background:#fae8ff; color:#86198f; }
+          .tag.long  { background:#dcfce7; color:#166534; }
+          .recommend-box { padding:10px; margin-bottom:10px; border:1px solid #eee; border-left:4px solid #f59e0b; background:#f8fafc; }
+          .recommend-title { font-size:13px; font-weight:bold; margin-bottom:5px; color:#191F28; }
+          .recommend-item  { font-size:12px; margin-bottom:3px; }
+          .analysis-text  { font-size:13px; line-height:1.5; text-align:justify; margin-bottom:15px; }
+          .report-title   { font-size:16px; font-weight:bold; margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px; color:#191F28; }
+          .item-amt        { font-weight:600; color:#191F28; }
+          .amount-display  { font-size:0.9em; color:#666; font-weight:normal; }
+          .item-header     { margin-bottom:2px; }
+          .indent          { padding-left:5px; }
+        </style>
+      `;
+
+      const headerHtml = `
+        <div style="font-family:sans-serif; color:#1f2937;">
+          <div style="text-align:center; border-bottom:2px solid #1e3a8a; padding-bottom:15px; margin-bottom:20px;">
+            <h1 style="color:#191F28; margin:0; font-size:24px;">HERITAGE FINANCIAL</h1>
+            <p style="color:#6b7280; margin:5px 0 0; font-size:12px;">[${info.name} 고객님 맞춤형 재무설계]</p>
+          </div>
+      `;
+      const footerHtml = `
+          <div style="margin-top:30px; text-align:center; font-size:10px; color:#9ca3af; padding-top:10px; border-top:1px solid #e5e7eb;">
+            본 보고서는 재무설계 참고용 자료입니다. 자세한 상담은 담당 컨설턴트에게 문의하세요.<br>
+            Heritage Financial Co., Ltd. | ${new Date().toLocaleDateString()}
+          </div>
+        </div>
+      `;
+
+      try {
+        document.body.appendChild(pdfWrap);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210;
+
+        btn.textContent = 'PDF 생성 중 (1/2)...';
+        pdfWrap.innerHTML = styleBlock + headerHtml + `<div style="font-size:13px">${part1Content}</div>` + footerHtml;
+        await new Promise(r => setTimeout(r, 500));
+        const canvas1 = await html2canvas(pdfWrap, { scale, useCORS: true, logging: false, windowWidth: 760, backgroundColor: '#ffffff' });
+        doc.addImage(canvas1.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, imgWidth, (canvas1.height * imgWidth) / canvas1.width);
+
+        btn.textContent = 'PDF 생성 중 (2/2)...';
+        doc.addPage();
+        pdfWrap.innerHTML = styleBlock + headerHtml + `<div style="font-size:13px">${part2Content}</div>` + footerHtml;
+        await new Promise(r => setTimeout(r, 500));
+        const canvas2 = await html2canvas(pdfWrap, { scale, useCORS: true, logging: false, windowWidth: 760, backgroundColor: '#ffffff' });
+        doc.addImage(canvas2.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, imgWidth, (canvas2.height * imgWidth) / canvas2.width);
+
+        btn.textContent = '파일 저장 중...';
+        const blob = doc.output('blob');
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href = url; a.download = `${info.name}_재무설계리포트.pdf`;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+
+      } catch (err) {
+        console.error(err);
+        alert('PDF 생성 오류: ' + err.message);
+      } finally {
+        if (document.body.contains(pdfWrap)) document.body.removeChild(pdfWrap);
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

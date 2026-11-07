@@ -8508,9 +8508,9 @@ function renderContactResult() {
     </div>
 </div>
 
-<div id="financialModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9999] flex items-center justify-center hidden px-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden relative">
-        <button onclick="closeFinancialModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 z-10 font-bold text-2xl bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm">&times;</button>
+<div id="financialModal" class="fixed inset-0 bg-black/40 z-[9999] flex items-end sm:items-center justify-center hidden sm:px-4">
+    <div class="w-full max-w-2xl h-[100dvh] sm:h-[90vh] flex flex-col overflow-hidden relative sm:rounded-[24px]" style="background:#F2F4F6">
+        <button onclick="closeFinancialModal()" aria-label="재무설계 닫기" class="absolute right-3 z-10 w-11 h-11 rounded-xl flex items-center justify-center text-[#4E5968] hover:bg-[#E5E8EB]" style="top:calc(14px + env(safe-area-inset-top))"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
         <div id="financialFrameContainer" class="w-full h-full"></div>
     </div>
 </div>
@@ -8538,16 +8538,13 @@ function linkify(text) {
              // 로딩 스피너 표시
              container.innerHTML = '<div class="flex items-center justify-center h-full"><div class="loader"></div></div>';
              
-             google.script.run.withSuccessHandler(function(html) {
-                  const iframe = document.createElement('iframe');
-                  iframe.style.width = '100%';
-                  iframe.style.height = '100%';
-                  iframe.style.border = 'none';
-                  iframe.srcdoc = html; // CSS 충돌 방지를 위해 iframe 사용
-                  
-                  container.innerHTML = '';
-                  container.appendChild(iframe);
-             }).getFinancialAppHtml();
+             // 화면은 GitHub의 fp.html에서 바로 불러옴 (서버 왕복 없음), 계산은 기존처럼 서버
+             const iframe = document.createElement('iframe');
+             iframe.style.cssText = 'width:100%;height:100%;border:none;background:#F2F4F6;padding-top:env(safe-area-inset-top)';
+             iframe.title = '재무설계';
+             iframe.src = 'fp.html?v=2';
+             container.innerHTML = '';
+             container.appendChild(iframe);
         }
     }
 

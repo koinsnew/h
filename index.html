@@ -15,6 +15,21 @@
 window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5gzSjmnX5gKGQDvFU7KtK6O2K-h_m4ecs3J41ZilZBWAB4bdqfZT9uDU/exec';
 (function () {
     if (window.google && window.google.script && window.google.script.run) return;   // Apps Script 내부 실행 시 원본 사용
+    // 서버 호출 1건
+    function callApi(fn, args) {
+        return fetch(window.HERITAGE_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // preflight 회피
+            body: JSON.stringify({ fn: fn, args: args, token: window.__hpToken || '' })
+        }).then(function (r) { return r.json(); });
+    }
+    // [속도] 앱을 열자마자 상품·수수료율 자료를 한꺼번에(동시에) 미리 요청해 둔다.
+    // 화면 쪽은 예전처럼 하나씩 차례로 부르지만, 이미 받아 둔 결과를 바로 쓰므로 20초 → 몇 초로 줄어든다.
+    var PREFETCH = {};
+    ['getSheetProductData', 'getSheetProduct2607Data', 'getMonthlyRates', 'getSonboWeekConfig', 'getSilsonRates', 'getSonboLongRates', 'getBranchGoalData', 'getNotices', 'getSchedules', 'getBoardData'].forEach(function (fn) {
+        var p = callApi(fn, []); p.catch(function () { });
+        PREFETCH[fn + '|[]'] = { p: p, at: Date.now() };
+    });
     function makeRunner(ok, fail, uo) {
         return new Proxy({}, {
             get: function (_, prop) {
@@ -24,11 +39,10 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 if (prop === 'withUserObject') return function (o) { return makeRunner(ok, fail, o); };
                 return function () {
                     var args = Array.prototype.slice.call(arguments);
-                    fetch(window.HERITAGE_API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // preflight 회피
-                        body: JSON.stringify({ fn: prop, args: args, token: window.__hpToken || '' })
-                    }).then(function (r) { return r.json(); }).then(function (j) {
+                    var key = prop + '|' + JSON.stringify(args), pre = PREFETCH[key];
+                    if (pre) delete PREFETCH[key];
+                    var req = (pre && Date.now() - pre.at < 60000) ? pre.p : callApi(prop, args);
+                    req.then(function (j) {
                         if (j && j.ok) { if (ok) ok(j.result, uo); }
                         else {
                             var e = new Error((j && j.error) || '서버 오류');
@@ -15213,7 +15227,7 @@ function briefCollect() {
   // 홈 로딩 문구: 20초 넘게 그대로면 안내로 바꿈
   var seen={};
   setInterval(function(){
-    document.querySelectorAll('#page-home .fl-label, #rankingListContainer > div').forEach(function(el,i){
+    document.querySelectorAll('#rankingListContainer > div').forEach(function(el,i){
       var t=(el.textContent||''); if(t.indexOf('불러오는 중')<0){ delete seen[i]; return; }
       if(!el.offsetParent) return;
       seen[i]=(seen[i]||0)+2;

@@ -857,6 +857,11 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     oninput="document.getElementById('loginErrorMsg').classList.add('hidden')"
                     autocomplete="off">
 
+                <label class="flex items-center justify-center gap-2 h-11 -mt-1 text-sm font-semibold text-gray-600 cursor-pointer select-none">
+                    <input type="checkbox" id="autoLoginChk" class="w-5 h-5 rounded accent-blue-600" checked>
+                    자동 로그인 <span class="text-xs font-normal text-gray-500">(이 기기에서 30일)</span>
+                </label>
+
                 <button id="btnLogin" onclick="secureLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition shadow-lg transform active:scale-95">
                     접속하기
                 </button>
@@ -10125,6 +10130,8 @@ function logout() {
         cancelButtonText: '아니요'
     }).then((result) => {
         if (result.isConfirmed) {
+            // 0. 자동 로그인 해제 (로그아웃하면 다음에 다시 입력)
+            try { localStorage.removeItem('hpAutoLogin'); } catch (e) { }
             // 1. 로그인 정보 지우기
             loggedInUser = "";
             currentUser = "";
@@ -15534,6 +15541,56 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
   var _pp=window.printPage;
   window.printPage=function(){ try{ if(typeof toggleMoreTools==='function') toggleMoreTools(false); }catch(e){} var r=_pp?_pp.apply(this,arguments):window.print(); setTimeout(recover,500); return r; };
   document.addEventListener('visibilitychange',function(){ if(!document.hidden) setTimeout(recover,200); });
+})();
+</script>
+<script>
+/* 자동 로그인: 로그인할 때 '자동 로그인'을 켜 두면 이 기기에서 30일 동안 앱을 열자마자 바로 들어갑니다.
+   비밀번호(주민번호 뒷자리)는 그대로 저장하지 않고 암호화한 값(SHA-256)만 이 기기에 남깁니다. 로그아웃하면 지워집니다. */
+(function(){
+  var KEY='hpAutoLogin', DAYS=30;
+  function sha(t){ try{ return crypto.subtle.digest('SHA-256', new TextEncoder().encode('heritage-pro|'+t)).then(function(b){ return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join(''); }); }catch(e){ return Promise.resolve(''); } }
+  function read(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o && o.n && o.at && Date.now()-o.at < DAYS*864e5) return o; localStorage.removeItem(KEY); }catch(e){} return null; }
+  // 1) 로그인 성공 시 저장/해제
+  var _hl=window.handleLogin;
+  if(typeof _hl==='function'){
+    window.handleLogin=function(){
+      var name=(document.getElementById('loginNameInput').value||'').trim(), pw=(document.getElementById('loginPwInput').value||'').trim();
+      var chk=document.getElementById('autoLoginChk'), want=!chk || chk.checked;
+      var r=_hl.apply(this,arguments);
+      setTimeout(function(){
+        if(typeof loggedInUser==='undefined' || !loggedInUser) return;
+        if(!want){ try{ localStorage.removeItem(KEY); }catch(e){} return; }
+        sha(pw).then(function(h){ try{ localStorage.setItem(KEY, JSON.stringify({ n: loggedInUser || name, h: h, at: Date.now() })); }catch(e){} });
+      },300);
+      return r;
+    };
+  }
+  // 2) 앱을 열면 사용자 목록을 받은 뒤 자동으로 로그인
+  var saved=read(); if(!saved) return;
+  var tries=0, done=false;
+  var lo=document.getElementById('loginOverlay'), btn=document.getElementById('btnLogin');
+  if(btn){ btn.dataset.label=btn.innerHTML; btn.innerHTML='자동 로그인 중…'; }
+  function restore(){ if(btn && btn.dataset.label){ btn.innerHTML=btn.dataset.label; } }
+  var t=setInterval(function(){
+    tries++;
+    if(done) return;
+    if(typeof loggedInUser!=='undefined' && loggedInUser){ clearInterval(t); restore(); return; }
+    var db=(typeof userDB!=='undefined')?userDB:null;
+    if(!db || !db.length){ if(tries>60){ clearInterval(t); restore(); } return; }   // 최대 약 30초 대기
+    done=true; clearInterval(t);
+    var u=db.find(function(x){ return String(x.name).trim()===saved.n; });
+    if(!u){ try{ localStorage.removeItem(KEY); }catch(e){} restore(); return; }
+    var pw=String(u.residentId||'').trim();
+    sha(pw).then(function(h){
+      if(h!==saved.h){ try{ localStorage.removeItem(KEY); }catch(e){} restore(); return; }   // 비밀번호가 바뀌었으면 다시 입력
+      document.getElementById('loginNameInput').value=saved.n;
+      document.getElementById('loginPwInput').value=pw;
+      restore();
+      try{ Swal.close(); }catch(e){}
+      try{ secureLogin(); }catch(e){ handleLogin(); }
+      document.getElementById('loginPwInput').value='';
+    });
+  },500);
 })();
 </script>
 </body>

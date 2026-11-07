@@ -4852,6 +4852,8 @@ function updateSummary(premium, p, next, bonus, total) {
     var _ltEl = document.getElementById('longTermBonusDisplay'); if (_ltEl) { _ltEl.innerText = _ltTxt; _ltEl.classList.toggle('text-base', !_ltOn); }
     var _ltPr = document.getElementById('printLongTermBonus'); if (_ltPr) _ltPr.innerText = _ltTxt;
     var _ltNote = document.getElementById('ltHanbogumNote'); if (_ltNote) _ltNote.classList.toggle('hidden', _ltOn);
+    // 지사장 화면에서는 장기근속 성장지원금 카드 숨김
+    var _ltCard = document.getElementById('longTermCard'); if (_ltCard) { var _ltRole = ''; try { _ltRole = String(getRole(currentUser) || ''); } catch (e) { } _ltCard.classList.toggle('hidden', _ltRole.indexOf('지사장') >= 0); }
 }
 
     // [누락된 함수 추가 1] 루키 보너스 업데이트
@@ -15534,7 +15536,12 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
   window.renderMyGoalCard=render;
   window.invalidateMyGoal=function(m){ if(m) delete cache[m]; else cache={}; };
   var _ud=window.updateDashboard;
-  if(typeof _ud==='function'){ window.updateDashboard=function(){ var r=_ud.apply(this,arguments); try{ render(); }catch(e){} return r; }; }
+  function hideLtForGM(){ var c=document.getElementById('longTermCard'); if(!c) return; var r=''; try{ r=String(getRole(currentUser)||''); }catch(e){} c.classList.toggle('hidden', r.indexOf('지사장')>=0); }
+  window.hideLtForGM=hideLtForGM;
+  // 화면 갱신 함수가 안쪽에서 직접 불려 위 감싸기가 안 걸리는 경우가 있어, 보는 사람·달·자료가 바뀌면 다시 그림
+  var _sig='';
+  setInterval(function(){ try{ if(typeof loggedInUser==='undefined'||!loggedInUser) return; var g=window.__goalData||{}; var sig=[currentUser,currentMonth,(typeof savedList!=='undefined'&&savedList)?savedList.length:0, g.fcActuals?Object.keys(g.fcActuals).length+':'+JSON.stringify(g.fcActuals[currentUser]||0):''].join('|'); if(sig!==_sig){ _sig=sig; render(); hideLtForGM(); } }catch(e){} }, 800);
+  if(typeof _ud==='function'){ window.updateDashboard=function(){ var r=_ud.apply(this,arguments); try{ render(); }catch(e){} try{ hideLtForGM(); }catch(e){} return r; }; }
   // 목표 저장 후 홈에도 반영
   var _sv=window.saveFcGoalsUI;
   if(typeof _sv==='function'){ window.saveFcGoalsUI=function(){ try{ window.invalidateMyGoal(typeof currentMonth!=='undefined'?currentMonth:''); }catch(e){} return _sv.apply(this,arguments); }; }

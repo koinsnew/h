@@ -739,7 +739,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   html,body{overflow-x:clip;max-width:100%}
   #mainContent{overflow-x:clip}
   /* 시작(로딩) 화면 로고 크게 */
-  #loadingOverlay{z-index:10002!important}
+  /* 대기(로딩) 화면 사용 안 함 */
+  #loadingOverlay{display:none!important}
   .hl-logo-wrap{width:200px!important;height:200px!important;border-radius:44px!important}
   .hl-logo{width:172px!important;height:172px!important}
   .hl-ring,.hl-ring2{top:100px!important;width:230px!important;height:230px!important;margin-left:-115px!important;margin-top:-115px!important}
@@ -15336,10 +15337,6 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
     if(dx>0 && !isOpen) toggleSidebar(); else if(dx<0 && isOpen) toggleSidebar();
   },{passive:true});
 })();
-</script>
-<script>
-/* 시작(대기) 화면: 앱을 열면 로그인 창보다 위에 헤리티지 로고 화면을 띄우고, 준비가 끝나면 로그인 창이 보임 (최대 15초) */
-(function(){ try{ var el=document.getElementById('loadingOverlay'); if(el){ el.classList.remove('hidden'); setTimeout(function(){ var lo=document.getElementById('loginOverlay'); if(lo && getComputedStyle(lo).display!=='none') el.classList.add('hidden'); }, 15000); } }catch(e){} })();
 </script>
 </body>
 </html>

@@ -735,6 +735,15 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .ts-listmore{width:100%;height:52px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:15px;font-weight:600;color:#4E5968;border-top:1px solid #F2F4F6;background:#fff;transition:background .15s}
   .ts-listmore:hover{background:#F9FAFB}
   .ts-listmore-n{color:#1B64DA}
+  /* 화면 밖에 대기 중인 청약 입력 패널 때문에 페이지가 옆으로 넓어지지 않게 (바로가기 실행 시 확대돼 보이던 문제) */
+  html,body{overflow-x:clip;max-width:100%}
+  #mainContent{overflow-x:clip}
+  /* 시작(로딩) 화면 로고 크게 */
+  .hl-logo-wrap{width:200px!important;height:200px!important;border-radius:44px!important}
+  .hl-logo{width:172px!important;height:172px!important}
+  .hl-ring,.hl-ring2{top:100px!important;width:230px!important;height:230px!important;margin-left:-115px!important;margin-top:-115px!important}
+  .hl-text{font-size:1.05rem!important;color:#1B64DA!important}
+  .hl-bar{background:#3182F6!important}
   :focus-visible{outline-color:#1E6EE8!important}
   /* 제목 앞 색 막대: 파랑 하나로 */
   h2 > span.w-1\.5, h3 > span.w-1\.5{background:#3182F6!important}
@@ -748,8 +757,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     <!-- 로그인 오버레이 -->
     <div id="loginOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-90 z-[10000] flex flex-col items-center justify-center px-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
-            <div class="mb-6 flex justify-center">
-                <img src="지사로고.jpg" onerror="this.style.display='none'" alt="로고" class="h-12 w-auto object-contain">
+            <div class="mb-4 flex justify-center">
+                <img id="loginLogo" alt="헤리티지 로고" class="w-28 h-28 object-contain rounded-3xl" style="display:none">
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-2 tracking-tight">Heritage <span class="text-indigo-600">Pro</span></h2>
             <p class="text-gray-500 text-sm mb-6">영업지원 시스템 접속</p>
@@ -771,7 +780,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <p id="loginErrorMsg" class="text-red-500 text-sm font-bold hidden animate-pulse"></p>
                 <p class="text-xs text-gray-500 mt-2">* 등록되지 않은 사용자는 접속할 수 없습니다.<br>* 주민번호 미등록자는 성명만 입력하세요.</p>
             </div>
-            <p class="mt-5 text-sm font-semibold text-slate-300 break-keep">나의 전문성은 고객을 위한 최소한의 배려</p>
+            <p class="mt-5 text-sm font-semibold text-gray-600 break-keep">나의 전문성은 고객을 위한 최소한의 배려</p>
             <p class="mt-2 text-xs text-gray-500">© 헤리티지 금융지사</p>
         </div>
     </div>
@@ -15329,6 +15338,10 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
     if(dx>0 && !isOpen) toggleSidebar(); else if(dx<0 && isOpen) toggleSidebar();
   },{passive:true});
 })();
+</script>
+<script>
+/* 로그인 화면에 시작 화면과 같은 헤리티지 로고 표시 */
+(function(){ try{ var src=document.querySelector('.hl-logo'); var el=document.getElementById('loginLogo'); if(src&&el&&src.getAttribute('src')){ el.src=src.getAttribute('src'); el.style.display=''; } }catch(e){} })();
 </script>
 </body>
 </html>

@@ -874,7 +874,15 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .ts-sum-label{font-size:14px;color:#4E5968;margin:0}
   .ts-sum-amt{font-size:30px;font-weight:800;color:#191F28;letter-spacing:-.03em;margin:2px 0 14px;font-variant-numeric:tabular-nums}
   .ts-sum-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .ts-sum-grid > div,.ts-stat{background:#F2F4F6;border-radius:14px;padding:12px}
+  .ts-sum-grid > div,.ts-sum-grid > button,.ts-stat{background:#F2F4F6;border-radius:14px;padding:12px;text-align:left;min-width:0}
+  .ts-sum-grid > button{cursor:pointer;transition:background .15s}
+  .ts-sum-grid > button:active{background:#E5E8EB}
+  .ts-sum-grid > button[aria-pressed="true"] b{font-size:13.5px;white-space:normal;word-break:break-all;overflow:visible}
+  .ts-year{display:flex;align-items:center;gap:2px;background:#F2F4F6;border-radius:12px;padding:3px;flex:1;min-width:0;max-width:240px}
+  .ts-year-arrow{flex:none;width:40px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#4E5968}
+  .ts-year-arrow:hover:not(:disabled){background:#E5E8EB}
+  .ts-year-arrow:disabled{color:#C9D2DC;cursor:default}
+  .ts-year-select{flex:1;min-width:0;height:38px;border:0;border-radius:9px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);text-align:center;text-align-last:center;font-size:15px;font-weight:700;color:#191F28;appearance:none;-webkit-appearance:none;cursor:pointer;padding:0 6px}
   .ts-sum-grid span,.ts-stat span{display:block;font-size:12.5px;color:#6B7684}
   .ts-sum-grid b,.ts-stat b{display:block;font-size:16px;font-weight:700;color:#191F28;font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ts-table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
@@ -965,9 +973,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     <p class="ts-sum-label"><span id="maintYearLabel">2026</span>년에 받을 유지수수료</p>
                     <p class="ts-sum-amt"><span id="maintTotal">0</span>원</p>
                     <div class="ts-sum-grid">
-                        <div><span>13회 시책</span><b id="maintSumBonus13Top">0</b></div>
-                        <div><span>2차년</span><b id="maintSumY2Top">0</b></div>
-                        <div><span>3차년</span><b id="maintSumY3Top">0</b></div>
+                        <button type="button" onclick="tsToggleAmt(this)" aria-pressed="false" title="눌러서 원 단위 보기"><span>13회 시책</span><b id="maintSumBonus13Top">0</b></button>
+                        <button type="button" onclick="tsToggleAmt(this)" aria-pressed="false" title="눌러서 원 단위 보기"><span>2차년</span><b id="maintSumY2Top">0</b></button>
+                        <button type="button" onclick="tsToggleAmt(this)" aria-pressed="false" title="눌러서 원 단위 보기"><span>3차년</span><b id="maintSumY3Top">0</b></button>
                     </div>
                 </div>
                 <table class="ts-table">
@@ -7563,9 +7571,8 @@ function updateBranchCompanyTotal() {
     yearSelect.innerHTML = ''; // 초기화
     
     // [수정] 2026년부터 향후 5년치(2030년까지) 표시
-    const startYear = 2026;
-    for (let i = 0; i < 5; i++) {
-        const y = startYear + i;
+    const startYear = 2026, endYear = Math.max(2030, new Date().getFullYear() + 10);
+    for (let y = startYear; y <= endYear; y++) {
         const opt = document.createElement('option');
         opt.value = y;
         opt.text = y + '년';
@@ -7574,7 +7581,7 @@ function updateBranchCompanyTotal() {
     // 기본값: 현재 연도가 2026년 이상이면 현재 연도, 아니면 2026년
     const currentYear = new Date().getFullYear();
     yearSelect.value = (currentYear >= 2026) ? currentYear : 2026;
-    renderTsSeg('maintYearChips', yearSelect);
+    renderYearStepper('maintYearChips', yearSelect);
     updateMaintTable();
 }
 
@@ -7669,8 +7676,40 @@ function updateBranchCompanyTotal() {
     document.getElementById('maintSumY2').innerText = sumY2.toLocaleString();
     document.getElementById('maintSumY3').innerText = sumY3.toLocaleString();
     var _t = function(id, v){ var e=document.getElementById(id); if(e) e.textContent = v; };
-    _t('maintSumBonus13Top', sum13.toLocaleString()); _t('maintSumY2Top', sumY2.toLocaleString()); _t('maintSumY3Top', sumY3.toLocaleString());
+    var _tile = function(id, v){ var e=document.getElementById(id); if(!e) return; e.dataset.full = v.toLocaleString() + '원'; e.dataset.short = tsMan(v); e.textContent = e.dataset.short; e.parentNode.setAttribute('aria-pressed','false'); };
+    _tile('maintSumBonus13Top', sum13); _tile('maintSumY2Top', sumY2); _tile('maintSumY3Top', sumY3);
     _t('maintTotal', (sum13 + sumY2 + sumY3).toLocaleString()); _t('maintYearLabel', selectedYear);
+}
+// 금액 줄여 쓰기: 7,027,400 → 702.7만 (누르면 원 단위)
+function tsMan(v) {
+    v = Number(v) || 0; if (v === 0) return '0';
+    if (Math.abs(v) >= 100000000) return (Math.round(v / 10000000) / 10).toLocaleString() + '억';
+    if (Math.abs(v) >= 10000) return (Math.round(v / 1000) / 10).toLocaleString() + '만';
+    return v.toLocaleString() + '원';
+}
+function tsToggleAmt(btn) {
+    var b = btn.querySelector('b'); if (!b || !b.dataset.full) return;
+    var on = btn.getAttribute('aria-pressed') !== 'true';
+    btn.setAttribute('aria-pressed', String(on)); b.textContent = on ? b.dataset.full : b.dataset.short;
+}
+// [A안] 연도 선택: ‹ 2026년 › (가운데를 누르면 목록에서 아무 연도나 선택)
+function renderYearStepper(boxId, sel) {
+    var box = document.getElementById(boxId); if (!box || !sel) return;
+    box.className = 'ts-year';
+    box.innerHTML = '';
+    var mk = function (dir, label) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'ts-year-arrow'; b.setAttribute('aria-label', label);
+        b.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (dir < 0 ? 'm15 6-6 6 6 6' : 'm9 6 6 6-6 6') + '"/></svg>';
+        b.onclick = function () { var i = sel.selectedIndex + dir; if (i < 0 || i >= sel.options.length) return; sel.selectedIndex = i; sel.dispatchEvent(new Event('change')); };
+        return b;
+    };
+    var prev = mk(-1, '이전 연도'), next = mk(1, '다음 연도');
+    sel.classList.remove('hidden'); sel.removeAttribute('aria-hidden'); sel.removeAttribute('tabindex');
+    sel.className = 'ts-year-select'; sel.setAttribute('aria-label', '연도 선택');
+    box.appendChild(prev); box.appendChild(sel); box.appendChild(next);
+    var sync = function () { prev.disabled = sel.selectedIndex <= 0; next.disabled = sel.selectedIndex >= sel.options.length - 1; };
+    if (!sel.__tsYearBound) { sel.addEventListener('change', function () { if (sel.__tsYearSync) sel.__tsYearSync(); }); sel.__tsYearBound = true; }
+    sel.__tsYearSync = sync; sync();
 }
 // [A안] select를 세그먼트 버튼으로 (값은 숨긴 select에 그대로)
 function renderTsSeg(boxId, sel) {
@@ -7952,21 +7991,43 @@ function buildTrendReport() {
             valFmt: function(v) { return v + '명'; } })
         + nameRows, ''));
 
-    // ----- 6. 새 창 출력 -----
-    var w = window.open('', '_blank');
-    if (!w) { if (typeof showAlert === 'function') showAlert('error', '팝업 차단', '브라우저 팝업 차단을 해제해 주세요.'); return; }
-    w.document.write('<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>' + scopeLabel + ' 업적·도입 보고서</title><style>'
+    // ----- 6. 앱 안에서 바로 보기 (바로가기 앱은 새 창이 막혀 반응이 없던 문제 해결) -----
+    var html = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>' + scopeLabel + ' 업적·도입 보고서</title><style>'
         + '*{margin:0;padding:0;box-sizing:border-box;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif}'
-        + 'body{background:#e8eaf0}'
-        + '.rpt-page{position:relative;width:1050px;height:590px;background:#fff;margin:16px auto;box-shadow:0 2px 10px rgba(0,0,0,.15);overflow:hidden;page-break-after:always}'
+        + 'body{background:#F2F4F6;padding:4px 0 24px}'
+        + '.rpt-page{position:relative;width:1050px;height:590px;background:#fff;margin:12px auto;box-shadow:0 2px 10px rgba(0,0,0,.10);border-radius:6px;overflow:hidden;page-break-after:always}'
         + '.rpt-foot{position:absolute;bottom:12px;right:44px;font-size:10px;letter-spacing:3px;color:' + GOLD + ';font-weight:700}'
-        + '.no-print{position:fixed;top:14px;right:14px;z-index:10}'
-        + '@media print{body{background:#fff}.no-print{display:none}.rpt-page{margin:0;box-shadow:none;width:100%;height:100vh}}'
+        + '@media print{body{background:#fff;padding:0;zoom:1!important}.rpt-page{margin:0;box-shadow:none;border-radius:0;width:100%;height:100vh}}'
         + '@page{size:A4 landscape;margin:0}'
-        + '</style></head><body>'
-        + '<div class="no-print"><button onclick="window.print()" style="background:' + NAVY + ';color:#fff;border:0;border-radius:8px;padding:10px 22px;font-weight:700;font-size:14px;cursor:pointer">인쇄 / PDF 저장</button></div>'
-        + pages.join('') + '</body></html>');
-    w.document.close();
+        + '</style></head><body>' + pages.join('')
+        + '<scr' + 'ipt>function fit(){var z=Math.min(1,(innerWidth-8)/1066);document.body.style.zoom=z;}fit();addEventListener("resize",fit);'
+        + 'addEventListener("beforeprint",function(){document.body.style.zoom=1});addEventListener("afterprint",fit);</scr' + 'ipt>'
+        + '</body></html>';
+    openTrendReportView(scopeLabel + ' 업적·도입 보고서', html);
+}
+
+function openTrendReportView(title, html) {
+    var ov = document.getElementById('trendReportView');
+    if (!ov) {
+        ov = document.createElement('div');
+        ov.id = 'trendReportView';
+        ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+        ov.style.cssText = 'position:fixed;inset:0;z-index:10060;background:#F2F4F6;display:flex;flex-direction:column';
+        ov.innerHTML = '<div style="flex:none;display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 10px 10px 16px;background:#fff;border-bottom:1px solid #E5E8EB">'
+            + '<h3 id="trvTitle" style="flex:1;min-width:0;font-size:16px;font-weight:700;color:#191F28;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0"></h3>'
+            + '<button type="button" id="trvPrint" class="ts-tonal" style="height:40px">인쇄 / PDF</button>'
+            + '<button type="button" id="trvClose" class="ts-x" aria-label="보고서 닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>'
+            + '<iframe id="trvFrame" title="보고서" style="flex:1;width:100%;border:0;background:#F2F4F6"></iframe>';
+        document.body.appendChild(ov);
+        document.getElementById('trvClose').onclick = function () { ov.style.display = 'none'; };
+        document.getElementById('trvPrint').onclick = function () {
+            var f = document.getElementById('trvFrame');
+            try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { if (typeof showAlert === 'function') showAlert('error', '인쇄할 수 없어요', '브라우저 메뉴의 인쇄를 이용해 주세요.'); }
+        };
+    }
+    document.getElementById('trvTitle').textContent = title;
+    document.getElementById('trvFrame').srcdoc = html;
+    ov.style.display = 'flex';
 }
 
 // [권한] 마스터본부 탭은 지사장·총무·본부장만 볼 수 있다
@@ -8048,19 +8109,14 @@ function openTrendModal(type) {
 
     select.innerHTML = '';
     const thisYear = new Date().getFullYear();
-    for (let y = thisYear; y >= 2024; y--) { 
+    var _prevYear = window.__trendYear;
+    for (let y = 2025; y <= Math.max(thisYear, 2026); y++) {
         const opt = document.createElement('option');
         opt.value = y; opt.text = y + '년';
         select.appendChild(opt);
     }
-    // 2026년 데이터가 있는 경우를 위한 안전장치
-    if(thisYear < 2026) {
-         const opt26 = document.createElement('option'); opt26.value = 2026; opt26.text = '2026년'; select.appendChild(opt26);
-         select.value = 2026;
-    } else select.value = thisYear;
-    // 오래된 연도가 왼쪽에 오도록 칩 순서 정렬
-    [].slice.call(select.options).sort(function(a,b){ return a.value - b.value; }).forEach(function(o){ select.appendChild(o); });
-    renderTsSeg('trendYearChips', select);
+    select.value = (_prevYear && select.querySelector('option[value="' + _prevYear + '"]')) ? _prevYear : Math.max(thisYear, 2025);
+    renderYearStepper('trendYearChips', select);
     updateTrendChart();
 }
 
@@ -8068,6 +8124,7 @@ function closeTrendModal() { document.getElementById('trendModal').classList.add
 
 function updateTrendChart() {
     const year = document.getElementById('trendYearSelect').value;
+    window.__trendYear = year;
     const ctx = document.getElementById('trendChartCanvas').getContext('2d');
     
     let monthlyP = Array(12).fill(0);

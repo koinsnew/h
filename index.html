@@ -1161,6 +1161,22 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     </h2>
                     <div id="myGoalBody"></div>
                 </div>
+                <div id="longTermCard" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center whitespace-nowrap min-w-0"><span class="w-1.5 h-5 sm:h-6 bg-blue-500 rounded-full mr-2 shrink-0"></span><span class="truncate">장기근속 성장지원금</span></h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-2 bg-blue-50 rounded-lg">
+                            <p class="text-xs text-gray-500 mb-1">이번 달 (월초P)</p>
+                            <p class="text-lg sm:text-xl font-extrabold text-blue-600 tracking-tight whitespace-nowrap tabular-nums" id="longTermBonusDisplay">0원</p>
+                        </div>
+                        <div class="text-center p-2 bg-indigo-50 rounded-lg">
+                            <p class="text-xs text-gray-500 mb-1">27년 1월 지급 예정 (누적)</p>
+                            <p class="text-lg sm:text-xl font-extrabold text-indigo-600 tracking-tight whitespace-nowrap tabular-nums" id="cumulativeBonusDisplay">0원</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 text-center mt-2">* 26년 6월 계약까지만 적립 · 27년 1월에 한 번에 지급</p>
+                    <p class="text-xs text-gray-500 text-center mt-1">쉐어계약은 메인에게 모두 지급, 편의상 쉐어율 적용</p>
+                    <p id="ltHanbogumNote" class="hidden mt-3 rounded-xl bg-blue-50 px-3 py-2.5 text-sm font-semibold text-blue-700 text-center break-keep">26년 7월 계약부터는 한보금ON에서 확인해 주세요.</p>
+                </div>
 
                 <div id="rookieCard" class="bg-white rounded-xl shadow-sm border border-green-100 p-4 sm:p-6 hidden bg-gradient-to-br from-white to-green-50">
                     <h2 class="text-base sm:text-lg font-bold text-green-800 mb-3 flex items-center">
@@ -1326,6 +1342,13 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                                 </tr>
                             </tfoot>
                         </table>
+                    </div>
+                    <div id="printOnlyBonusSection" class="hidden p-4">
+                        <h3 class="font-bold text-gray-800 mb-2 border-b pb-1">장기근속 성장지원금 현황</h3>
+                        <div class="flex justify-between text-sm">
+                            <span>이번 달 월초P 합계: <span id="printLongTermBonus" class="font-bold">0원</span></span>
+                            <span>누적(1년) 월초P 합계: <span id="printCumulativeBonus" class="font-bold">0원</span></span>
+                        </div>
                     </div>
                 </div>
 
@@ -4787,6 +4810,12 @@ function updateSummary(premium, p, next, bonus, total) {
             totalMonthlyInitialP += (item.monthlyInitialP || 0); 
         }
     });
+    // [장기근속 성장지원금] 26년 6월 계약까지만 적립. 26년 7월 계약부터는 한보금ON에서 확인
+    var _ltOn = (typeof LT_LAST_MONTH === 'undefined') || currentMonth <= LT_LAST_MONTH;
+    var _ltTxt = _ltOn ? totalMonthlyInitialP.toLocaleString() + '원' : '한보금ON 확인';
+    var _ltEl = document.getElementById('longTermBonusDisplay'); if (_ltEl) { _ltEl.innerText = _ltTxt; _ltEl.classList.toggle('text-base', !_ltOn); }
+    var _ltPr = document.getElementById('printLongTermBonus'); if (_ltPr) _ltPr.innerText = _ltTxt;
+    var _ltNote = document.getElementById('ltHanbogumNote'); if (_ltNote) _ltNote.classList.toggle('hidden', _ltOn);
 }
 
     // [누락된 함수 추가 1] 루키 보너스 업데이트
@@ -5129,6 +5158,9 @@ function updateSummary(premium, p, next, bonus, total) {
                     else if (oneYearLaterM > 1 && oneYearLaterM <= 7) { ltPayM = 7; } 
                     else { ltPayY = oneYearLaterY + 1; ltPayM = 1; }
 
+                    // 제도 변경: 26년 6월 계약까지만, 27년 1월 이후 지급분은 모두 27년 1월에 한 번에
+                    if (ltPayY > 2027 || (ltPayY === 2027 && ltPayM > 1)) { ltPayY = 2027; ltPayM = 1; }
+                    const ltEligible = perfMonth <= '2026-06';
                     const ltDateStr = `${ltPayY}년 ${ltPayM}월`;
                     const ltSig = `${perfMonth}_${giver}_${receiver}_longterm`;
                     let isLtPaid = completedSignatures.has(ltSig);
@@ -5151,7 +5183,7 @@ function updateSummary(premium, p, next, bonus, total) {
                         let monthlyInitialP = Math.round(basePrem * ratio);
                         let amount2 = Math.round(monthlyInitialP * rate);
 
-                        if (false && amount2 > 0) {   // 장기근속 성장지원금 알림 폐지
+                        if(ltEligible && amount2 > 0) {
                             let existing = notifications.find(n => n.id === ltSig);
                             if(!existing) {
                                 notifications.push({ id: ltSig, perfMonth: perfMonth, payDateText: ltDateStr, giver: giver, receiver: receiver, type: 'longterm', amount: amount2, payDateObj: new Date(ltPayY, ltPayM-1, 1), isPaid: isLtPaid });
@@ -5663,11 +5695,18 @@ function calcPromoMonthlyInitialP(item) {
 
 
 // 2. 장기보너스 누적 월초P를 합산하는 함수 (중복 계산 완벽 차단)
+// [장기근속 성장지원금] 제도 변경: 26년 6월 계약까지만 적립하고, 그동안 쌓인 금액(25년 8월~26년 6월 계약분)을 27년 1월에 한 번에 지급.
+// 25년 7월 계약분까지는 기존 규칙대로 26년 7월에 지급 완료. 26년 7월 계약부터는 한보금ON에서 확인.
+var LT_FIRST_MONTH = '2025-08', LT_LAST_MONTH = '2026-06', LT_PAY_MONTH = '2027-01';
 function calculateCumulativeBonus() {
     let totalCumulativeP = 0;
-    const [currY, currM] = currentMonth.split('-').map(Number);
-    const targetY = currY - 1; 
-    let startM = (currM >= 7) ? 7 : 1;
+    const [currY0, currM0] = currentMonth.split('-').map(Number);
+    // 적립 기간: 25년 8월 ~ (보고 있는 달과 26년 6월 중 이른 달)
+    const endMonth = currentMonth < LT_LAST_MONTH ? currentMonth : LT_LAST_MONTH;
+    const [currY, currM] = endMonth.split('-').map(Number);
+    const targetY = Number(LT_FIRST_MONTH.slice(0, 4));
+    let startM = Number(LT_FIRST_MONTH.slice(5, 7));
+    const _ltPaid = currentMonth > LT_PAY_MONTH;   // 27년 1월 지급 후
     
     let latestDataMap = new Map();
     allUsersData.forEach(d => {
@@ -5732,7 +5771,13 @@ function calculateCumulativeBonus() {
     }
     
     // 화면 출력 업데이트
-    // (장기근속 성장지원금 표시는 제거됨)
+    const displayEl = document.getElementById('cumulativeBonusDisplay');
+    const printEl = document.getElementById('printCumulativeBonus');
+    
+    var _cumTxt = _ltPaid ? '지급 완료' : totalCumulativeP.toLocaleString() + '원';
+    if(displayEl) { displayEl.innerText = _cumTxt; displayEl.classList.toggle('text-base', _ltPaid); }
+    if(printEl) printEl.innerText = _cumTxt;
+    var _cumLbl = displayEl && displayEl.previousElementSibling; if (_cumLbl) _cumLbl.innerText = _ltPaid ? '27년 1월 지급분' : '27년 1월 지급 예정 (누적)';
 }
 
     function addToList() {
@@ -15245,7 +15290,7 @@ function briefCollect() {
 /* [홈] 1280px 미만에서 아래 카드 접기 + 한 줄 요약, 홈 로딩 문구 시간 제한 */
 (function(){
   var chev='<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>';
-  var cfg=[['recruitBonusCard',null,''],['overridingCard',null,''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
+  var cfg=[['longTermCard','cumulativeBonusDisplay','27.1 지급 '],['recruitBonusCard',null,''],['overridingCard',null,''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
   function setup(){
     cfg.forEach(function(c){
       var card=document.getElementById(c[0]); if(!card||card.classList.contains('fold-card')) return;

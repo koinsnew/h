@@ -14532,15 +14532,17 @@ function briefCollect() {
         try { briefApplyPerm(); } catch (e) { }
     }
     window.briefApplyMenu = applyMenu;
-    var tries = 0;
-    var timer = setInterval(function () {
-        tries++;
-        if (typeof loggedInUser !== 'undefined' && loggedInUser) {
+    // 로그인할 때마다(늦게 로그인해도, 다시 로그인해도) 메뉴 권한을 적용
+    var _lastUser = null;
+    setInterval(function () {
+        var u = (typeof loggedInUser !== 'undefined') ? loggedInUser : null;
+        if (u && u !== _lastUser && (typeof userDB !== 'undefined') && userDB && userDB.length) {
+            _lastUser = u;
             if (window.briefBrokers === null) briefLoadBrokers(applyMenu); else applyMenu();
-            clearInterval(timer);
+            setTimeout(applyMenu, 1500);
         }
-        if (tries > 120) clearInterval(timer);
-    }, 1000);
+        if (!u) _lastUser = null;
+    }, 700);
 })();
 </script>
 <!-- BRIEF-SCRIPT-END -->

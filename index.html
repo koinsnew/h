@@ -145,7 +145,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     
     .chk-btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 3rem; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; background-color: white; color: #6b7280; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); white-space: nowrap; }
     .chk-btn:hover { background-color: #f9fafb; }
-    .chk-input:checked + .chk-btn { background-color: #4f46e5 !important; color: white !important; border-color: #4f46e5 !important; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); transform: translateY(-1px); }
+    .chk-input:checked + .chk-btn { background-color: #4f46e5 !important; color: white !important; border-color: #4f46e5 !important; box-shadow: 0 4px 6px -1px rgba(30, 110, 232, 0.3); transform: translateY(-1px); }
     
     #loginOverlay, #shareModal, #maintModal { backdrop-filter: blur(5px); }
     select { background-color: white !important; -webkit-appearance: none; -moz-appearance: none; appearance: none; text-align-last: center; }
@@ -630,6 +630,88 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     .tbl-msg{position:sticky;left:0;max-width:calc(100vw - 3rem);margin:0 auto 0 0;text-align:center}
     @media (min-width:640px){.tbl-msg{max-width:none;margin:0 auto}}
 </style>
+
+<!-- [디자인 개편 · A안 클리어 블루] 토스형: 밝은 회색 바탕, 흰 카드, 파랑 하나, Pretendard -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style id="themeA">
+  :root{
+    --brand-600:#1E6EE8; --brand-500:#3182F6; --brand-400:#64A8FF; --brand-50:#E8F3FF; --brand-100:#C9E2FF;
+    --ink-900:#191F28; --ink-700:#333D4B; --ink-500:#6B7684; --line:#E5E8EB; --page-bg:#F2F4F6;
+    --card-radius:20px; --btn-radius:14px;
+    --shadow-card:none; --shadow-card-hover:none; --shadow-brand:none;
+    --ts-blue:#1E6EE8; --ts-blue-press:#1B64DA; --ts-blue-text:#1B64DA;
+  }
+  html, body, button, input, select, textarea, .swal2-popup, .flatpickr-calendar{
+    font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif!important;
+  }
+  body{background:#F2F4F6!important;color:#191F28;letter-spacing:-0.012em}
+  /* 카드: 테두리·그림자 없이 흰 면 + 큰 라운드 */
+  .bg-white.rounded-xl,.bg-white.rounded-2xl,.ts-card{background:#fff;border-radius:20px!important;box-shadow:none!important;border:0!important}
+  .bg-white.rounded-xl.shadow-sm:hover,.bg-white.rounded-2xl:hover{transform:none!important;box-shadow:none!important}
+  /* 상단 바·사이드 메뉴 */
+  body > nav{background:#F2F4F6!important;box-shadow:none!important;border-bottom:0!important}
+  #sidebar{background:#fff!important;border-right:1px solid #E5E8EB!important;box-shadow:none!important}
+  .nav-item[aria-current="page"],.nav-item.active{background:#E8F3FF!important;color:#1B64DA!important}
+  /* 파랑 한 가지 */
+  .bg-indigo-600,.bg-indigo-500,.bg-blue-600,.bg-blue-500{background:#1E6EE8!important;box-shadow:none!important}
+  .bg-indigo-600:hover,.hover\:bg-indigo-700:hover,.bg-indigo-700,.hover\:bg-blue-700:hover{background:#1B64DA!important}
+  .bg-indigo-600:hover{transform:none;filter:none}
+  button[class*="bg-gradient"],a[class*="bg-gradient"],label[class*="bg-gradient"]{background:#1E6EE8!important;box-shadow:none!important;color:#fff!important}
+  button[class*="bg-gradient"]:hover,a[class*="bg-gradient"]:hover{background:#1B64DA!important}
+  .text-indigo-500,.text-indigo-600,.text-indigo-700,.text-blue-600,.text-blue-700,.text-indigo-800{color:#1B64DA!important}
+  .text-indigo-900,.text-blue-800,.text-blue-900{color:#194AA6!important}
+  .bg-indigo-50,.bg-blue-50{background:#E8F3FF!important}
+  .bg-indigo-100,.bg-blue-100{background:#C9E2FF!important}
+  .border-indigo-100,.border-indigo-200,.border-blue-100,.border-blue-200{border-color:#C9E2FF!important}
+  .border-indigo-500,.border-indigo-600,.focus\:border-indigo-400:focus,.focus\:border-indigo-500:focus{border-color:#1E6EE8!important}
+  .chk-input:checked + .chk-btn{background:#1E6EE8!important;box-shadow:none!important;transform:none}
+  .peer:checked ~ .chk-btn.peer-checked\:bg-indigo-600,.peer:checked + .chk-btn.peer-checked\:bg-indigo-600{background:#1E6EE8!important;border-color:#1E6EE8!important;box-shadow:none!important;color:#fff!important}
+  .chk-btn{border-radius:12px!important}
+  .progress-bar-fill{background-image:none!important;background-color:#3182F6!important}
+  .input-unified-container:focus-within{border-color:#1E6EE8!important;box-shadow:0 0 0 3px rgba(49,130,246,.16)}
+  /* 회색 단계 (토스 그레이) */
+  .text-gray-900,.text-gray-800{color:#191F28!important}
+  .text-gray-700{color:#333D4B!important}
+  .text-gray-600{color:#4E5968!important}
+  .text-gray-500,#mainContent .text-gray-400{color:#6B7684!important}
+  .border-gray-100{border-color:#F2F4F6!important}
+  .border-gray-200,.border-gray-300{border-color:#E5E8EB!important}
+  .bg-gray-50{background:#F9FAFB!important}
+  .bg-gray-100{background:#F2F4F6!important}
+  .rounded-lg{border-radius:12px!important}
+  /* 홈 A안 요소 */
+  .ts-amount{margin:2px 0 0;font-size:32px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:#191F28}
+  .ts-link{color:#1B64DA}
+  .ts-link:hover{color:#194AA6}
+  .ts-chip{display:inline-block;padding:4px 10px;border-radius:8px;background:#E8F3FF;color:#1B64DA}
+  .ts-primary{height:54px;border-radius:14px;background:#1E6EE8;color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,transform .1s}
+  .ts-primary:hover{background:#1B64DA}.ts-primary:active{transform:scale(.98)}
+  .ts-tile{height:76px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#333D4B;font-size:13px;font-weight:500;transition:background .15s}
+  .ts-tile svg{color:#3182F6}
+  .ts-tile:hover,.ts-tile:active{background:#F2F4F6}
+  .ts-sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;max-width:30rem;margin:0 auto;animation:tsSheet .28s cubic-bezier(.2,.8,.2,1) both}
+  @media (min-width:640px){.ts-sheet{bottom:auto;top:50%;transform:translateY(-50%);border-radius:24px;animation:none}}
+  @keyframes tsSheet{from{transform:translateY(100%)}to{transform:none}}
+  .ts-row{height:56px;padding:0 12px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;font-size:16px;font-weight:600;color:#191F28;text-align:left}
+  .ts-row:hover{background:#F2F4F6}.ts-row span{color:#8B95A1;font-size:20px}
+  .ts-row.hidden{display:none}
+  /* 홈 청약 리스트 카드 */
+  #homeListTable tbody tr{border-bottom:1px solid #F2F4F6}
+  #homeListTable tbody td:nth-child(n+4):nth-child(-n+9){font-size:15px;font-weight:600;color:#191F28}
+  #homeListTable tbody td:nth-child(n+4):nth-child(-n+9)::before,#homeListTable tfoot td:nth-child(n+2):nth-child(-n+7)::before{color:#6B7684!important;font-weight:400}
+  #homeListTable tbody td:nth-child(9){font-weight:800!important}
+  #homeListTable tbody td:last-child button[onclick^="withdraw"],#homeListTable tbody td:last-child button[onclick^="toggleWithdraw"]{background:#F2F4F6!important;color:#333D4B!important;border:0!important;border-radius:12px!important}
+  #homeListTable tbody td:last-child button[onclick^="deleteRow"]{background:#FFEEEE!important;color:#D22030!important;border:0!important;border-radius:12px!important}
+  /* SweetAlert 버튼 */
+  .swal2-styled.swal2-confirm{background:#1E6EE8!important;border-radius:14px!important;box-shadow:none!important}
+  .swal2-styled.swal2-cancel{background:#F2F4F6!important;color:#333D4B!important;border-radius:14px!important}
+  .swal2-popup{border-radius:24px!important}
+  :focus-visible{outline-color:#1E6EE8!important}
+  /* 제목 앞 색 막대: 파랑 하나로 */
+  h2 > span.w-1\.5, h3 > span.w-1\.5{background:#3182F6!important}
+  #overridingCard h2 [class*="text-purple"],#overridingCard h2 [class*="text-indigo"]{color:#191F28!important}
+  #overridingCard > h2{font-size:1rem!important}
+</style>
 </head>
 <body class="text-gray-800">
     <a href="#mainContent" onclick="var m=document.getElementById('mainContent'); if(m){m.focus();}" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[20000] focus:bg-white focus:text-indigo-700 focus:font-bold focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg">본문으로 건너뛰기</a>
@@ -803,36 +885,45 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
       <div id="page-home" class="page-section px-2 sm:px-0">
         <div id="shareNotificationArea" class="mb-4 space-y-2 no-print max-h-[260px] overflow-y-auto custom-scrollbar pr-1"></div>
 
-        <div class="mb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-            <div class="w-full sm:w-auto text-center sm:text-left">
-                <h1 class="sr-only">홈</h1>
-                <p class="text-base sm:text-xl font-bold text-gray-900 break-keep" id="welcomeMsg">환영합니다.</p>
+        <h1 class="sr-only">홈</h1>
+        <section id="homeHero" class="ts-card mb-3 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div class="min-w-0">
+                <p class="text-[15px] text-gray-600 break-keep" id="welcomeMsg">환영합니다.</p>
+                <p class="mt-3 text-sm text-gray-600"><span id="displayMonth"></span>월 예상 수수료 <span class="text-gray-500">· 익월 + OR</span></p>
+                <p class="ts-amount cursor-pointer tabular-nums" id="grandTotalCommission" onclick="openGmOperationModal()">0원</p>
+                <button type="button" id="gmOperationHint" class="hidden mt-1 h-8 text-sm font-semibold ts-link" onclick="openGmOperationModal()">지사운영 내역 보기 ›</button>
+                <div id="clubMsg" class="hidden mt-2 text-sm font-bold ts-chip animate-bounce-slow">천만클럽 달성 축하드립니다</div>
             </div>
-            <div class="flex flex-col items-center sm:items-end gap-3 w-full sm:w-auto">
-                <div class="text-center sm:text-right w-full">
-                    <span class="text-xs sm:text-sm text-gray-500"><span id="displayMonth" class="font-bold text-gray-700"></span>월 예상 수수료 (익월 + OR)</span>
-                    <p class="text-3xl font-extrabold text-indigo-600 leading-none mt-1 cursor-pointer hover:text-indigo-700 transition inline-flex items-center gap-1 justify-center sm:justify-end w-full tabular-nums" id="grandTotalCommission" onclick="openGmOperationModal()">0원</p>
-                    <span id="gmOperationHint" class="hidden text-xs text-indigo-700 font-semibold mt-1 cursor-pointer" onclick="openGmOperationModal()">지사운영 내역 보기 ▸</span>
-                    <div id="clubMsg" class="hidden mt-2 text-sm sm:text-base font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full animate-bounce-slow shadow-sm inline-block">
-                        🎉 천만클럽 달성 축하드립니다! 🎉
-                    </div>
-                </div>
-                <button type="button" id="btnOpenEntry" onclick="openEntryPanel()" class="xl:hidden no-print w-full h-12 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2">
-                    <span class="text-lg leading-none" aria-hidden="true">＋</span> 청약 입력 <span class="text-xs font-semibold text-indigo-100">· 오른쪽으로 밀어도 열려요</span>
+            <div class="flex flex-col gap-2 sm:items-end sm:min-w-[15rem]">
+                <button type="button" id="btnOpenEntry" onclick="openEntryPanel()" class="xl:hidden no-print ts-primary w-full">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    청약 입력
                 </button>
-                <div id="actionBtnRow" class="no-print grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-end gap-2 w-full sm:w-auto sm:max-w-[34rem]" aria-label="도구">
-                    <button onclick="navigateTo('product-strategy')" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">상품전략</button>
-                    <button onclick="openFinancialModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">재무설계</button>
-                    <button onclick="openMaintModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">유지수수료</button>
-                    <button type="button" onclick="openTrendModal('personal')" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">내 추이</button>
-                    <button type="button" onclick="openOperationModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">가동 현황</button>
-                    <button type="button" id="btnBranchTrend" onclick="openTrendModal('branch')" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap hidden">지사 추이</button>
-                    <button type="button" id="btnCompPerf" onclick="openCompanyPerfModal()" class="h-10 inline-flex items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap hidden">회사별</button>
-                    <button onclick="printPage()" class="hidden sm:inline-flex h-10 items-center justify-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">출력</button>
-                </div>
                 <div class="no-print flex items-center justify-center sm:justify-end gap-2 w-full min-h-[2rem]">
                     <p id="autoSaveStatus" class="text-xs text-gray-600 tabular-nums" aria-live="polite">추가·삭제하면 자동으로 저장됩니다</p>
-                    <button id="btnSaveData" onclick="saveData(false)" class="h-8 px-2 text-xs font-bold text-indigo-700 underline underline-offset-2 hover:text-indigo-900 rounded">지금 저장</button>
+                    <button id="btnSaveData" onclick="saveData(false)" class="h-8 px-2 text-xs font-bold ts-link rounded">지금 저장</button>
+                </div>
+            </div>
+        </section>
+        <nav id="actionBtnRow" class="no-print ts-card mb-6 p-2 grid grid-cols-4 gap-1" aria-label="도구">
+            <button type="button" onclick="navigateTo('product-strategy')" class="ts-tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg><span>상품전략</span></button>
+            <button type="button" onclick="openFinancialModal()" class="ts-tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg><span>재무설계</span></button>
+            <button type="button" onclick="openMaintModal()" class="ts-tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><span>유지수수료</span></button>
+            <button type="button" id="btnMoreTools" onclick="openMoreTools()" aria-haspopup="dialog" aria-expanded="false" class="ts-tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg><span>더보기</span></button>
+        </nav>
+        <div id="moreTools" class="hidden no-print fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label="더보기">
+            <div class="absolute inset-0 bg-slate-900/40" onclick="closeMoreTools()"></div>
+            <div class="ts-sheet">
+                <div class="flex items-center justify-between px-5 pt-5 pb-2">
+                    <h2 class="text-lg font-bold text-gray-900">더보기</h2>
+                    <button type="button" onclick="closeMoreTools()" aria-label="닫기" class="w-10 h-10 -mr-2 rounded-xl text-gray-500 hover:bg-gray-100 text-2xl leading-none">&times;</button>
+                </div>
+                <div id="moreToolsList" class="px-3 pb-6 flex flex-col">
+                    <button type="button" onclick="openTrendModal('personal')" class="ts-row">내 추이<span aria-hidden="true">›</span></button>
+                    <button type="button" onclick="openOperationModal()" class="ts-row">가동 추이<span aria-hidden="true">›</span></button>
+                    <button type="button" id="btnBranchTrend" onclick="openTrendModal('branch')" class="ts-row hidden">지사 추이<span aria-hidden="true">›</span></button>
+                    <button type="button" id="btnCompPerf" onclick="openCompanyPerfModal()" class="ts-row hidden">회사별 실적<span aria-hidden="true">›</span></button>
+                    <button type="button" onclick="printPage()" class="ts-row">출력<span aria-hidden="true">›</span></button>
                 </div>
             </div>
         </div>
@@ -6042,9 +6133,9 @@ function renderList() {
     // 직책 없는 사용자: 쉐어 뱃지(비율) 전체 숨김
     shareBadge = '';
 } else if(item.isSharedView) { 
-    shareBadge = `<div class="mt-1"><span class="inline-block text-xs bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded border border-teal-200 whitespace-normal break-keep font-medium shadow-sm">🤝 쉐어 ${shareText}</span></div>`; 
+    shareBadge = `<div class="mt-1"><span class="inline-block text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md whitespace-normal break-keep font-semibold">쉐어 ${shareText}</span></div>`; 
 } else { 
-    shareBadge = `<div class="mt-1"><span class="inline-block text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200 whitespace-normal break-keep font-medium shadow-sm">🤝 쉐어 ${shareText}</span></div>`; 
+    shareBadge = `<div class="mt-1"><span class="inline-block text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md whitespace-normal break-keep font-semibold">쉐어 ${shareText}</span></div>`; 
 }
         }
 
@@ -7157,7 +7248,7 @@ window.saveFcGoalsUI = function() {
         const ctx = document.getElementById('commissionChart').getContext('2d');
         commChart = new Chart(ctx, {
             type: 'bar',
-            data: { labels: ['익월 수수료', '익월 시책', '13회 시책', '2차년 유지', '3차년 유지'], datasets: [{ label: '금액', data: [0, 0, 0, 0, 0], backgroundColor: [ 'rgba(79, 70, 229, 0.95)', 'rgba(79, 70, 229, 0.7)', 'rgba(79, 70, 229, 0.5)', 'rgba(79, 70, 229, 0.32)', 'rgba(79, 70, 229, 0.2)' ], borderRadius: 4, barPercentage: 0.6 }] },
+            data: { labels: ['익월 수수료', '익월 시책', '13회 시책', '2차년 유지', '3차년 유지'], datasets: [{ label: '금액', data: [0, 0, 0, 0, 0], backgroundColor: [ 'rgba(30, 110, 232, 0.95)', 'rgba(30, 110, 232, 0.7)', 'rgba(30, 110, 232, 0.5)', 'rgba(30, 110, 232, 0.32)', 'rgba(30, 110, 232, 0.2)' ], borderRadius: 4, barPercentage: 0.6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { color: '#4b5563', anchor: 'end', align: 'top', formatter: function(value) { return value === 0 ? '' : Math.round(value/10000).toLocaleString() + '만'; }, font: { weight: 'bold', size: 11 } } }, scales: { y: { beginAtZero: true, grid: { borderDash: [2, 4] }, suggestedMax: 1000000, ticks: { callback: (v) => tickMan(v) } }, x: { grid: { display: false } } }, layout: { padding: { top: 20 } } }
         });
         chartEmptyOverlay();
@@ -7826,8 +7917,8 @@ function updateTrendChart() {
             {
                 label: _scopeLabel + ' 환산P',
                 data: monthlyP,
-                backgroundColor: 'rgba(79, 70, 229, 0.15)',
-                borderColor: 'rgba(79, 70, 229, 1)',
+                backgroundColor: 'rgba(30, 110, 232, 0.15)',
+                borderColor: 'rgba(30, 110, 232, 1)',
                 borderWidth: 2,
                 tension: 0.3,
                 fill: true,
@@ -7848,7 +7939,7 @@ function updateTrendChart() {
             {
                 label: '평균 환산P (' + (_avgP/10000).toFixed(0) + '만)',
                 data: _avgPLine,
-                borderColor: 'rgba(79, 70, 229, 0.55)',
+                borderColor: 'rgba(30, 110, 232, 0.55)',
                 borderWidth: 2,
                 borderDash: [6, 4],
                 pointRadius: 0,
@@ -10439,7 +10530,7 @@ function renderPerformancePage() {
                 if (shares.length > 0) {
                     let shareDetails = [`<strong class="font-black">M${userName}</strong> ${Math.round(writerRate * 100)}%`];
                     shares.forEach(s => shareDetails.push(`${s.user} ${Math.round((parseFloat(s.rate)||0)*100)}%`));
-                    badge = `<div class="mt-0.5"><span class="inline-block text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200 whitespace-nowrap font-medium shadow-sm">🤝 쉐어: ${shareDetails.join(', ')}</span></div>`;
+                    badge = `<div class="mt-0.5"><span class="inline-block text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-md whitespace-nowrap font-semibold">쉐어: ${shareDetails.join(', ')}</span></div>`;
                 }
 
                 const wUser = userDB.find(u => u.name === userName);
@@ -15165,6 +15256,16 @@ function briefCollect() {
       if (/주민등록번호/.test(m)) { pwEl.value=''; pwEl.focus(); }
     }).apiLogin(name, pw, (typeof currentMonth==='string'?currentMonth:''));
   };
+})();
+</script>
+<script>
+/* [홈] 더보기 시트 */
+(function(){
+  var last=null;
+  window.openMoreTools=function(){ var m=document.getElementById('moreTools'); if(!m) return; last=document.activeElement; m.classList.remove('hidden'); var b=document.getElementById('btnMoreTools'); if(b) b.setAttribute('aria-expanded','true'); var f=m.querySelector('#moreToolsList button:not(.hidden)'); if(f) f.focus(); };
+  window.closeMoreTools=function(){ var m=document.getElementById('moreTools'); if(!m||m.classList.contains('hidden')) return; m.classList.add('hidden'); var b=document.getElementById('btnMoreTools'); if(b) b.setAttribute('aria-expanded','false'); if(last&&last.focus) try{last.focus();}catch(e){} };
+  document.addEventListener('click',function(e){ var l=document.getElementById('moreToolsList'); if(l && l.contains(e.target) && e.target.closest('button')) setTimeout(closeMoreTools,0); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeMoreTools(); });
 })();
 </script>
 </body>

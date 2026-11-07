@@ -750,8 +750,17 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .ts-listmore:hover{background:#F9FAFB}
   .ts-listmore-n{color:#1B64DA}
   /* 화면 밖에 대기 중인 청약 입력 패널 때문에 페이지가 옆으로 넓어지지 않게 (바로가기 실행 시 확대돼 보이던 문제) */
-  html,body{overflow-x:clip;max-width:100%}
-  #mainContent{overflow-x:clip}
+  body{overflow-x:hidden}
+  @media screen{ #mainContent{overflow-x:clip} }
+  /* 출력: 청약 리스트가 용지 폭에 맞게 (잘리지 않게) */
+  @media print{
+    html,body,#mainContent,#homeListWrap{overflow:visible!important;max-width:none!important}
+    #homeListTable{min-width:0!important;width:100%!important;table-layout:auto!important}
+    #homeListTable th,#homeListTable td{white-space:normal!important;word-break:keep-all;padding:3px 4px!important}
+    #homeListTable th:last-child,#homeListTable td:last-child{display:none!important}
+    html,body{background:#fff!important}
+    #mainContent .bg-white.rounded-xl,#mainContent .ts-card{border:1px solid #E5E8EB!important}
+  }
   /* 시작(로딩) 화면 로고 크게 */
   .hl-text{font-size:1.05rem!important;color:#1B64DA!important}
   .hl-bar{background:#3182F6!important}
@@ -15414,6 +15423,26 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
   // 목표 저장 후 홈에도 반영
   var _sv=window.saveFcGoalsUI;
   if(typeof _sv==='function'){ window.saveFcGoalsUI=function(){ try{ window.invalidateMyGoal(typeof currentMonth!=='undefined'?currentMonth:''); }catch(e){} return _sv.apply(this,arguments); }; }
+})();
+</script>
+<script>
+/* 출력(인쇄) 창을 닫고 돌아왔을 때 화면이 멈춰 스크롤이 안 되던 문제 방지 */
+(function(){
+  function recover(){
+    try{
+      var b=document.body, sb=document.getElementById('sidebar'), ov=document.getElementById('sidebarOverlay');
+      var anyModal=[].some.call(document.querySelectorAll('.fixed.inset-0'),function(m){ return m.id!=='sidebarOverlay' && m.id!=='entryBackdrop' && m.id!=='loadingOverlay' && m.id!=='loginOverlay' && !m.classList.contains('hidden') && getComputedStyle(m).display!=='none'; });
+      if(!anyModal) b.style.overflow='';
+      if(sb && sb.classList.contains('-translate-x-full') && ov) ov.classList.add('hidden');
+      if(!document.body.classList.contains('entry-open')){ var pn=document.getElementById('entryPanel'); if(pn) pn.removeAttribute('aria-modal'); }
+      var y=window.scrollY; window.scrollTo(0,y+1); window.scrollTo(0,y);
+      document.documentElement.style.overflowY='auto'; requestAnimationFrame(function(){ document.documentElement.style.overflowY=''; });
+    }catch(e){}
+  }
+  window.addEventListener('afterprint',function(){ recover(); setTimeout(recover,300); setTimeout(recover,1000); });
+  var _pp=window.printPage;
+  window.printPage=function(){ try{ if(typeof toggleMoreTools==='function') toggleMoreTools(false); }catch(e){} var r=_pp?_pp.apply(this,arguments):window.print(); setTimeout(recover,500); return r; };
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) setTimeout(recover,200); });
 })();
 </script>
 </body>

@@ -706,6 +706,21 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .swal2-styled.swal2-confirm{background:#1E6EE8!important;border-radius:14px!important;box-shadow:none!important}
   .swal2-styled.swal2-cancel{background:#F2F4F6!important;color:#333D4B!important;border-radius:14px!important}
   .swal2-popup{border-radius:24px!important}
+  /* 아이콘 · 모달 정리 */
+  .ts-ico{flex:none;color:#8B95A1}
+  .nav-item .ts-ico{color:#8B95A1}
+  .nav-item[aria-current="page"] .ts-ico,.nav-item:hover .ts-ico{color:#1E6EE8}
+  .nav-item{border-left-color:transparent!important}
+  button .ts-ico-sm{color:currentColor;opacity:.75}
+  #sidebarHead{background:#fff!important}
+  #rookieCard,#conventionCard{background:#fff!important;border:0!important}
+  #perfCalendarModal .bg-gradient-to-r{background:#1E6EE8!important}
+  button.bg-teal-600,button.bg-teal-500,button.bg-green-500,button[class*="from-green-500"],button.bg-rose-600[onclick^="saveRecruit"]{background:#1E6EE8!important;background-image:none!important;color:#fff!important;box-shadow:none!important}
+  button.bg-teal-600:hover,button.bg-green-500:hover,button[class*="from-green-500"]:hover,button.bg-rose-600[onclick^="saveRecruit"]:hover{background:#1B64DA!important}
+  .peer:checked + .chk-btn.peer-checked\:bg-teal-600{background:#1E6EE8!important;border-color:#1E6EE8!important;color:#fff!important}
+  button.bg-gray-800[onclick^="capture"]{background:#fff!important;color:#333D4B!important;border:1px solid #E5E8EB!important;box-shadow:none!important}
+  #recruitModalTitle{color:#191F28!important}
+  .fixed .bg-white.rounded-2xl,.fixed .bg-white.rounded-xl{border-radius:24px!important}
   :focus-visible{outline-color:#1E6EE8!important}
   /* 제목 앞 색 막대: 파랑 하나로 */
   h2 > span.w-1\.5, h3 > span.w-1\.5{background:#3182F6!important}
@@ -818,36 +833,36 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     <!-- 사이드바 -->
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden transition-opacity"></div>
     <aside id="sidebar" inert aria-label="메뉴" class="fixed top-0 left-0 w-64 h-full bg-white shadow-2xl z-[10000] transform -translate-x-full transition-transform duration-300 flex flex-col">
-        <div id="sidebarHead" class="p-5 border-b border-gray-100 flex justify-between items-center bg-indigo-600">
-            <h2 class="text-white font-bold text-lg lg:hidden">메뉴</h2>
+        <div id="sidebarHead" class="p-5 border-b border-gray-100 flex justify-between items-center bg-white">
+            <h2 class="text-gray-900 font-bold text-lg lg:hidden">메뉴</h2>
             <button onclick="navigateTo('home')" class="hidden lg:block text-xl font-bold text-gray-800 rounded px-1 hover:bg-gray-50">Heritage <span class="text-indigo-600">Pro</span></button>
-            <button onclick="toggleSidebar()" aria-label="메뉴 닫기" class="lg:hidden text-white text-2xl w-11 h-11 -mr-2 flex items-center justify-center rounded-lg hover:bg-white/10">&times;</button>
+            <button onclick="toggleSidebar()" aria-label="메뉴 닫기" class="lg:hidden text-gray-500 text-2xl w-11 h-11 -mr-2 flex items-center justify-center rounded-lg hover:bg-gray-100">&times;</button>
         </div>
         <div id="sidebarScroll" class="flex-1 overflow-y-auto py-4 lg:py-2">
             <ul class="space-y-0.5">
                 <li role="presentation" class="px-5 pt-1 pb-1 text-xs font-bold text-gray-500 tracking-wide">내 영업</li>
-                <li><button onclick="navigateTo('home')" data-nav="home" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🏠</span><span>홈</span></button></li>
-                <li><button onclick="navigateTo('performance')" data-nav="performance" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📊</span><span>업적 현황</span></button></li>
-                <li id="menuGoalAchievement"><button onclick="navigateTo('goal-achievement')" data-nav="goal-achievement" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🎯</span><span>목표달성률</span></button></li>
-                <li><button onclick="navigateTo('active-status')" data-nav="active-status" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🏃‍♂️</span><span>가동 현황</span></button></li>
-                <li id="menuLapse"><button onclick="navigateTo('lapse')" data-nav="lapse" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🚨</span><span>연체·실효 관리</span></button></li>
+                <li><button onclick="navigateTo('home')" data-nav="home" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/></svg><span>홈</span></button></li>
+                <li><button onclick="navigateTo('performance')" data-nav="performance" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>업적 현황</span></button></li>
+                <li id="menuGoalAchievement"><button onclick="navigateTo('goal-achievement')" data-nav="goal-achievement" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span>목표달성률</span></button></li>
+                <li><button onclick="navigateTo('active-status')" data-nav="active-status" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span>가동 현황</span></button></li>
+                <li id="menuLapse"><button onclick="navigateTo('lapse')" data-nav="lapse" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span>연체·실효 관리</span></button></li>
                 <li role="presentation" class="px-5 pt-4 pb-1 text-xs font-bold text-gray-500 tracking-wide">지사</li>
-                <li><button onclick="navigateTo('orgchart')" data-nav="orgchart" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🏢</span><span>조직도</span></button></li>
-                <li><button onclick="navigateTo('contact')" data-nav="contact" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">👥</span><span>헤리티지 연락망</span></button></li>
-                <li id="menuBranchIncome" class="hidden"><button onclick="navigateTo('branch-income')" data-nav="branch-income" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">💰</span><span>지사 소득</span></button></li>
-                <li><button onclick="navigateTo('recruiting')" data-nav="recruiting" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">🤝</span><span>리크루팅 현황</span></button></li>
-                <li id="menuFcRegister" class="hidden"><button onclick="navigateTo('fc-register')" data-nav="fc-register" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📝</span><span>FC 신규등록</span></button></li>
-                <li id="menuMasterHq" class="hidden"><button onclick="navigateTo('master-hq')" data-nav="master-hq" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📣</span><span>마스터본부</span></button></li>
+                <li><button onclick="navigateTo('orgchart')" data-nav="orgchart" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-2h12v2"/></svg><span>조직도</span></button></li>
+                <li><button onclick="navigateTo('contact')" data-nav="contact" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg><span>헤리티지 연락망</span></button></li>
+                <li id="menuBranchIncome" class="hidden"><button onclick="navigateTo('branch-income')" data-nav="branch-income" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/><path d="M7 6V4h10v2"/></svg><span>지사 소득</span></button></li>
+                <li><button onclick="navigateTo('recruiting')" data-nav="recruiting" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M19 8v6M16 11h6"/></svg><span>리크루팅 현황</span></button></li>
+                <li id="menuFcRegister" class="hidden"><button onclick="navigateTo('fc-register')" data-nav="fc-register" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 11h6M9 15h4"/></svg><span>FC 신규등록</span></button></li>
+                <li id="menuMasterHq" class="hidden"><button onclick="navigateTo('master-hq')" data-nav="master-hq" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg><span>마스터본부</span></button></li>
                 <li role="presentation" class="px-5 pt-4 pb-1 text-xs font-bold text-gray-500 tracking-wide">정보·자료</li>
-                <li><button onclick="navigateTo('board')" data-nav="board" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📋</span><span>정보 게시판</span></button></li>
-                <li><button onclick="navigateTo('life')" data-nav="life" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📂</span><span>시책 확인</span></button></li>
-                <li><button onclick="navigateTo('schedule')" data-nav="schedule" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📅</span><span>교육일정</span></button></li>
-                <li><button onclick="navigateTo('gallery')" data-nav="gallery" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><span aria-hidden="true" class="w-6 text-center">📸</span><span>사진첩</span></button></li>
+                <li><button onclick="navigateTo('board')" data-nav="board" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg><span>정보 게시판</span></button></li>
+                <li><button onclick="navigateTo('life')" data-nav="life" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>시책 확인</span></button></li>
+                <li><button onclick="navigateTo('schedule')" data-nav="schedule" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>교육일정</span></button></li>
+                <li><button onclick="navigateTo('gallery')" data-nav="gallery" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 17-5-5-9 8"/></svg><span>사진첩</span></button></li>
             </ul>
         </div>
         <div class="p-4 border-t border-gray-200 bg-gray-50">
             <button onclick="logout()" class="w-full py-3 bg-white border border-gray-300 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-gray-600 font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
-                🚪 로그아웃
+                <svg class="ts-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg> 로그아웃
             </button>
         </div>
     </aside>
@@ -963,7 +978,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                             <div class="flex-1">
                                 <label class="block text-xs sm:text-sm font-medium text-gray-600 mb-1">청약일 (달력선택)</label>
                                 <div class="input-unified-container">
-                                    <span class="text-gray-500 mr-2 text-lg">📅</span>
+                                    <span class="text-gray-500 mr-2 text-lg"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
                                     <input type="text" id="dateInput" aria-label="청약일" class="input-unified-field text-sm" placeholder="날짜 선택" readonly style="font-size: 14px;">
                                 </div>
                             </div>
@@ -1150,7 +1165,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center justify-between">
                         <div class="flex items-center"><span class="w-1.5 h-5 sm:h-6 bg-indigo-500 rounded-full mr-2"></span>실시간 업적 현황</div>
                         <div class="flex items-center gap-2">
-                            <button onclick="captureRanking()" aria-label="업적 현황 캡처" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full border border-gray-300 flex items-center justify-center transition no-print shadow-sm">📷</button>
+                            <button onclick="captureRanking()" aria-label="업적 현황 캡처" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full inline-flex items-center justify-center border border-gray-300 flex items-center justify-center transition no-print shadow-sm"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
                             <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-xs" id="rankMonthBadge">--</span>
                         </div>
                     </h2>
@@ -1198,7 +1213,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
         </label>
         <span class="text-xs bg-white border border-gray-200 px-1.5 py-1 rounded-md text-gray-500 font-bold shadow-sm whitespace-nowrap" id="rowCount">0건</span>
         <button onclick="syncMainData()" class="h-8 inline-flex items-center gap-1 text-xs text-gray-700 font-bold bg-white px-2 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition no-print whitespace-nowrap">
-            <span id="syncMainIcon" class="inline-block">🔄</span>
+            <span id="syncMainIcon" class="inline-block"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg></span>
             <span>갱신</span>
         </button>
     </div>
@@ -1260,7 +1275,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
               </h2>
               <div class="flex items-center gap-2">
                   <button onclick="window.print()" class="no-print bg-gray-800 hover:bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm transition flex items-center gap-1 active:scale-95">
-                      🖨️ 인쇄
+                      <svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg> 인쇄
                   </button>
               </div>
           </div>
@@ -1317,7 +1332,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
               <h2 class="text-xl font-bold flex items-center text-gray-800">
                   <span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2"></span>정보 게시판
               </h2>
-              <button onclick="refreshBoard()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">🔄 갱신</button>
+              <button onclick="refreshBoard()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신</button>
           </div>
           <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[300px]">
               <div class="overflow-x-auto custom-scrollbar">
@@ -1357,7 +1372,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
               <div class="sm:w-64 shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
                   <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                       <span class="text-sm font-bold text-gray-700">자료 목록</span>
-                      <button onclick="loadProductStrategyFiles()" class="h-9 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">🔄 갱신</button>
+                      <button onclick="loadProductStrategyFiles()" class="h-9 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신</button>
                   </div>
                   <div id="psFileList" class="flex-1 overflow-y-auto custom-scrollbar p-2">
                       <div class="text-center text-gray-500 py-8 text-sm">불러오는 중...</div>
@@ -1384,7 +1399,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   <div class="relative flex items-center shrink-0">
                       <button onclick="openPerfCalendar()" id="perfDatePickerBtn"
                           class="h-10 inline-flex items-center gap-1.5 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">
-                          <span>📅</span>
+                          <span><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
                           <span id="perfDateBtnLabel">기간 선택</span>
                       </button>
                       <button onclick="clearPerfDateFilter()" id="btnPerfDateClear"
@@ -1436,9 +1451,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                           </div>
                       </div>
                   </div>
-                  <button onclick="window.print()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap no-print shrink-0">🖨️ 출력</button>
+                  <button onclick="window.print()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap no-print shrink-0"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg> 출력</button>
                   <button id="btnSyncPerformance" onclick="syncPerformanceData()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap no-print shrink-0">
-                      <span id="syncPerfIcon" class="inline-block">🔄</span>
+                      <span id="syncPerfIcon" class="inline-block"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg></span>
                       <span id="syncPerfText">갱신</span>
                   </button>
               </div>
@@ -1481,8 +1496,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   <span id="activeStatusMonthTitle">가동 현황</span>
               </h2>
               <div class="flex items-center gap-2">
-                  <button onclick="captureActiveStatus()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-1 no-print">📷 캡처</button>
-                  <button onclick="syncActiveStatusData()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap no-print">🔄 갱신</button>
+                  <button onclick="captureActiveStatus()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-1 no-print"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg> 캡처</button>
+                  <button onclick="syncActiveStatusData()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap no-print"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신</button>
               </div>
           </div>
           <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-6">
@@ -1501,7 +1516,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   <span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2 shrink-0"></span>
                   <span id="globalRankPageTitle" class="truncate">전사 통합 랭킹</span>
               </h2>
-              <div class="flex items-center gap-2 shrink-0 ml-auto"><button onclick="captureGlobalRanking()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">📸 캡처</button><button onclick="renderGlobalRankingPage()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">🔄 갱신</button></div>
+              <div class="flex items-center gap-2 shrink-0 ml-auto"><button onclick="captureGlobalRanking()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg> 캡처</button><button onclick="renderGlobalRankingPage()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신</button></div>
           </div>
           <div class="flex mb-4 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <button onclick="switchGlobalTab('branch')" id="gTab-branch" class="flex-1 py-3 text-sm font-bold transition duration-200 text-center">🏢 지사 순위</button>
@@ -1546,7 +1561,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   <span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2"></span>
                   <span id="sonboBonusMonthTitle">손보 시책진도</span>
               </h2>
-              <button onclick="renderSonboBonusPage()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap no-print">🔄 갱신</button>
+              <button onclick="renderSonboBonusPage()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap no-print"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신</button>
           </div>
           <div id="sonboBonusContentArea" class="space-y-6"></div>
       </div>
@@ -1616,7 +1631,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
               </h2>
               <div class="flex items-center gap-2">
                   <span id="lapseScopeBadge" class="hidden text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100"></span>
-                  <button type="button" onclick="renderLapsePage()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">🔄 갱신</button>
+                  <button type="button" onclick="renderLapsePage()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신</button>
               </div>
           </div>
 
@@ -1683,7 +1698,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   <span id="branchIncomeTitle">지사 소득 현황</span>
               </h2>
               <button id="btnSyncBranchIncome" onclick="syncBranchIncomeData()" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap no-print">
-    <span id="syncBranchIncomeIcon" class="inline-block">🔄</span>
+    <span id="syncBranchIncomeIcon" class="inline-block"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg></span>
     <span id="syncBranchIncomeText">갱신</span>
 </button>
           </div>
@@ -1786,8 +1801,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
         <span class="truncate">리크루팅 현황</span>
     </h2>
     <div class="flex gap-1.5 shrink-0">
-        <button onclick="loadRecruitingData(true)" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">🔄 갱신</button>
-        <button onclick="openRecruitModal()" class="h-10 inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-3 rounded-lg text-sm font-bold shadow-sm transition whitespace-nowrap">➕ 후보자 등록</button>
+        <button onclick="loadRecruitingData(true)" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신</button>
+        <button onclick="openRecruitModal()" class="h-10 inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-3 rounded-lg text-sm font-bold shadow-sm transition whitespace-nowrap">후보자 등록</button>
     </div>
 </div>
           
@@ -1822,7 +1837,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
       <div id="recruitModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[10000] flex items-center justify-center hidden px-4" style="backdrop-filter:blur(3px)">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh]">
         <div class="bg-rose-50 border-b border-rose-100 px-5 py-4 rounded-t-2xl flex justify-between items-center">
-            <h3 id="recruitModalTitle" class="text-rose-900 font-bold text-lg">➕ 후보자 등록</h3>
+            <h3 id="recruitModalTitle" class="text-rose-900 font-bold text-lg">후보자 등록</h3>
             <button onclick="closeRecruitModal()" class="text-gray-500 hover:text-gray-600 font-bold text-2xl">&times;</button>
         </div>
         <div class="p-5 flex-1 overflow-y-auto space-y-4 custom-scrollbar">
@@ -2017,7 +2032,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
             사진첩
         </h2>
         <button onclick="loadGallery(true)" class="text-sm text-gray-500 hover:text-pink-600 font-bold bg-white px-3 py-1 rounded border border-gray-200 shadow-sm transition flex items-center gap-1">
-            🔄 갱신
+            <svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신
         </button>
     </div>
     
@@ -11566,7 +11581,7 @@ function syncActiveStatusData() {
 
     if (typeof google === 'undefined' || typeof google.script === 'undefined') {
         renderActiveStatusPage();
-        if (btn) { btn.disabled = false; btn.innerText = '🔄 갱신'; }
+        if (btn) { btn.disabled = false; btn.innerHTML = '<svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신'; }
         return;
     }
 
@@ -11574,13 +11589,13 @@ function syncActiveStatusData() {
         allUsersData = data;
         renderActiveStatusPage();
 
-        if (btn) { btn.disabled = false; btn.innerText = '🔄 갱신'; }
+        if (btn) { btn.disabled = false; btn.innerHTML = '<svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신'; }
 
         const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
         Toast.fire({ icon: 'success', title: '가동 현황이 갱신되었습니다.' });
 
     }).withFailureHandler(function(err) {
-        if (btn) { btn.disabled = false; btn.innerText = '🔄 갱신'; }
+        if (btn) { btn.disabled = false; btn.innerHTML = '<svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신'; }
         showAlert('error', '갱신 실패', '서버 통신 중 오류가 발생했습니다: ' + err);
     }).getAllData();
 }
@@ -11754,11 +11769,11 @@ function renderSonboBonusPage() {
             <div id="${captureId}" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6 relative w-full inline-block">
                 <div class="bg-teal-50 px-3 py-2 sm:px-4 sm:py-3 border-b border-teal-100 flex justify-between items-center">
                     <h3 class="font-bold text-teal-800 text-[13px] sm:text-base flex items-center">
-                        📅 ${weekLabel} 
+                        <svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg> ${weekLabel} 
                         <span class="text-xs font-bold text-red-500 ml-2 bg-white px-1.5 py-0.5 rounded shadow-sm">~ ${endDate} 까지</span>
                     </h3>
                     <button onclick="captureSonboWeek('${captureId}', '${weekLabel}')" class="no-print text-xs sm:text-xs bg-white text-teal-700 border border-teal-200 hover:bg-teal-100 px-2 py-1 rounded shadow-sm font-bold flex items-center gap-1 transition active:scale-95 shrink-0">
-                        📷 캡처
+                        <svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg> 캡처
                     </button>
                 </div>
                 <div class="overflow-x-auto custom-scrollbar bg-white">
@@ -13351,7 +13366,7 @@ function openRecruitModal(id = null) {
 
         updateStageSpecificFields(data.stage);
     } else {
-        title.innerHTML = '➕ 후보자 등록';
+        title.innerHTML = '후보자 등록';
         document.getElementById('recruitId').value = '';
         document.getElementById('recruitName').value = '';
         document.getElementById('recruitPhone').value = '';

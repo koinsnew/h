@@ -739,6 +739,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   html,body{overflow-x:clip;max-width:100%}
   #mainContent{overflow-x:clip}
   /* 시작(로딩) 화면 로고 크게 */
+  #loadingOverlay{z-index:10002!important}
   .hl-logo-wrap{width:200px!important;height:200px!important;border-radius:44px!important}
   .hl-logo{width:172px!important;height:172px!important}
   .hl-ring,.hl-ring2{top:100px!important;width:230px!important;height:230px!important;margin-left:-115px!important;margin-top:-115px!important}
@@ -757,9 +758,6 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     <!-- 로그인 오버레이 -->
     <div id="loginOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-90 z-[10000] flex flex-col items-center justify-center px-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
-            <div class="mb-4 flex justify-center">
-                <img id="loginLogo" alt="헤리티지 로고" class="w-28 h-28 object-contain rounded-3xl" style="display:none">
-            </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-2 tracking-tight">Heritage <span class="text-indigo-600">Pro</span></h2>
             <p class="text-gray-500 text-sm mb-6">영업지원 시스템 접속</p>
             <div class="space-y-4">
@@ -15340,8 +15338,8 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 })();
 </script>
 <script>
-/* 로그인 화면에 시작 화면과 같은 헤리티지 로고 표시 */
-(function(){ try{ var src=document.querySelector('.hl-logo'); var el=document.getElementById('loginLogo'); if(src&&el&&src.getAttribute('src')){ el.src=src.getAttribute('src'); el.style.display=''; } }catch(e){} })();
+/* 시작(대기) 화면: 앱을 열면 로그인 창보다 위에 헤리티지 로고 화면을 띄우고, 준비가 끝나면 로그인 창이 보임 (최대 15초) */
+(function(){ try{ var el=document.getElementById('loadingOverlay'); if(el){ el.classList.remove('hidden'); setTimeout(function(){ var lo=document.getElementById('loginOverlay'); if(lo && getComputedStyle(lo).display!=='none') el.classList.add('hidden'); }, 15000); } }catch(e){} })();
 </script>
 </body>
 </html>

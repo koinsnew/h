@@ -829,6 +829,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .sn-btn{height:36px;padding:0 12px;border-radius:10px;background:#1E6EE8;color:#fff;font-size:13px;font-weight:700;white-space:nowrap}
   .sn-btn:hover{background:#1B64DA}.sn-btn-gray{background:#F2F4F6;color:#4E5968}.sn-btn-gray:hover{background:#E5E8EB}
   #shareNotificationArea.sn-more{-webkit-mask-image:linear-gradient(#000 calc(100% - 14px),transparent);mask-image:linear-gradient(#000 calc(100% - 14px),transparent)}
+  #overridingCard > h2 > div:nth-child(2){margin-left:auto}
+  #hqManagerCard .text-teal-600{color:#1B64DA!important}
   :focus-visible{outline-color:#1E6EE8!important}
   /* 제목 앞 색 막대: 파랑 하나로 */
   h2 span.w-1\.5, h3 span.w-1\.5{background:#3182F6!important}
@@ -1173,6 +1175,43 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     </h2>
                     <div id="myGoalBody"></div>
                 </div>
+                <!-- [본부장 수수료] 지사 총 환산P 기준: 미달성 0원 / 달성 10% / 3천만 달성 15% -->
+                <div id="hqManagerCard" class="bg-white rounded-xl shadow-sm border border-teal-100 p-4 sm:p-6 hidden">
+                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <span class="w-1.5 h-5 sm:h-6 bg-teal-500 rounded-full mr-2 shrink-0"></span>본부장 수수료
+                    </h2>
+                    <div class="mb-2 flex justify-between items-end">
+                        <span class="text-xs text-gray-600 font-bold">지사 총 환산P</span>
+                        <span class="text-sm font-extrabold text-gray-800" id="hqBranchTotalP">0</span>
+                    </div>
+                    <div class="mb-1 flex justify-between items-end">
+                        <span class="text-xs text-gray-600 font-bold" id="hqPayLabel">본부장 수수료</span>
+                        <span class="text-lg font-extrabold text-teal-600" id="hqPayAmount">0원</span>
+                    </div>
+                    <div id="hqPayNote" class="text-right text-xs text-gray-500 mt-1"></div>
+                    <div id="hqExpectBox" class="hidden mt-2 pt-2 border-t border-gray-100 text-xs text-gray-500 space-y-0.5"></div>
+                </div>
+                <div id="overridingCard" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hidden">
+                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center justify-between gap-1">
+                        <div class="flex items-center min-w-0 shrink" id="orCardTitle">
+                            <span class="w-1.5 h-5 sm:h-6 bg-purple-500 rounded-full mr-1 sm:mr-2 shrink-0"></span>
+                            <span id="orTitleText" class="text-base sm:text-lg truncate flex items-center">지점장 수수료</span>
+                        </div>
+                        <div class="flex flex-col items-end shrink-0 pl-1">
+                            <span class="text-sm font-semibold text-gray-700 tabular-nums" id="totalORAmount">0원</span>
+                            <span id="orBranchTotalDisplay" class="text-xs text-gray-500 font-normal mt-0.5 hidden">
+                                지점 합: <span id="orBranchTotalValue" class="font-bold text-gray-700">0</span>
+                            </span>
+                        </div>
+                    </h2>
+                    <div id="orList" class="space-y-2 text-xs sm:text-sm max-h-40 overflow-y-auto custom-scrollbar"></div>
+                    <div id="orConditionMsg" class="text-xs text-red-500 mt-2 hidden text-center">※ 본인 환산P 30만원 미달로 미지급</div>
+                    <div id="orCardNote" class="text-xs text-gray-500 mt-2 hidden text-center leading-relaxed"></div>
+                    <div id="cmQualifiedBox" class="hidden mt-3 pt-3 border-t border-gray-100">
+                        <div id="cmQualifiedTitle" class="text-xs text-gray-500 font-semibold mb-1.5">신입FC(1~12차월) 환산P</div>
+                        <div id="cmQualifiedList" class="space-y-1 text-xs"></div>
+                    </div>
+                </div>
                 <div id="longTermCard" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center whitespace-nowrap"><span class="w-1.5 h-5 sm:h-6 bg-blue-500 rounded-full mr-2 shrink-0"></span><span class="shrink-0">장기근속 성장지원금</span></h2>
                     <div class="grid grid-cols-2 gap-4">
@@ -1198,44 +1237,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 </div>
 
 
-                <!-- [본부장 수수료] 지사 총 환산P 기준: 미달성 0원 / 달성 10% / 3천만 달성 15% -->
-                <div id="hqManagerCard" class="bg-white rounded-xl shadow-sm border border-teal-100 p-4 sm:p-6 hidden">
-                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center">
-                        <span class="w-1.5 h-5 sm:h-6 bg-teal-500 rounded-full mr-2 shrink-0"></span>본부장 수수료
-                    </h2>
-                    <div class="mb-2 flex justify-between items-end">
-                        <span class="text-xs text-gray-600 font-bold">지사 총 환산P</span>
-                        <span class="text-sm font-extrabold text-gray-800" id="hqBranchTotalP">0</span>
-                    </div>
-                    <div class="mb-1 flex justify-between items-end">
-                        <span class="text-xs text-gray-600 font-bold" id="hqPayLabel">본부장 수수료</span>
-                        <span class="text-lg font-extrabold text-teal-600" id="hqPayAmount">0원</span>
-                    </div>
-                    <div id="hqPayNote" class="text-right text-xs text-gray-500 mt-1"></div>
-                    <div id="hqExpectBox" class="hidden mt-2 pt-2 border-t border-gray-100 text-xs text-gray-500 space-y-0.5"></div>
-                </div>
 
-                <div id="overridingCard" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hidden">
-                    <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center justify-between gap-1">
-                        <div class="flex items-center min-w-0 shrink" id="orCardTitle">
-                            <span class="w-1.5 h-5 sm:h-6 bg-purple-500 rounded-full mr-1 sm:mr-2 shrink-0"></span>
-                            <span id="orTitleText" class="text-base sm:text-lg truncate flex items-center">지점장 수수료</span>
-                        </div>
-                        <div class="flex flex-col items-end shrink-0 pl-1">
-                            <span class="text-sm font-semibold text-gray-700 tabular-nums" id="totalORAmount">0원</span>
-                            <span id="orBranchTotalDisplay" class="text-xs text-gray-500 font-normal mt-0.5 hidden">
-                                지점 합: <span id="orBranchTotalValue" class="font-bold text-gray-700">0</span>
-                            </span>
-                        </div>
-                    </h2>
-                    <div id="orList" class="space-y-2 text-xs sm:text-sm max-h-40 overflow-y-auto custom-scrollbar"></div>
-                    <div id="orConditionMsg" class="text-xs text-red-500 mt-2 hidden text-center">※ 본인 환산P 30만원 미달로 미지급</div>
-                    <div id="orCardNote" class="text-xs text-gray-500 mt-2 hidden text-center leading-relaxed"></div>
-                    <div id="cmQualifiedBox" class="hidden mt-3 pt-3 border-t border-gray-100">
-                        <div id="cmQualifiedTitle" class="text-xs text-gray-500 font-semibold mb-1.5">신입FC(1~12차월) 환산P</div>
-                        <div id="cmQualifiedList" class="space-y-1 text-xs"></div>
-                    </div>
-                </div>
 
                 <!-- [리크루팅 보너스] 지점장·CM 전용 별도 카드 (기존 OR 카드와 함께 표시) -->
                 <div id="recruitBonusCard" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hidden">
@@ -15310,7 +15312,7 @@ function briefCollect() {
 /* [홈] 1280px 미만에서 아래 카드 접기 + 한 줄 요약, 홈 로딩 문구 시간 제한 */
 (function(){
   var chev='<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>';
-  var cfg=[['longTermCard','cumulativeBonusDisplay',''],['recruitBonusCard',null,''],['overridingCard',null,''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
+  var cfg=[['longTermCard','cumulativeBonusDisplay',''],['recruitBonusCard',null,''],['overridingCard',null,''],['hqManagerCard','hqPayAmount',''],['conventionCard','newStarCurrent','달성 '],['rankingSection','branchPercent','지사 목표 ']];
   function setup(){
     cfg.forEach(function(c){
       var card=document.getElementById(c[0]); if(!card||card.classList.contains('fold-card')) return;

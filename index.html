@@ -848,6 +848,45 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .rp-play{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(25,31,40,.55);display:flex;align-items:center;justify-content:center;padding-left:3px}
   .rp-done{position:absolute;left:10px;top:10px;padding:3px 9px;border-radius:8px;background:#1E6EE8;color:#fff;font-size:12px;font-weight:700}
   .rp-title{font-size:15px;font-weight:600;color:#191F28;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
+  /* [A안] 유지수수료·추이 시트 */
+  .ts-modal{background:rgba(0,0,0,.4);align-items:flex-end;justify-content:center}
+  .ts-modal.hidden{display:none!important}
+  .ts-sheet{background:#fff;width:100%;max-height:92vh;border-radius:24px 24px 0 0;display:flex;flex-direction:column;overflow:hidden;animation:tsSheetUp .32s cubic-bezier(.16,1,.3,1)}
+  @keyframes tsSheetUp{from{transform:translateY(32px);opacity:.5}to{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){.ts-sheet{animation:none}}
+  @media (min-width:640px){.ts-modal{align-items:center;padding:16px}.ts-sheet{border-radius:24px;max-height:88vh}}
+  .ts-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:18px 12px 6px 20px;flex:none}
+  .ts-sheet-head h3{font-size:19px;font-weight:700;color:#191F28;letter-spacing:-.02em;margin:0}
+  .ts-x{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#6B7684}
+  .ts-x:hover{background:#F2F4F6}
+  .ts-sheet-body{padding:6px 20px calc(20px + env(safe-area-inset-bottom));overflow-y:auto}
+  .ts-seg{display:flex;gap:4px;background:#F2F4F6;border-radius:12px;padding:4px}
+  .ts-seg > button{flex:1;height:36px;border-radius:9px;font-size:14px;font-weight:600;color:#6B7684;white-space:nowrap;padding:0 8px;transition:background .15s,color .15s}
+  .ts-seg > button[aria-pressed="true"]{background:#fff;color:#191F28;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .ts-seg-scope{display:grid}
+  .ts-seg-scope > button{font-size:13px;padding:0 4px}
+  .ts-seg-inline{flex:1;min-width:0}
+  .ts-tonal{flex:none;display:inline-flex;align-items:center;gap:5px;height:44px;padding:0 14px;border-radius:12px;background:#E8F3FF;color:#1B64DA;font-size:14px;font-weight:700}
+  .ts-tonal:hover{background:#DCEBFF}
+  .ts-tonal.hidden{display:none}
+  .ts-seg.hidden{display:none!important}
+  .ts-sum{margin:16px 0 14px}
+  .ts-sum-label{font-size:14px;color:#4E5968;margin:0}
+  .ts-sum-amt{font-size:30px;font-weight:800;color:#191F28;letter-spacing:-.03em;margin:2px 0 14px;font-variant-numeric:tabular-nums}
+  .ts-sum-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .ts-sum-grid > div,.ts-stat{background:#F2F4F6;border-radius:14px;padding:12px}
+  .ts-sum-grid span,.ts-stat span{display:block;font-size:12.5px;color:#6B7684}
+  .ts-sum-grid b,.ts-stat b{display:block;font-size:16px;font-weight:700;color:#191F28;font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ts-table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+  .ts-table th{font-size:12.5px;font-weight:600;color:#6B7684;text-align:right;padding:8px 4px;border-bottom:1px solid #E5E8EB;white-space:nowrap}
+  .ts-table th:first-child,.ts-table td:first-child{text-align:left;padding-left:2px}
+  .ts-table td{text-align:right;padding:11px 4px;color:#333D4B;border-bottom:1px solid #F2F4F6;white-space:nowrap}
+  .ts-table td:first-child{color:#6B7684;font-weight:600}
+  .ts-table tr.is-empty td{color:#B0B8C1}
+  .ts-table tfoot td{font-weight:800;color:#191F28;border-bottom:0;padding-top:13px}
+  .ts-table tfoot td:first-child{color:#191F28}
+  .ts-note{font-size:12.5px;color:#8B95A1;margin:14px 2px 0;line-height:1.5;word-break:keep-all}
+  .ts-chart{margin-top:14px}
   :focus-visible{outline-color:#1E6EE8!important}
   /* 제목 앞 색 막대: 파랑 하나로 */
   h2 span.w-1\.5, h3 span.w-1\.5{background:#3182F6!important}
@@ -912,43 +951,35 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
         </div>
     </div>
 
-    <!-- 유지수수료 모달 -->
-    <div id="maintModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9998] flex items-center justify-center hidden px-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg flex flex-col max-h-[85vh]">
-            <div class="p-6 pb-2 flex-none border-b border-gray-100">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold flex items-center"><span class="w-1.5 h-5 bg-blue-500 rounded-full mr-2"></span>유지 수수료 확인</h3>
-                    <button onclick="closeMaintModal()" class="text-gray-500 hover:text-gray-600 font-bold text-xl">&times;</button>
-                </div>
-                <div class="flex justify-center">
-                    <select id="maintYearSelect" onchange="updateMaintTable()" class="border border-gray-300 rounded px-3 py-2 font-bold text-gray-700 outline-none focus:border-indigo-500"></select>
-                </div>
+    <!-- 유지수수료 모달 (A안 시트) -->
+    <div id="maintModal" class="ts-modal fixed inset-0 z-[9998] flex hidden" role="dialog" aria-modal="true" aria-labelledby="maintTitle">
+        <div class="ts-sheet max-w-lg">
+            <div class="ts-sheet-head">
+                <h3 id="maintTitle">유지수수료</h3>
+                <button type="button" onclick="closeMaintModal()" class="ts-x" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
             </div>
-            <div class="overflow-auto p-4 flex-1 custom-scrollbar bg-gray-50">
-                <table class="w-full text-xs sm:text-sm text-center bg-white rounded-lg shadow-sm">
-                    <thead class="bg-gray-100 text-gray-600 sticky top-0 shadow-sm z-10">
-                        <tr>
-                            <th class="py-2 px-2 rounded-l-lg bg-gray-100 whitespace-nowrap w-14 sm:w-16">월</th>
-                            <th class="py-2 px-2 text-purple-600 bg-gray-100 whitespace-nowrap">13회 시책</th>
-                            <th class="py-2 px-2 bg-gray-100 whitespace-nowrap">2차년(Y2)</th>
-                            <th class="py-2 px-2 bg-gray-100 whitespace-nowrap">3차년(Y3)</th>
-                            <th class="py-2 px-2 rounded-r-lg bg-gray-100 whitespace-nowrap">4차년(Y4)</th>
-                        </tr>
+            <div class="ts-sheet-body custom-scrollbar">
+                <div id="maintYearChips" class="ts-seg" role="group" aria-label="연도 선택"></div>
+                <select id="maintYearSelect" onchange="updateMaintTable()" class="hidden" aria-hidden="true" tabindex="-1"></select>
+                <div class="ts-sum">
+                    <p class="ts-sum-label"><span id="maintYearLabel">2026</span>년에 받을 유지수수료</p>
+                    <p class="ts-sum-amt"><span id="maintTotal">0</span>원</p>
+                    <div class="ts-sum-grid">
+                        <div><span>13회 시책</span><b id="maintSumBonus13Top">0</b></div>
+                        <div><span>2차년</span><b id="maintSumY2Top">0</b></div>
+                        <div><span>3차년</span><b id="maintSumY3Top">0</b></div>
+                    </div>
+                </div>
+                <table class="ts-table">
+                    <thead>
+                        <tr><th>계약월</th><th>13회 시책</th><th>2차년</th><th>3차년</th></tr>
                     </thead>
-                    <tbody id="maintTableBody" class="divide-y divide-gray-100"></tbody>
-                    <tfoot class="bg-blue-50 font-bold text-blue-800 sticky bottom-0 shadow-inner z-10">
-                        <tr>
-                            <td class="py-2 bg-blue-50 whitespace-nowrap">합계</td>
-                            <td id="maintSumBonus13" class="text-purple-600 bg-blue-50">0</td>
-                            <td id="maintSumY2" class="bg-blue-50">0</td>
-                            <td id="maintSumY3" class="bg-blue-50">0</td>
-                            <td id="maintSumY4" class="bg-blue-50">0</td>
-                        </tr>
+                    <tbody id="maintTableBody"></tbody>
+                    <tfoot>
+                        <tr><td>합계</td><td id="maintSumBonus13">0</td><td id="maintSumY2">0</td><td id="maintSumY3">0</td></tr>
                     </tfoot>
                 </table>
-            </div>
-            <div class="p-4 border-t border-gray-100 text-center flex-none bg-white rounded-b-xl">
-                <button onclick="closeMaintModal()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 rounded-xl transition shadow-lg">닫기</button>
+                <p class="ts-note">전년도 계약은 13회 시책·2차년, 전전년도 계약은 3차년으로 잡혀요. 쉐어 계약은 내 몫만 계산해요.</p>
             </div>
         </div>
     </div>
@@ -7543,7 +7574,7 @@ function updateBranchCompanyTotal() {
     // 기본값: 현재 연도가 2026년 이상이면 현재 연도, 아니면 2026년
     const currentYear = new Date().getFullYear();
     yearSelect.value = (currentYear >= 2026) ? currentYear : 2026;
-    
+    renderTsSeg('maintYearChips', yearSelect);
     updateMaintTable();
 }
 
@@ -7629,21 +7660,28 @@ function updateBranchCompanyTotal() {
         const textY3 = d.y3 > 0 ? d.y3.toLocaleString() : '-';
 
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-gray-50 border-b border-gray-50";
-        // [수정] '월' 칸에 whitespace-nowrap 추가
-        tr.innerHTML = `
-            <td class="py-2 font-bold text-gray-700 whitespace-nowrap">${d.month}월</td>
-            <td class="py-2 text-purple-600 font-bold">${text13}</td>
-            <td class="py-2 text-gray-600">${textY2}</td>
-            <td class="py-2 text-gray-500">${textY3}</td>
-            <td class="py-2 text-gray-400">-</td>
-        `;
+        if (!(d.bonus13 || d.y2 || d.y3)) tr.className = 'is-empty';
+        tr.innerHTML = `<td>${d.month}월</td><td>${text13}</td><td>${textY2}</td><td>${textY3}</td>`;
         tbody.appendChild(tr);
     });
 
     document.getElementById('maintSumBonus13').innerText = sum13.toLocaleString();
     document.getElementById('maintSumY2').innerText = sumY2.toLocaleString();
     document.getElementById('maintSumY3').innerText = sumY3.toLocaleString();
+    var _t = function(id, v){ var e=document.getElementById(id); if(e) e.textContent = v; };
+    _t('maintSumBonus13Top', sum13.toLocaleString()); _t('maintSumY2Top', sumY2.toLocaleString()); _t('maintSumY3Top', sumY3.toLocaleString());
+    _t('maintTotal', (sum13 + sumY2 + sumY3).toLocaleString()); _t('maintYearLabel', selectedYear);
+}
+// [A안] select를 세그먼트 버튼으로 (값은 숨긴 select에 그대로)
+function renderTsSeg(boxId, sel) {
+    var box = document.getElementById(boxId); if (!box || !sel) return;
+    box.innerHTML = '';
+    [].slice.call(sel.options).forEach(function(op){
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = op.text.replace('년','');
+        b.setAttribute('aria-pressed', String(sel.value === op.value));
+        b.onclick = function(){ sel.value = op.value; [].forEach.call(box.children, function(c){ c.setAttribute('aria-pressed','false'); }); b.setAttribute('aria-pressed','true'); sel.dispatchEvent(new Event('change')); };
+        box.appendChild(b);
+    });
 }
 
     // ==========================================
@@ -7964,17 +8002,15 @@ function switchTrendScope(scope) {
         honors:  document.getElementById('trendTabHonors'),
         leaders: document.getElementById('trendTabLeaders')
     };
-    var on = 'bg-indigo-600 text-white shadow';
-    var off = 'bg-gray-100 text-gray-600 hover:bg-gray-200';
     for (var key in tabs) {
-        if (tabs[key]) tabs[key].className = 'flex-1 text-xs sm:text-xs font-bold py-2 rounded-lg transition ' + (scope===key?on:off);
+        if (tabs[key]) { tabs[key].className = ''; tabs[key].setAttribute('aria-pressed', String(scope===key)); }
     }
     // 제목
     var titleMap = {
-        branch:  '📊 전체 환산P · 건수 추이',
-        seminar: '📊 마스터본부 환산P · 건수 추이',
-        honors:  '📊 아너스지점 환산P · 건수 추이',
-        leaders: '📊 리더스지점 환산P · 건수 추이'
+        branch:  '전체 환산P · 건수 추이',
+        seminar: '마스터본부 환산P · 건수 추이',
+        honors:  '아너스지점 환산P · 건수 추이',
+        leaders: '리더스지점 환산P · 건수 추이'
     };
     var title = document.getElementById('trendModalTitle');
     if (title) title.innerHTML = titleMap[scope] || titleMap.branch;
@@ -8007,7 +8043,7 @@ function openTrendModal(type) {
     } else {
         if (_scopeTabs) _scopeTabs.classList.add('hidden');
         if (_rptBtn) _rptBtn.classList.remove('hidden');   // 개인 보고서도 지원
-        title.innerHTML = '📈 나의 환산P & 수수료 추이';
+        title.innerHTML = '나의 환산P · 수수료 추이';
     }
 
     select.innerHTML = '';
@@ -8022,7 +8058,9 @@ function openTrendModal(type) {
          const opt26 = document.createElement('option'); opt26.value = 2026; opt26.text = '2026년'; select.appendChild(opt26);
          select.value = 2026;
     } else select.value = thisYear;
-
+    // 오래된 연도가 왼쪽에 오도록 칩 순서 정렬
+    [].slice.call(select.options).sort(function(a,b){ return a.value - b.value; }).forEach(function(o){ select.appendChild(o); });
+    renderTsSeg('trendYearChips', select);
     updateTrendChart();
 }
 
@@ -8126,10 +8164,11 @@ function updateTrendChart() {
             {
                 label: _scopeLabel + ' 환산P',
                 data: monthlyP,
-                backgroundColor: 'rgba(30, 110, 232, 0.15)',
-                borderColor: 'rgba(30, 110, 232, 1)',
-                borderWidth: 2,
-                tension: 0.3,
+                backgroundColor: 'rgba(30, 110, 232, 0.10)',
+                borderColor: '#1E6EE8',
+                borderWidth: 2.5,
+                pointRadius: 3, pointBackgroundColor: '#fff', pointBorderWidth: 2,
+                tension: 0.35,
                 fill: true,
                 yAxisID: 'y',
                 type: 'line',
@@ -8138,9 +8177,9 @@ function updateTrendChart() {
             {
                 label: '건수',
                 data: monthlyCount,
-                backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                borderColor: 'rgba(16, 185, 129, 1)',
-                borderWidth: 1,
+                backgroundColor: '#E5E8EB',
+                borderColor: '#E5E8EB',
+                borderWidth: 0, borderRadius: 4, maxBarThickness: 18,
                 yAxisID: 'y1',
                 type: 'bar',
                 order: 4
@@ -8148,9 +8187,9 @@ function updateTrendChart() {
             {
                 label: '평균 환산P (' + (_avgP/10000).toFixed(0) + '만)',
                 data: _avgPLine,
-                borderColor: 'rgba(30, 110, 232, 0.55)',
-                borderWidth: 2,
-                borderDash: [6, 4],
+                borderColor: 'rgba(30, 110, 232, 0.45)',
+                borderWidth: 1.5,
+                borderDash: [5, 4],
                 pointRadius: 0,
                 fill: false,
                 yAxisID: 'y',
@@ -8160,9 +8199,9 @@ function updateTrendChart() {
             {
                 label: '평균 건수 (' + _avgCount.toFixed(1) + '건)',
                 data: _avgCntLine,
-                borderColor: 'rgba(16, 185, 129, 0.6)',
-                borderWidth: 2,
-                borderDash: [6, 4],
+                borderColor: 'rgba(107, 118, 132, 0.5)',
+                borderWidth: 1.5,
+                borderDash: [5, 4],
                 pointRadius: 0,
                 fill: false,
                 yAxisID: 'y1',
@@ -8182,9 +8221,9 @@ function updateTrendChart() {
             { 
                 label: '환산P', 
                 data: monthlyP, 
-                backgroundColor: 'rgba(59, 130, 246, 0.5)', 
-                borderColor: 'rgba(59, 130, 246, 1)', 
-                borderWidth: 1, 
+                backgroundColor: '#1E6EE8', 
+                borderColor: '#1E6EE8', 
+                borderWidth: 0, borderRadius: 4, maxBarThickness: 18, 
                 yAxisID: 'y', 
                 type: 'bar',
                 order: 4
@@ -8192,10 +8231,10 @@ function updateTrendChart() {
             { 
                 label: '예상 수수료(익월+시책)', 
                 data: monthlyComm, 
-                backgroundColor: 'rgba(245, 158, 11, 1)', 
-                borderColor: 'rgba(245, 158, 11, 1)', 
-                borderWidth: 2, 
-                tension: 0.3, 
+                backgroundColor: '#191F28', 
+                borderColor: '#191F28', 
+                borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#fff', pointBorderWidth: 2,
+                tension: 0.35, 
                 yAxisID: 'y1', 
                 type: 'line',
                 order: 3
@@ -8203,11 +8242,11 @@ function updateTrendChart() {
             {
                 label: '건수',
                 data: monthlyCount,
-                borderColor: 'rgba(16, 185, 129, 1)',
-                backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                borderWidth: 2,
+                borderColor: '#8B95A1',
+                backgroundColor: '#8B95A1',
+                borderWidth: 1.5, borderDash: [2, 3],
                 tension: 0.3,
-                pointRadius: 3,
+                pointRadius: 2.5,
                 fill: false,
                 yAxisID: 'y2',
                 type: 'line',
@@ -8216,9 +8255,9 @@ function updateTrendChart() {
             {
                 label: '평균 환산P (' + (_pAvgP/10000).toFixed(0) + '만)',
                 data: Array(12).fill(_pAvgP),
-                borderColor: 'rgba(59, 130, 246, 0.55)',
-                borderWidth: 2,
-                borderDash: [6, 4],
+                borderColor: 'rgba(30, 110, 232, 0.45)',
+                borderWidth: 1.5,
+                borderDash: [5, 4],
                 pointRadius: 0,
                 fill: false,
                 yAxisID: 'y',
@@ -8228,9 +8267,9 @@ function updateTrendChart() {
             {
                 label: '평균 건수 (' + _pAvgC.toFixed(1) + '건)',
                 data: Array(12).fill(_pAvgC),
-                borderColor: 'rgba(16, 185, 129, 0.6)',
-                borderWidth: 2,
-                borderDash: [6, 4],
+                borderColor: 'rgba(107, 118, 132, 0.5)',
+                borderWidth: 1.5,
+                borderDash: [5, 4],
                 pointRadius: 0,
                 fill: false,
                 yAxisID: 'y2',
@@ -8246,18 +8285,15 @@ function updateTrendChart() {
         if (currentTrendType === 'branch' || currentTrendType === 'personal') {
             _sumEl.classList.remove('hidden');
             _sumEl.innerHTML =
-                '<div class="bg-indigo-50 rounded-xl p-3 text-center">'
-              + '<div class="text-xs text-indigo-400">지금까지 평균 환산P</div>'
-              + '<div class="text-base font-bold text-indigo-700">' + (window.__branchAvgP||0).toLocaleString() + '원</div></div>'
-              + '<div class="bg-emerald-50 rounded-xl p-3 text-center">'
-              + '<div class="text-xs text-emerald-500">지금까지 평균 건수</div>'
-              + '<div class="text-base font-bold text-emerald-600">' + (window.__branchAvgCount||0).toFixed(1) + '건</div></div>';
+                '<div class="ts-stat"><span>월평균 환산P</span><b>' + (window.__branchAvgP||0).toLocaleString() + '원</b></div>'
+              + '<div class="ts-stat"><span>월평균 건수</span><b>' + (window.__branchAvgCount||0).toFixed(1) + '건</b></div>';
         } else {
             _sumEl.classList.add('hidden');
             _sumEl.innerHTML = '';
         }
     }
 
+    try { Chart.defaults.font.family = "'Pretendard Variable',Pretendard,-apple-system,sans-serif"; Chart.defaults.color = '#6B7684'; } catch (e) {}
     trendChart = new Chart(ctx, {
         data: { labels: labels, datasets: datasets },
         options: {
@@ -8266,8 +8302,9 @@ function updateTrendChart() {
             // [툴팁] 같은 월의 환산P·수수료·건수를 함께 표시 (평균선은 filter로 제외)
             interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: { position: 'top' },
-                tooltip: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 7, boxHeight: 7, padding: 14, font: { size: 12, weight: '600' }, color: '#4E5968',
+                    filter: function(it){ return !String(it.text || '').startsWith('평균'); } } },
+                tooltip: { backgroundColor: 'rgba(25,31,40,0.92)', padding: 10, cornerRadius: 10, titleFont: { weight: '700' }, boxPadding: 4, usePointStyle: true,
                     // 평균선(라벨이 '평균'으로 시작)은 툴팁에서 제외 — 값은 범례에 상시 표시됨
                     filter: function(item) {
                         return !String(item.dataset.label || '').startsWith('평균');
@@ -8292,13 +8329,15 @@ function updateTrendChart() {
                 datalabels: { display: false }
             },
             scales: {
+                x: { grid: { display: false }, border: { display: false }, ticks: { maxRotation: 0, autoSkipPadding: 4, font: { size: 11 } } },
                 y: {
                     type: 'linear',
                     display: true,
                     position: 'left',
                     beginAtZero: true,
-                    title: { display: true, text: '환산P' },
-                    ticks: { callback: function(value) { return tickMan(value); } }
+                    title: { display: false, text: '환산P' },
+                    grid: { color: '#F2F4F6' }, border: { display: false },
+                    ticks: { maxTicksLimit: 6, font: { size: 11 }, callback: function(value) { return tickMan(value); } }
                 },
                 y1: {
                     type: 'linear',
@@ -8306,18 +8345,20 @@ function updateTrendChart() {
                     position: 'right',
                     beginAtZero: true,
                     grid: { drawOnChartArea: false },
-                    title: { display: true, text: currentTrendType === 'branch' ? '건수' : '수수료' },
-                    ticks: { callback: function(value) {
+                    title: { display: false, text: currentTrendType === 'branch' ? '건수' : '수수료' },
+                    border: { display: false },
+                    ticks: { maxTicksLimit: 6, font: { size: 11 }, precision: 0, callback: function(value) {
                         return currentTrendType === 'branch' ? (value + '건') : tickMan(value);
                     } }
                 },
                 y2: {
                     type: 'linear',
-                    display: currentTrendType === 'personal',
+                    display: false,
                     position: 'right',
                     beginAtZero: true,
+                    grace: '60%',
                     grid: { drawOnChartArea: false },
-                    title: { display: true, text: '건수' },
+                    title: { display: false, text: '건수' },
                     ticks: { callback: function(value) { return value + '건'; } }
                 }
             }
@@ -8431,38 +8472,28 @@ function renderContactResult() {
 }
 
     </script>
-    <div id="trendModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[9998] flex items-center justify-center hidden px-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
-        
-        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-xl">
-            <h3 class="text-lg font-bold flex items-center text-gray-800">
-                <span id="trendModalTitle">📈 연간 지표 분석</span>
-            </h3>
-            <button onclick="closeTrendModal()" class="text-gray-500 hover:text-gray-600 font-bold text-2xl">&times;</button>
+    <div id="trendModal" class="ts-modal fixed inset-0 z-[9998] flex hidden" role="dialog" aria-modal="true" aria-labelledby="trendModalTitle">
+    <div class="ts-sheet max-w-3xl">
+        <div class="ts-sheet-head">
+            <h3 id="trendModalTitle">연간 추이</h3>
+            <button type="button" onclick="closeTrendModal()" class="ts-x" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
         </div>
-
-        <div id="trendScopeTabs" class="hidden px-4 pt-3 bg-white grid grid-cols-4 gap-1.5">
-            <button type="button" id="trendTabBranch" onclick="switchTrendScope('branch')" class="text-xs sm:text-xs font-bold py-2 rounded-lg transition">전체</button>
-            <button type="button" id="trendTabSeminar" onclick="switchTrendScope('seminar')" class="text-xs sm:text-xs font-bold py-2 rounded-lg transition">마스터본부</button>
-            <button type="button" id="trendTabHonors" onclick="switchTrendScope('honors')" class="text-xs sm:text-xs font-bold py-2 rounded-lg transition">아너스지점</button>
-            <button type="button" id="trendTabLeaders" onclick="switchTrendScope('leaders')" class="text-xs sm:text-xs font-bold py-2 rounded-lg transition">리더스지점</button>
-        </div>
-
-        <div class="p-4 bg-white flex justify-between items-center border-b border-gray-100">
-            <button type="button" id="trendReportBtn" onclick="buildTrendReport()" class="hidden bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">📄 보고서</button>
-            <select id="trendYearSelect" onchange="updateTrendChart()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 font-bold">
-                </select>
-        </div>
-
-        <div class="p-4 flex-1 overflow-hidden bg-white relative">
-            <div class="w-full h-[300px] sm:h-[400px]">
-                <canvas id="trendChartCanvas"></canvas>
+        <div class="ts-sheet-body custom-scrollbar">
+            <div id="trendScopeTabs" class="hidden ts-seg ts-seg-scope grid grid-cols-4" role="group" aria-label="범위 선택">
+                <button type="button" id="trendTabBranch" onclick="switchTrendScope('branch')">전체</button>
+                <button type="button" id="trendTabSeminar" onclick="switchTrendScope('seminar')">마스터본부</button>
+                <button type="button" id="trendTabHonors" onclick="switchTrendScope('honors')">아너스지점</button>
+                <button type="button" id="trendTabLeaders" onclick="switchTrendScope('leaders')">리더스지점</button>
+            </div>
+            <div class="flex items-center justify-between gap-2 mt-3">
+                <div id="trendYearChips" class="ts-seg ts-seg-inline" role="group" aria-label="연도 선택"></div>
+                <select id="trendYearSelect" onchange="updateTrendChart()" class="hidden" aria-hidden="true" tabindex="-1"></select>
+                <button type="button" id="trendReportBtn" onclick="buildTrendReport()" class="hidden ts-tonal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>보고서</button>
             </div>
             <div id="trendAvgSummary" class="hidden mt-3 grid grid-cols-2 gap-2"></div>
-        </div>
-
-        <div class="p-4 border-t border-gray-100 text-center bg-gray-50 rounded-b-xl">
-            <button onclick="closeTrendModal()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 rounded-xl transition shadow-lg">닫기</button>
+            <div class="ts-chart">
+                <div class="w-full h-[300px] sm:h-[380px]"><canvas id="trendChartCanvas" role="img" aria-label="월별 추이 그래프"></canvas></div>
+            </div>
         </div>
     </div>
 </div>

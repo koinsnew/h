@@ -959,6 +959,12 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   /* [A안] 쉐어 정산 */
   .sh-tool{height:40px;display:inline-flex;align-items:center;gap:5px;padding:0 12px;border-radius:12px;background:#fff;color:#333D4B;font-size:14px;font-weight:700;white-space:nowrap}
   .sh-tool:hover{background:#E5E8EB}
+  .sh-toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));z-index:10080;display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);padding:12px 18px 12px 14px;border-radius:999px;background:rgba(25,31,40,.94);color:#fff;font-size:15px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);opacity:0;transform:translate(-50%,12px);pointer-events:none;transition:opacity .2s ease,transform .32s cubic-bezier(.16,1,.3,1)}
+  .sh-toast.on{opacity:1;transform:translate(-50%,0)}
+  .sh-toast svg{flex:none}
+  @media (prefers-reduced-motion:reduce){.sh-toast{transition:opacity .15s}}
+  .sh-status{transition:background .2s,color .2s}
+  .sh-sync-status{transition:color .2s}
   .sh-scope{font-size:13.5px;color:#4E5968;margin:-2px 2px 4px}
   .sh-scope b{color:#191F28}
   .sh-sync-status{font-size:12.5px;color:#0E8A4F;margin:0 2px 10px;min-height:18px;font-weight:600}
@@ -9127,6 +9133,16 @@ function navigateTo(pageId) {
 // 데이터: 서버 '쉐어정산' 시트 {writer, month, json} (예전 쉐어 시트에서 자동 이전)
 // ==========================================
 var SH = { data: [], isAdmin: false, view: 'ME', loaded: false, users: [] };
+function shToast(msg, kind) {
+    var t = document.getElementById('shToast');
+    if (!t) { t = document.createElement('div'); t.id = 'shToast'; t.className = 'sh-toast'; t.setAttribute('role', 'status'); t.setAttribute('aria-live', 'polite'); document.body.appendChild(t); }
+    var ico = kind === 'error'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF8A95" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 7v6M12 17h.01"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6FE3A6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+    t.innerHTML = ico + '<span>' + bdEsc(msg) + '</span>';
+    t.classList.remove('on'); void t.offsetWidth; t.classList.add('on');
+    clearTimeout(t._h); t._h = setTimeout(function () { t.classList.remove('on'); }, 1800);
+}
 function shMe() { return String((typeof loggedInUser !== 'undefined' && loggedInUser) || '').trim(); }
 function shWon(n) { return (Number(n) || 0).toLocaleString() + '원'; }
 function shToggleForm(force) {
@@ -9163,11 +9179,9 @@ function shViewed() { var v = String((typeof currentUser !== 'undefined' && curr
 // 보기 범위: 일반 사용자는 본인 건만 / 지사장·총무는 본인을 볼 때 전체, 위에서 다른 사람을 고르면 그 사람 건만
 function shChangeView() {
     var me = shMe(), viewed = shViewed();
-    if (!SH.isAdmin) SH.view = 'ME';
-    else SH.view = (viewed === me) ? 'ALL' : viewed;
+    SH.view = (!SH.isAdmin || viewed === me) ? 'ME' : viewed;
     var info = document.getElementById('shAdminInfo'), scope = document.getElementById('shScope');
-    if (SH.view === 'ALL') { info.classList.add('hidden'); scope.innerHTML = '<b>전체 사용자</b>의 쉐어 내역 · 위에서 사람을 고르면 그 사람 것만 보여요'; }
-    else if (SH.view === 'ME') { info.classList.add('hidden'); scope.innerHTML = '<b>' + bdEsc(me) + '</b> 님이 주거나 받을 쉐어 내역'; }
+    if (SH.view === 'ME') { info.classList.add('hidden'); scope.innerHTML = '<b>' + bdEsc(me) + '</b> 님이 주거나 받을 쉐어 내역' + (SH.isAdmin ? ' · 다른 사람 것은 위에서 이름을 고르면 보여요' : ''); }
     else { info.classList.remove('hidden'); info.innerHTML = '<b>' + bdEsc(SH.view) + '</b> 님 명의로 등록돼요.'; scope.innerHTML = '<b>' + bdEsc(SH.view) + '</b> 님의 쉐어 내역'; }
     document.getElementById('shListTitle').textContent = SH.view === 'ALL' ? '쉐어 현황 · 전체' : '쉐어 현황';
     SH.lastViewed = viewed;
@@ -9203,7 +9217,7 @@ function shSync(showToast) {
         var done = function () { shSyncState('ok', '동기화 완료 · ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ' 최신 내용'); };
         // 너무 빨리 끝나도 '동기화 중'이 잠깐은 보이게
         setTimeout(done, Math.max(0, 500 - (Date.now() - t0)));
-        if (showToast && typeof Swal !== 'undefined') Swal.fire({ toast: true, position: 'top', icon: 'success', title: '동기화 완료', showConfirmButton: false, timer: 1300 });
+        if (showToast) setTimeout(function () { shToast('동기화 완료'); }, Math.max(0, 500 - (Date.now() - t0)));
     }).withFailureHandler(function (err) {
         shSyncState('error', '동기화하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.');
         if (!SH.loaded) box.innerHTML = '<div class="bd-empty"><b>불러오지 못했어요</b>잠시 후 동기화를 눌러 주세요.</div>';
@@ -9273,7 +9287,7 @@ function shSave(writer, month, list, msg) {
     en.json = JSON.stringify(list);
     shRender();
     google.script.run.withSuccessHandler(function (res) {
-        if (res && res.success) { if (msg && typeof Swal !== 'undefined') Swal.fire({ toast: true, position: 'top', icon: 'success', title: msg, showConfirmButton: false, timer: 1200 }); }
+        if (res && res.success) { if (msg) shToast(msg); }
         else { if (typeof Swal !== 'undefined') Swal.fire('저장하지 못했어요', (res && res.error) || '잠시 후 다시 시도해 주세요.', 'error'); shSync(false); }
     }).withFailureHandler(function () { if (typeof Swal !== 'undefined') Swal.fire('저장하지 못했어요', '인터넷 연결을 확인하고 다시 시도해 주세요.', 'error'); shSync(false); })
       .shareSaveEntry(shMe(), writer, month, en.json);

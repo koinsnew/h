@@ -788,7 +788,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   @keyframes tsDrop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
   @media screen{ #homeListTable tbody tr.lm-hide{display:none!important} }
   @media screen{ #homeListTable tbody tr#listMoreRow{display:block!important;padding:0!important;border-bottom:0} #homeListTable tbody tr#listMoreRow td{display:block;padding:0!important} #homeListTable tbody tr#listMoreRow.lm-off{display:none!important} }
-  @media print{ #listMoreRow{display:none!important} #shareSettleLoading{display:none!important} }
+  @media print{ #listMoreRow{display:none!important} }
   .ts-listmore{width:100%;height:52px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:15px;font-weight:600;color:#4E5968;border-top:1px solid #F2F4F6;background:#fff;transition:background .15s}
   .ts-listmore:hover{background:#F9FAFB}
   .ts-listmore-n{color:#1B64DA}
@@ -956,6 +956,64 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .cal-li-time{display:inline-block;margin-right:6px;font-size:12.5px;font-weight:700;color:#1B64DA;background:#E8F3FF;border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums}
   .cal-li-meta{font-size:13px;color:#6B7684;margin:3px 0 0}
   .cal-none{font-size:14px;color:#8B95A1;padding:6px 0 12px;margin:0}
+  /* [A안] 쉐어 정산 */
+  .sh-tool{height:40px;display:inline-flex;align-items:center;gap:5px;padding:0 12px;border-radius:12px;background:#fff;color:#333D4B;font-size:14px;font-weight:700;white-space:nowrap}
+  .sh-tool:hover{background:#E5E8EB}
+  .sh-admin{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:10px;flex-wrap:wrap}
+  .sh-admin label{font-size:13px;font-weight:700;color:#1B64DA}
+  .sh-admin select{flex:1;min-width:160px;height:42px;border:0;border-radius:10px;background:#F2F4F6;padding:0 10px;font-size:15px;font-weight:600}
+  .sh-sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+  .sh-sum > div{background:#fff;border-radius:16px;padding:14px 16px}
+  .sh-sum span{display:block;font-size:13px;color:#6B7684}
+  .sh-sum b{display:block;font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:2px}
+  .sh-alert{background:#FFF4E5;color:#8A4B00;border-radius:14px;padding:12px 14px;font-size:14px;margin-bottom:10px}
+  .sh-alert b{margin-right:6px}
+  .sh-layout{display:grid;gap:10px}
+  @media (min-width:1024px){.sh-layout{grid-template-columns:360px minmax(0,1fr);align-items:start}.sh-form{position:sticky;top:12px}}
+  .sh-form{padding:0;overflow:hidden}
+  .sh-form-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;text-align:left}
+  .sh-form-toggle h3,.sh-list-head h3{font-size:17px;font-weight:700;color:#191F28;margin:0}
+  .sh-chev{color:#8B95A1;transition:transform .2s}
+  .sh-form.is-open .sh-chev{transform:rotate(180deg)}
+  .sh-form-body{display:none;padding:0 18px 18px}
+  .sh-form.is-open .sh-form-body{display:block}
+  .sh-form-body #shFields > div{margin-bottom:12px}
+  .sh-form-body label,.sh-swal-f label{display:block;font-size:13px;font-weight:600;color:#4E5968;margin-bottom:5px;text-align:left}
+  .sh-form-body input,.sh-form-body select,.sh-form-body textarea,.sh-swal-f input,.sh-swal-f textarea{width:100%;min-height:46px;border:1px solid transparent;border-radius:12px;background:#F2F4F6;padding:10px 12px;font-size:16px;color:#191F28;outline:none}
+  .sh-form-body input:focus,.sh-form-body select:focus,.sh-form-body textarea:focus,.sh-swal-f input:focus,.sh-swal-f textarea:focus{background:#fff;border-color:#1E6EE8;box-shadow:0 0 0 3px rgba(30,110,232,.14)}
+  .sh-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .sh-partner{background:#F9FAFB;border-radius:14px;padding:12px}
+  .sh-partner input,.sh-partner select{background:#fff}
+  #page-share-settle select{text-align:left;text-align-last:left}
+  .sh-amt{font-size:13px;color:#6B7684;margin:8px 2px 0;text-align:right}
+  .sh-amt b{color:#191F28;font-variant-numeric:tabular-nums}
+  .sh-info{background:#E8F3FF;color:#1B64DA;border-radius:12px;padding:10px 12px;font-size:13.5px;margin-bottom:12px}
+  .sh-listcard{padding:16px 0 6px}
+  .sh-list-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px}
+  .sh-all{display:flex;align-items:center;gap:6px;font-size:13px;color:#6B7684;font-weight:600}
+  .sh-all input,.sh-chk input{width:18px;height:18px;accent-color:#1E6EE8}
+  .sh-list .bd-empty{margin:0 16px 10px;background:#F9FAFB}
+  .sh-item{display:flex;gap:10px;padding:14px 16px;border-top:1px solid #F2F4F6}
+  .sh-item.is-done{background:#FBFCFD}
+  .sh-chk{flex:none;padding-top:2px}
+  .sh-body{flex:1;min-width:0}
+  .sh-top{display:flex;align-items:center;gap:8px}
+  .sh-b{flex:none;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 7px;background:#F2F4F6;color:#4E5968}
+  .sh-give{background:#FFF0F1;color:#E42939}.sh-recv{background:#E8F3FF;color:#1B64DA}
+  .sh-who{flex:1;min-width:0;font-size:15px;font-weight:700;color:#191F28;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sh-amount{flex:none;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+  .sh-desc{font-size:14.5px;color:#333D4B;margin:6px 0 0;word-break:keep-all;overflow-wrap:anywhere}
+  .sh-meta{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:12.5px;color:#8B95A1;margin:4px 0 0;font-variant-numeric:tabular-nums}
+  .sh-due-soon{color:#E42939;font-weight:700}
+  .sh-memo{font-size:13px;color:#4E5968;background:#F9FAFB;border-radius:10px;padding:8px 10px;margin:8px 0 0;white-space:pre-wrap;word-break:break-all}
+  .sh-actions{display:flex;gap:6px;margin-top:10px}
+  .sh-status{height:36px;padding:0 12px;border-radius:10px;font-size:13.5px;font-weight:700;background:#F2F4F6;color:#4E5968}
+  .sh-status.is-done{background:#E5F7EE;color:#0E8A4F}
+  .sh-status:disabled{opacity:.6}
+  .sh-act{height:36px;padding:0 12px;border-radius:10px;font-size:13.5px;font-weight:600;color:#4E5968}
+  .sh-act:hover{background:#F2F4F6}
+  .sh-del:hover{background:#FFF0F1;color:#E42939}
+  .sh-swal{text-align:left}.sh-swal .sh-swal-f{margin-bottom:10px}
   :focus-visible{outline-color:#1E6EE8!important}
   /* 제목 앞 색 막대: 파랑 하나로 */
   h2 span.w-1\.5, h3 span.w-1\.5{background:#3182F6!important}
@@ -1586,19 +1644,70 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
       </div>
 
       <!-- RP영상 페이지 (유튜브 재생목록 교육영상) -->
-      <!-- 쉐어 정산 페이지 (별도 Apps Script 웹앱을 iframe으로 표시, 처음 열 때만 불러옴) -->
-      <div id="page-share-settle" class="page-section hidden p-4 pb-4">
+      <!-- 쉐어 정산 페이지 (헤리티지 쉐어를 통합: 로그인 없이 헤리티지 프로 사용자로 바로 사용) -->
+      <div id="page-share-settle" class="page-section hidden p-4 pb-24">
           <div class="flex justify-between items-center gap-2 mb-3">
               <h2 class="text-xl font-bold text-gray-800 flex items-center"><span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2"></span>쉐어 정산</h2>
-              <a id="shareSettleNewWin" href="https://script.google.com/macros/s/AKfycbzfKBrtqsDFpTu4bOH2hJTfIM0Nvvc3878ZqX_92OfpQoHo1nRNnCcBvoqaeNWUnVOsUA/exec" target="_blank" rel="noopener" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"/></svg> 새 창으로 열기</a>
-          </div>
-          <div id="shareSettleWrap" class="ts-card relative overflow-x-auto" style="padding:0">
-              <div id="shareSettleLoading" class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[15px] font-semibold text-[#4E5968] bg-white z-10" role="status">
-                  <div class="loader"></div>쉐어 정산 불러오는 중...
+              <div class="flex gap-2">
+                  <button type="button" onclick="shPrintSelected()" class="sh-tool"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/></svg>선택 출력</button>
+                  <button type="button" onclick="shSync(true)" class="sh-tool"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg>동기화</button>
               </div>
           </div>
-          <p class="mt-2 text-xs text-gray-500">로그인·인쇄가 안 되면 오른쪽 위 "새 창으로 열기"를 눌러 주세요.</p>
+          <div id="shAdminBar" class="hidden ts-card sh-admin">
+              <label for="shViewSel">관리자 · 조회/작성 대상</label>
+              <select id="shViewSel" onchange="shChangeView()"></select>
+          </div>
+          <div class="sh-sum">
+              <div><span>내가 줄 돈</span><b id="shTotalGive" class="text-[#E42939]">0원</b></div>
+              <div><span>내가 받을 돈</span><b id="shTotalRecv" class="text-[#1B64DA]">0원</b></div>
+          </div>
+          <div id="shAlert" class="hidden sh-alert" role="status"></div>
+          <div class="sh-layout">
+              <section class="ts-card sh-form" aria-labelledby="shFormTitle">
+                  <button type="button" class="sh-form-toggle" onclick="shToggleForm()" aria-expanded="false" aria-controls="shFormBody">
+                      <h3 id="shFormTitle">쉐어 등록</h3>
+                      <svg class="sh-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div id="shFormBody" class="sh-form-body">
+                      <p id="shAdminInfo" class="hidden sh-info"></p>
+                      <p id="shBlocked" class="hidden sh-info">전체 보기에서는 등록할 수 없어요. 위에서 사용자를 골라 주세요.</p>
+                      <div id="shFields">
+                          <div class="sh-row2">
+                              <div><label for="shDate">계약일</label><input type="date" id="shDate"></div>
+                              <div><label for="shDue">정산 예정일</label><input type="date" id="shDue"></div>
+                          </div>
+                          <div><label for="shDesc">계약 내용</label><input type="text" id="shDesc" placeholder="예: 홍길동 / 종신보험"></div>
+                          <div class="sh-row2">
+                              <div><label for="shFee">수수료 항목</label><input type="text" id="shFee" placeholder="예: 모집, 시책"></div>
+                              <div><label for="shTotal">총 수수료 (원)</label><input type="text" id="shTotal" inputmode="numeric" placeholder="0" oninput="shMoneyInput(this)"></div>
+                          </div>
+                          <div class="sh-partner">
+                              <div class="sh-row2">
+                                  <div><label for="shP1">파트너 1 <span class="text-[#E42939]">필수</span></label><select id="shP1"></select></div>
+                                  <div><label for="shR1">쉐어율 (%)</label><input type="number" id="shR1" min="0" max="100" inputmode="numeric" placeholder="0" oninput="shPreview()"></div>
+                              </div>
+                              <p class="sh-amt">지급액 <b id="shA1">0원</b></p>
+                          </div>
+                          <div class="sh-partner">
+                              <div class="sh-row2">
+                                  <div><label for="shP2">파트너 2 <span class="text-[#8B95A1]">선택</span></label><select id="shP2"></select></div>
+                                  <div><label for="shR2">쉐어율 (%)</label><input type="number" id="shR2" min="0" max="100" inputmode="numeric" placeholder="0" oninput="shPreview()"></div>
+                              </div>
+                              <p class="sh-amt">지급액 <b id="shA2">0원</b></p>
+                          </div>
+                          <div><label for="shMemo">메모 (특이사항)</label><textarea id="shMemo" rows="3" placeholder="내용을 입력하세요"></textarea></div>
+                          <button type="button" class="bd-btn bd-btn-blue w-full" onclick="shAdd()">등록하기</button>
+                      </div>
+                  </div>
+              </section>
+              <section class="ts-card sh-listcard" aria-labelledby="shListTitle">
+                  <div class="sh-list-head">
+                      <h3 id="shListTitle">쉐어 현황</h3>
+                      <label class="sh-all"><input type="checkbox" id="shAllChk" onclick="shCheckAll(this)"> 전체 선택</label>
+                  </div>
+                  <div id="shList" class="sh-list"><div class="bd-empty">불러오는 중…</div></div>
+              </section>
+          </div>
       </div>
 
       <div id="page-rp-videos" class="page-section hidden p-4 pb-20">
@@ -9011,47 +9120,242 @@ function navigateTo(pageId) {
 }
 
 // ==========================================
-// [쉐어 정산] 별도 Apps Script 웹앱을 화면 안에 표시
-// - 처음 열 때만 iframe 생성(지연 로딩), 다른 메뉴로 가도 숨김만 하므로 로그인 상태 유지
-// - 쉐어 앱의 로직·데이터·로그인은 그대로 (자체 로그인 사용)
+// [쉐어 정산] 헤리티지 쉐어 통합 — 로그인 없이 헤리티지 프로 로그인 사용자로 사용
+// 데이터: 서버 '쉐어정산' 시트 {writer, month, json} (예전 쉐어 시트에서 자동 이전)
 // ==========================================
-var SHARE_SETTLE_URL = 'https://script.google.com/macros/s/AKfycbzfKBrtqsDFpTu4bOH2hJTfIM0Nvvc3878ZqX_92OfpQoHo1nRNnCcBvoqaeNWUnVOsUA/exec';
-function fitShareSettle() {
-    var f = document.getElementById('shareSettleFrame');
-    var wrap = document.getElementById('shareSettleWrap');
-    if (!wrap) return;
-    var page = document.getElementById('page-share-settle');
-    if (!page || page.classList.contains('hidden')) return;
-    var top = wrap.getBoundingClientRect().top + window.scrollY;
-    var h = Math.max(420, window.innerHeight - (wrap.getBoundingClientRect().top) - 40);
-    wrap.style.height = h + 'px';
-    if (f) f.style.height = h + 'px';
+var SH = { data: [], isAdmin: false, view: 'ME', loaded: false, users: [] };
+function shMe() { return String((typeof loggedInUser !== 'undefined' && loggedInUser) || '').trim(); }
+function shWon(n) { return (Number(n) || 0).toLocaleString() + '원'; }
+function shToggleForm(force) {
+    var card = document.querySelector('#page-share-settle .sh-form'); if (!card) return;
+    var open = (typeof force === 'boolean') ? force : !card.classList.contains('is-open');
+    card.classList.toggle('is-open', open);
+    card.querySelector('.sh-form-toggle').setAttribute('aria-expanded', String(open));
 }
 function openShareSettle() {
-    var wrap = document.getElementById('shareSettleWrap');
-    if (!wrap) return;
-    window.scrollTo(0, 0);
-    if (!document.getElementById('shareSettleFrame')) {
-        var f = document.createElement('iframe');
-        f.id = 'shareSettleFrame';
-        f.title = '쉐어 정산';
-        f.src = SHARE_SETTLE_URL;
-        f.setAttribute('allow', 'clipboard-write');
-        f.style.cssText = 'display:block;width:100%;min-width:320px;border:0;background:#fff;border-radius:inherit';
-        f.addEventListener('load', function () {
-            var ld = document.getElementById('shareSettleLoading');
-            if (ld) ld.classList.add('hidden');
-        });
-        wrap.appendChild(f);
-        // 15초가 지나도 안 뜨면 안내만 바꿈 (iframe은 그대로 둠)
-        setTimeout(function () {
-            var ld = document.getElementById('shareSettleLoading');
-            if (ld && !ld.classList.contains('hidden')) ld.innerHTML = '<div class="loader"></div><span>조금 오래 걸리고 있어요.</span><span class="text-sm font-normal">계속 안 뜨면 위의 "새 창으로 열기"를 눌러 주세요.</span>';
-        }, 15000);
+    if (!shMe()) return;
+    if (!SH.loaded) {
+        var t = new Date();
+        document.getElementById('shDate').value = shYmd(t);
+        document.getElementById('shDue').value = shYmd(new Date(t.getFullYear(), t.getMonth() + 1, 25));
+        if (window.innerWidth >= 1024) shToggleForm(true);
     }
-    requestAnimationFrame(fitShareSettle);
+    shInitUsers();
+    shSync(false);
 }
-window.addEventListener('resize', fitShareSettle);
+function shYmd(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function shInitUsers() {
+    var me = shMe();
+    var list = (typeof userDB !== 'undefined' && userDB) ? userDB : [];
+    var seen = {}; SH.users = [];
+    list.forEach(function (u) { var n = String(u && u.name || '').trim(); if (n && !seen[n]) { seen[n] = 1; SH.users.push({ name: n, title: u.role || '' }); } });
+    SH.users.sort(function (a, b) { return a.name.localeCompare(b.name, 'ko'); });
+    var opt = function (u) { return '<option value="' + bdEsc(u.name) + '">' + bdEsc(u.name) + (u.title ? ' (' + bdEsc(u.title) + ')' : '') + '</option>'; };
+    var others = SH.users.filter(function (u) { return u.name !== me; });
+    document.getElementById('shP1').innerHTML = '<option value="">선택하세요</option>' + others.map(opt).join('');
+    document.getElementById('shP2').innerHTML = '<option value="">(없음)</option>' + others.map(opt).join('');
+}
+function shInitAdmin() {
+    var bar = document.getElementById('shAdminBar'), sel = document.getElementById('shViewSel');
+    if (!SH.isAdmin) { bar.classList.add('hidden'); SH.view = 'ME'; return; }
+    bar.classList.remove('hidden');
+    if (!sel.options.length) {
+        var me = shMe();
+        sel.innerHTML = '<option value="ME">내 데이터 (본인)</option><option value="ALL">전체 사용자 (조회)</option>'
+            + SH.users.filter(function (u) { return u.name !== me; }).map(function (u) { return '<option value="' + bdEsc(u.name) + '">' + bdEsc(u.name) + ' ' + bdEsc(u.title) + '</option>'; }).join('');
+        sel.value = SH.view;
+    }
+}
+function shChangeView() {
+    SH.view = SH.isAdmin ? document.getElementById('shViewSel').value : 'ME';
+    var fields = document.getElementById('shFields'), blocked = document.getElementById('shBlocked'), info = document.getElementById('shAdminInfo');
+    if (SH.view === 'ALL') {
+        fields.classList.add('opacity-50', 'pointer-events-none'); blocked.classList.remove('hidden'); info.classList.add('hidden');
+        document.getElementById('shListTitle').textContent = '쉐어 현황 · 전체 사용자';
+    } else {
+        fields.classList.remove('opacity-50', 'pointer-events-none'); blocked.classList.add('hidden');
+        if (SH.view !== 'ME') { info.classList.remove('hidden'); info.innerHTML = '<b>' + bdEsc(SH.view) + '</b> 님 명의로 등록돼요.'; document.getElementById('shListTitle').textContent = '쉐어 현황 · ' + SH.view; }
+        else { info.classList.add('hidden'); document.getElementById('shListTitle').textContent = '쉐어 현황'; }
+    }
+    shRender();
+}
+function shSync(showToast) {
+    var me = shMe(); if (!me) return;
+    var box = document.getElementById('shList');
+    if (!SH.loaded) box.innerHTML = '<div class="bd-empty">불러오는 중…</div>';
+    google.script.run.withSuccessHandler(function (res) {
+        if (!res || !res.success) { box.innerHTML = '<div class="bd-empty"><b>불러오지 못했어요</b>' + bdEsc(res && res.error || '') + '</div>'; return; }
+        SH.data = res.data || []; SH.isAdmin = !!res.isAdmin; SH.loaded = true;
+        shInitAdmin(); shChangeView();
+        if (showToast && typeof Swal !== 'undefined') Swal.fire({ toast: true, position: 'top', icon: 'success', title: '최신 내용으로 바꿨어요', showConfirmButton: false, timer: 1200 });
+    }).withFailureHandler(function (err) {
+        box.innerHTML = '<div class="bd-empty"><b>불러오지 못했어요</b>잠시 후 동기화를 눌러 주세요.</div>';
+    }).shareGetData(me);
+}
+function shItems() {
+    var me = shMe(), out = [];
+    var target = SH.view === 'ME' ? me : (SH.view === 'ALL' ? null : SH.view);
+    SH.data.forEach(function (en) {
+        var list = []; try { list = JSON.parse(en.json); } catch (e) { }
+        list.forEach(function (it) {
+            var base = Object.assign({}, it, { writer: en.writer, sourceMonth: en.month });
+            if (target === null) {
+                base.type = en.writer === me ? 'GIVE' : (it.partner === me ? 'RECEIVE' : 'OBSERVE'); out.push(base);
+            } else if (en.writer === target) { base.type = 'GIVE'; out.push(base); }
+            else if (it.partner === target) { base.type = 'RECEIVE'; out.push(base); }
+        });
+    });
+    out.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
+    return out;
+}
+function shRender() {
+    var items = shItems(), me = shMe(), box = document.getElementById('shList');
+    var give = 0, recv = 0, alerts = 0, now = new Date();
+    document.getElementById('shAllChk').checked = false;
+    if (!items.length) { box.innerHTML = '<div class="bd-empty"><b>쉐어 내역이 없어요</b>위의 쉐어 등록에서 추가해 주세요.</div>'; }
+    var html = '';
+    items.forEach(function (it) {
+        if (it.type === 'GIVE') give += Number(it.shareAmount) || 0; else if (it.type === 'RECEIVE') recv += Number(it.shareAmount) || 0;
+        var soon = false;
+        if (it.status !== '지급완료' && it.dueDate) { var dd = Math.ceil((new Date(it.dueDate) - now) / 86400000); if (dd <= 30) { soon = true; if (it.type !== 'OBSERVE') alerts++; } }
+        var canEdit = it.writer === me || it.partner === me || SH.isAdmin;
+        var who = it.type === 'GIVE' ? it.partner : (it.type === 'RECEIVE' ? it.writer : it.writer + ' → ' + it.partner);
+        var badge = it.type === 'GIVE' ? '<span class="sh-b sh-give">줄 돈</span>' : (it.type === 'RECEIVE' ? '<span class="sh-b sh-recv">받을 돈</span>' : '<span class="sh-b">조회</span>');
+        var key = it.id + '|' + bdEsc(it.writer) + '|' + bdEsc(it.sourceMonth);
+        var done = it.status === '지급완료';
+        html += '<div class="sh-item' + (done ? ' is-done' : '') + '" data-key="' + key + '">'
+            + '<label class="sh-chk"><input type="checkbox" class="sh-row-chk" aria-label="출력할 건 선택"></label>'
+            + '<div class="sh-body">'
+            + '<div class="sh-top">' + badge + '<span class="sh-who">' + bdEsc(who) + '</span><span class="sh-amount ' + (it.type === 'GIVE' ? 'text-[#E42939]' : it.type === 'RECEIVE' ? 'text-[#1B64DA]' : '') + '">' + shWon(it.shareAmount) + '</span></div>'
+            + '<p class="sh-desc">' + bdEsc(it.desc) + '</p>'
+            + '<p class="sh-meta"><span>계약 ' + bdEsc(it.date) + '</span><span>' + bdEsc(it.feeItem || '-') + '</span><span>총 ' + shWon(it.total) + ' × ' + (Number(it.rate) || 0) + '%</span><span class="' + (soon && !done ? 'sh-due-soon' : '') + '">정산 ' + bdEsc(String(it.dueDate || '').slice(2)) + '</span></p>'
+            + (it.memo ? '<p class="sh-memo">' + bdEsc(it.memo) + '</p>' : '')
+            + '<div class="sh-actions">'
+            + '<button type="button" class="sh-status' + (done ? ' is-done' : '') + '" ' + (canEdit ? '' : 'disabled') + ' onclick="shToggleStatus(this)">' + (done ? '지급완료' : '미지급') + '</button>'
+            + (canEdit ? '<button type="button" class="sh-act" onclick="shEdit(this)">수정</button><button type="button" class="sh-act sh-del" onclick="shDelete(this)">삭제</button>' : '')
+            + '</div></div></div>';
+    });
+    if (items.length) box.innerHTML = html;
+    document.getElementById('shTotalGive').textContent = shWon(give);
+    document.getElementById('shTotalRecv').textContent = shWon(recv);
+    var al = document.getElementById('shAlert');
+    if (alerts) { al.classList.remove('hidden'); al.innerHTML = '<b>정산 확인 필요</b> 한 달 안에 정산할 건이나 지난 건이 ' + alerts + '건 있어요.'; } else al.classList.add('hidden');
+}
+function shFind(btn) {
+    var k = btn.closest('.sh-item').getAttribute('data-key').split('|');
+    var id = k[0], w = k[1], m = k[2];
+    var en = SH.data.find(function (d) { return d.writer === w && d.month === m; });
+    if (!en) return null;
+    var list = JSON.parse(en.json);
+    var it = list.find(function (x) { return String(x.id) === String(id); });
+    return { en: en, list: list, it: it };
+}
+function shSave(writer, month, list, msg) {
+    var en = SH.data.find(function (d) { return d.writer === writer && d.month === month; });
+    if (!en) { en = { writer: writer, month: month, json: '[]' }; SH.data.push(en); }
+    en.json = JSON.stringify(list);
+    shRender();
+    google.script.run.withSuccessHandler(function (res) {
+        if (res && res.success) { if (msg && typeof Swal !== 'undefined') Swal.fire({ toast: true, position: 'top', icon: 'success', title: msg, showConfirmButton: false, timer: 1200 }); }
+        else { if (typeof Swal !== 'undefined') Swal.fire('저장하지 못했어요', (res && res.error) || '잠시 후 다시 시도해 주세요.', 'error'); shSync(false); }
+    }).withFailureHandler(function () { if (typeof Swal !== 'undefined') Swal.fire('저장하지 못했어요', '인터넷 연결을 확인하고 다시 시도해 주세요.', 'error'); shSync(false); })
+      .shareSaveEntry(shMe(), writer, month, en.json);
+}
+function shMoneyInput(el) { var v = el.value.replace(/[^\d]/g, ''); el.value = v ? Number(v).toLocaleString() : ''; shPreview(); }
+function shPreview() {
+    var total = Number(document.getElementById('shTotal').value.replace(/,/g, '')) || 0;
+    [1, 2].forEach(function (i) { var r = Math.min(100, Math.max(0, Number(document.getElementById('shR' + i).value) || 0)); document.getElementById('shA' + i).textContent = shWon(Math.round(total * r / 100)); });
+}
+function shAdd() {
+    if (SH.view === 'ALL') return;
+    var me = shMe();
+    var writer = (SH.isAdmin && SH.view !== 'ME') ? SH.view : me;
+    var g = function (id) { return document.getElementById(id).value; };
+    var date = g('shDate'), due = g('shDue'), desc = g('shDesc').trim(), fee = g('shFee').trim(), memo = g('shMemo');
+    var total = Number(g('shTotal').replace(/,/g, '')) || 0;
+    var p1 = g('shP1'), p2 = g('shP2'), r1 = Number(g('shR1')) || 0, r2 = Number(g('shR2')) || 0;
+    if (!date || !due || !desc || total <= 0) { Swal.fire('빠진 칸이 있어요', '계약일·정산 예정일·계약 내용·총 수수료를 입력해 주세요.', 'warning'); return; }
+    if (!p1) { Swal.fire('파트너 1을 골라 주세요', '', 'warning'); return; }
+    if (p1 === writer || (p2 && p2 === writer)) { Swal.fire('본인은 파트너가 될 수 없어요', '', 'warning'); return; }
+    if (r1 > 100 || r2 > 100) { Swal.fire('쉐어율은 100% 이하로 입력해 주세요', '', 'warning'); return; }
+    var month = date.substring(0, 7);
+    var en = SH.data.find(function (d) { return d.writer === writer && d.month === month; });
+    var list = en ? JSON.parse(en.json) : [];
+    var base = { date: date, desc: desc, feeItem: fee || '-', total: total, dueDate: due, memo: memo, status: '미지급' };
+    var t = Date.now();
+    list.push(Object.assign({ id: t, partner: p1, rate: r1, shareAmount: Math.round(total * r1 / 100) }, base));
+    if (p2) list.push(Object.assign({ id: t + 1, partner: p2, rate: r2, shareAmount: Math.round(total * r2 / 100) }, base));
+    ['shDesc', 'shFee', 'shTotal', 'shMemo', 'shR1', 'shR2'].forEach(function (id) { document.getElementById(id).value = ''; });
+    document.getElementById('shP2').value = ''; shPreview();
+    shSave(writer, month, list, '등록했어요');
+}
+function shToggleStatus(btn) {
+    var f = shFind(btn); if (!f || !f.it) return;
+    f.it.status = f.it.status === '지급완료' ? '미지급' : '지급완료';
+    shSave(f.en.writer, f.en.month, f.list, f.it.status === '지급완료' ? '지급완료로 바꿨어요' : '미지급으로 바꿨어요');
+}
+function shDelete(btn) {
+    var f = shFind(btn); if (!f || !f.it) return;
+    Swal.fire({ title: '이 쉐어를 삭제할까요?', text: '삭제하면 되돌릴 수 없어요.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: '삭제', cancelButtonText: '취소' }).then(function (r) {
+        if (!r.isConfirmed) return;
+        shSave(f.en.writer, f.en.month, f.list.filter(function (x) { return String(x.id) !== String(f.it.id); }), '삭제했어요');
+    });
+}
+function shEdit(btn) {
+    var f = shFind(btn); if (!f || !f.it) return; var it = f.it;
+    var inp = function (id, label, val, type) { return '<div class="sh-swal-f"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="' + (type || 'text') + '" value="' + bdEsc(val == null ? '' : val) + '"></div>'; };
+    Swal.fire({
+        title: '쉐어 수정',
+        html: '<div class="sh-swal">' + inp('sw-date', '계약일', it.date, 'date') + inp('sw-desc', '계약 내용', it.desc) + inp('sw-fee', '수수료 항목', it.feeItem)
+            + '<div class="sh-row2">' + inp('sw-total', '총 수수료', it.total, 'number') + inp('sw-rate', '쉐어율(%)', it.rate, 'number') + '</div>'
+            + inp('sw-due', '정산 예정일', it.dueDate, 'date')
+            + '<div class="sh-swal-f"><label for="sw-memo">메모</label><textarea id="sw-memo" rows="3">' + bdEsc(it.memo || '') + '</textarea></div></div>',
+        showCancelButton: true, confirmButtonText: '저장', cancelButtonText: '취소', focusConfirm: false,
+        preConfirm: function () {
+            var v = function (id) { return document.getElementById(id).value; };
+            return { date: v('sw-date'), desc: v('sw-desc'), feeItem: v('sw-fee'), total: Number(v('sw-total')) || 0, rate: Number(v('sw-rate')) || 0, dueDate: v('sw-due'), memo: v('sw-memo') };
+        }
+    }).then(function (r) {
+        if (!r.isConfirmed) return; var n = r.value;
+        Object.assign(it, n, { shareAmount: Math.round(n.total * n.rate / 100) });
+        shSave(f.en.writer, f.en.month, f.list, '수정했어요');
+    });
+}
+function shCheckAll(cb) { [].forEach.call(document.querySelectorAll('.sh-row-chk'), function (c) { c.checked = cb.checked; }); }
+function shPrintSelected() {
+    var rows = [].slice.call(document.querySelectorAll('#shList .sh-item'));
+    if (!rows.length) { Swal.fire('출력할 내역이 없어요', '', 'info'); return; }
+    var picked = rows.filter(function (r) { return r.querySelector('.sh-row-chk').checked; });
+    var go = function (list) {
+        var items = shItems(), byKey = {};
+        items.forEach(function (it) { byKey[it.id + '|' + it.writer + '|' + it.sourceMonth] = it; });
+        var sel = list.map(function (r) { return byKey[r.getAttribute('data-key')]; }).filter(Boolean);
+        var give = 0, recv = 0;
+        var trs = sel.map(function (it) {
+            if (it.type === 'GIVE') give += Number(it.shareAmount) || 0; else if (it.type === 'RECEIVE') recv += Number(it.shareAmount) || 0;
+            var who = it.type === 'GIVE' ? it.partner : (it.type === 'RECEIVE' ? it.writer : it.writer + '→' + it.partner);
+            return '<tr><td>' + bdEsc(it.date) + '</td><td>' + (it.type === 'GIVE' ? '줄 돈' : it.type === 'RECEIVE' ? '받을 돈' : '조회') + '</td><td>' + bdEsc(it.feeItem || '-') + '</td><td>' + bdEsc(who) + '</td><td class="l">' + bdEsc(it.desc) + '</td><td class="r">' + (Number(it.total) || 0).toLocaleString() + '</td><td>' + (Number(it.rate) || 0) + '%</td><td class="r b">' + (Number(it.shareAmount) || 0).toLocaleString() + '</td><td>' + bdEsc(String(it.dueDate || '').slice(2)) + '</td><td>' + bdEsc(it.status || '') + '</td></tr>'
+                + (it.memo ? '<tr class="memo"><td></td><td colspan="9"><b>메모</b> ' + bdEsc(it.memo) + '</td></tr>' : '');
+        }).join('');
+        var who = SH.view === 'ME' ? shMe() : (SH.view === 'ALL' ? '전체 사용자' : SH.view);
+        var html = '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>쉐어 정산 내역</title><style>'
+            + '*{box-sizing:border-box;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif}body{margin:0;padding:16px;background:#F2F4F6;color:#191F28}'
+            + '.sheet{background:#fff;width:1050px;margin:0 auto;padding:28px 28px 24px;border-radius:8px}'
+            + 'h1{font-size:20px;margin:0 0 4px}.sub{font-size:12px;color:#6B7684;margin:0 0 14px}.tot{display:flex;gap:24px;font-size:13px;margin-bottom:12px}.tot b{font-size:15px}'
+            + 'table{width:100%;border-collapse:collapse;font-size:11px}th{background:#F2F4F6;font-weight:700;color:#4E5968;padding:6px 4px;border-bottom:1px solid #D1D6DB;white-space:nowrap}'
+            + 'td{padding:6px 4px;border-bottom:1px solid #E5E8EB;text-align:center;white-space:nowrap}td.l{text-align:left;white-space:normal;word-break:keep-all}td.r{text-align:right}td.b{font-weight:700}'
+            + 'tr.memo td{border-bottom:1px solid #E5E8EB;text-align:left;white-space:pre-wrap;color:#333D4B;font-size:10px;padding-top:0}tr.memo b{color:#1B64DA;margin-right:4px}'
+            + '@media print{body{background:#fff;padding:0;zoom:1!important}.sheet{padding:0;width:auto}@page{size:A4 landscape;margin:10mm}tr{page-break-inside:avoid}}'
+            + '</style></head><body><div class="sheet"><h1>쉐어 정산 내역</h1><p class="sub">' + bdEsc(who) + ' · ' + sel.length + '건 · 출력일 ' + shYmd(new Date()) + '</p>'
+            + '<div class="tot"><span>줄 돈 <b>' + give.toLocaleString() + '원</b></span><span>받을 돈 <b>' + recv.toLocaleString() + '원</b></span></div>'
+            + '<table><thead><tr><th>계약일</th><th>구분</th><th>항목</th><th>파트너</th><th>계약 내용</th><th>총 수수료</th><th>쉐어율</th><th>정산 금액</th><th>정산일</th><th>상태</th></tr></thead><tbody>' + trs + '</tbody></table></div>'
+            + '<scr' + 'ipt>function fit(){document.body.style.zoom=Math.min(1,(innerWidth-8)/1082);}fit();addEventListener("resize",fit);addEventListener("beforeprint",function(){document.body.style.zoom=1});addEventListener("afterprint",fit);</scr' + 'ipt></body></html>';
+        openTrendReportView('쉐어 정산 내역 · ' + sel.length + '건', html);
+    };
+    if (picked.length) { go(picked); return; }
+    Swal.fire({ title: '선택한 건이 없어요', text: '체크한 건만 출력돼요. 전체를 출력할까요?', icon: 'question', showCancelButton: true, confirmButtonText: '전체 출력', cancelButtonText: '취소' })
+        .then(function (r) { if (r.isConfirmed) go(rows); });
+}
 
 // [지사운영] 예상수수료 클릭 시 지사 OA/OR 내역 모달 열기 (지사장 전용)
 function openGmOperationModal() {

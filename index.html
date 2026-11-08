@@ -9194,7 +9194,7 @@ function shChangeView() {
     var me = shMe(), viewed = shViewed();
     SH.view = (!SH.isAdmin || viewed === me) ? 'ME' : viewed;
     var info = document.getElementById('shAdminInfo'), scope = document.getElementById('shScope');
-    if (SH.view === 'ME') { info.classList.add('hidden'); scope.innerHTML = '<b>' + bdEsc(me) + '</b> 님이 주거나 받을 쉐어 내역' + (SH.isAdmin ? ' · 다른 사람 것은 위에서 이름을 고르면 보여요' : ''); }
+    if (SH.view === 'ME') { info.classList.add('hidden'); scope.innerHTML = '<b>' + bdEsc(me) + '</b> 님이 주거나 받을 쉐어 내역'; }
     else { info.classList.remove('hidden'); info.innerHTML = '<b>' + bdEsc(SH.view) + '</b> 님 명의로 등록돼요.'; scope.innerHTML = '<b>' + bdEsc(SH.view) + '</b> 님의 쉐어 내역'; }
     document.getElementById('shListTitle').textContent = SH.view === 'ALL' ? '쉐어 현황 · 전체' : '쉐어 현황';
     SH.lastViewed = viewed;

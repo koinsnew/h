@@ -788,7 +788,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   @keyframes tsDrop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
   @media screen{ #homeListTable tbody tr.lm-hide{display:none!important} }
   @media screen{ #homeListTable tbody tr#listMoreRow{display:block!important;padding:0!important;border-bottom:0} #homeListTable tbody tr#listMoreRow td{display:block;padding:0!important} #homeListTable tbody tr#listMoreRow.lm-off{display:none!important} }
-  @media print{ #listMoreRow{display:none!important} }
+  @media print{ #listMoreRow{display:none!important} #shareSettleLoading{display:none!important} }
   .ts-listmore{width:100%;height:52px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:15px;font-weight:600;color:#4E5968;border-top:1px solid #F2F4F6;background:#fff;transition:background .15s}
   .ts-listmore:hover{background:#F9FAFB}
   .ts-listmore-n{color:#1B64DA}
@@ -1082,6 +1082,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <li><button onclick="navigateTo('active-status')" data-nav="active-status" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span>가동 현황</span></button></li>
                 <li id="menuGoalAchievement"><button onclick="navigateTo('goal-achievement')" data-nav="goal-achievement" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg><span>목표달성률</span></button></li>
                 <li id="menuLapse"><button onclick="navigateTo('lapse')" data-nav="lapse" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span>연체·실효 관리</span></button></li>
+                <li id="menuShareSettle"><button onclick="navigateTo('share-settle')" data-nav="share-settle" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="16" r="4"/><path d="M14 6h3a2 2 0 0 1 2 2v2M10 18H7a2 2 0 0 1-2-2v-2"/></svg><span>쉐어 정산</span></button></li>
                 <li role="presentation" class="px-5 pt-4 pb-1 text-xs font-bold text-gray-500 tracking-wide">지사</li>
                 <li><button onclick="navigateTo('orgchart')" data-nav="orgchart" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-2h12v2"/></svg><span>조직도</span></button></li>
                 <li><button onclick="navigateTo('contact')" data-nav="contact" class="nav-item w-full text-left px-5 h-11 flex items-center gap-2.5 text-[15px] text-gray-700 font-medium border-l-4 border-transparent hover:bg-gray-50 transition"><svg class="ts-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg><span>헤리티지 연락망</span></button></li>
@@ -1585,6 +1586,21 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
       </div>
 
       <!-- RP영상 페이지 (유튜브 재생목록 교육영상) -->
+      <!-- 쉐어 정산 페이지 (별도 Apps Script 웹앱을 iframe으로 표시, 처음 열 때만 불러옴) -->
+      <div id="page-share-settle" class="page-section hidden p-4 pb-4">
+          <div class="flex justify-between items-center gap-2 mb-3">
+              <h2 class="text-xl font-bold text-gray-800 flex items-center"><span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2"></span>쉐어 정산</h2>
+              <a id="shareSettleNewWin" href="https://script.google.com/macros/s/AKfycbzfKBrtqsDFpTu4bOH2hJTfIM0Nvvc3878ZqX_92OfpQoHo1nRNnCcBvoqaeNWUnVOsUA/exec" target="_blank" rel="noopener" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"/></svg> 새 창으로 열기</a>
+          </div>
+          <div id="shareSettleWrap" class="ts-card relative overflow-x-auto" style="padding:0">
+              <div id="shareSettleLoading" class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[15px] font-semibold text-[#4E5968] bg-white z-10" role="status">
+                  <div class="loader"></div>쉐어 정산 불러오는 중...
+              </div>
+          </div>
+          <p class="mt-2 text-xs text-gray-500">로그인·인쇄가 안 되면 오른쪽 위 "새 창으로 열기"를 눌러 주세요.</p>
+      </div>
+
       <div id="page-rp-videos" class="page-section hidden p-4 pb-20">
           <div class="flex justify-between items-center gap-2 flex-wrap mb-4">
               <h2 class="text-xl font-bold text-gray-800 flex items-center"><span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2"></span>RP영상</h2>
@@ -8987,11 +9003,55 @@ function navigateTo(pageId) {
     if (pageId === 'recruiting')    loadRecruitingData(true);
     if (pageId === 'product-strategy') loadProductStrategyFiles();
     if (pageId === 'rp-videos' && typeof window.loadRpVideos === 'function') window.loadRpVideos(false);
+    if (pageId === 'share-settle') openShareSettle();
     if (pageId === 'goal-achievement' && typeof window.renderGoalAchievementPage === 'function') window.renderGoalAchievementPage();
     if (pageId === 'lapse' && typeof window.renderLapsePage === 'function') window.renderLapsePage();
     if (pageId === 'master-hq' && typeof window.renderMasterHqPage === 'function') window.renderMasterHqPage();
     if (pageId === 'promotion' && typeof window.renderPromotionPage === 'function') window.renderPromotionPage();
 }
+
+// ==========================================
+// [쉐어 정산] 별도 Apps Script 웹앱을 화면 안에 표시
+// - 처음 열 때만 iframe 생성(지연 로딩), 다른 메뉴로 가도 숨김만 하므로 로그인 상태 유지
+// - 쉐어 앱의 로직·데이터·로그인은 그대로 (자체 로그인 사용)
+// ==========================================
+var SHARE_SETTLE_URL = 'https://script.google.com/macros/s/AKfycbzfKBrtqsDFpTu4bOH2hJTfIM0Nvvc3878ZqX_92OfpQoHo1nRNnCcBvoqaeNWUnVOsUA/exec';
+function fitShareSettle() {
+    var f = document.getElementById('shareSettleFrame');
+    var wrap = document.getElementById('shareSettleWrap');
+    if (!wrap) return;
+    var page = document.getElementById('page-share-settle');
+    if (!page || page.classList.contains('hidden')) return;
+    var top = wrap.getBoundingClientRect().top + window.scrollY;
+    var h = Math.max(420, window.innerHeight - (wrap.getBoundingClientRect().top) - 40);
+    wrap.style.height = h + 'px';
+    if (f) f.style.height = h + 'px';
+}
+function openShareSettle() {
+    var wrap = document.getElementById('shareSettleWrap');
+    if (!wrap) return;
+    window.scrollTo(0, 0);
+    if (!document.getElementById('shareSettleFrame')) {
+        var f = document.createElement('iframe');
+        f.id = 'shareSettleFrame';
+        f.title = '쉐어 정산';
+        f.src = SHARE_SETTLE_URL;
+        f.setAttribute('allow', 'clipboard-write');
+        f.style.cssText = 'display:block;width:100%;min-width:320px;border:0;background:#fff;border-radius:inherit';
+        f.addEventListener('load', function () {
+            var ld = document.getElementById('shareSettleLoading');
+            if (ld) ld.classList.add('hidden');
+        });
+        wrap.appendChild(f);
+        // 15초가 지나도 안 뜨면 안내만 바꿈 (iframe은 그대로 둠)
+        setTimeout(function () {
+            var ld = document.getElementById('shareSettleLoading');
+            if (ld && !ld.classList.contains('hidden')) ld.innerHTML = '<div class="loader"></div><span>조금 오래 걸리고 있어요.</span><span class="text-sm font-normal">계속 안 뜨면 위의 "새 창으로 열기"를 눌러 주세요.</span>';
+        }, 15000);
+    }
+    requestAnimationFrame(fitShareSettle);
+}
+window.addEventListener('resize', fitShareSettle);
 
 // [지사운영] 예상수수료 클릭 시 지사 OA/OR 내역 모달 열기 (지사장 전용)
 function openGmOperationModal() {

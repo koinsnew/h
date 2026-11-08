@@ -959,6 +959,13 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   /* [A안] 쉐어 정산 */
   .sh-tool{height:40px;display:inline-flex;align-items:center;gap:5px;padding:0 12px;border-radius:12px;background:#fff;color:#333D4B;font-size:14px;font-weight:700;white-space:nowrap}
   .sh-tool:hover{background:#E5E8EB}
+  .sh-scope{font-size:13.5px;color:#4E5968;margin:-2px 2px 4px}
+  .sh-scope b{color:#191F28}
+  .sh-sync-status{font-size:12.5px;color:#0E8A4F;margin:0 2px 10px;min-height:18px;font-weight:600}
+  .sh-sync-status.is-busy{color:#1B64DA}.sh-sync-status.is-err{color:#E42939}
+  .sh-tool.is-busy{color:#1B64DA;background:#E8F3FF}
+  .sh-tool.is-busy svg{animation:spin .9s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
   .sh-admin{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:10px;flex-wrap:wrap}
   .sh-admin label{font-size:13px;font-weight:700;color:#1B64DA}
   .sh-admin select{flex:1;min-width:160px;height:42px;border:0;border-radius:10px;background:#F2F4F6;padding:0 10px;font-size:15px;font-weight:600}
@@ -1650,13 +1657,10 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
               <h2 class="text-xl font-bold text-gray-800 flex items-center"><span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2"></span>쉐어 정산</h2>
               <div class="flex gap-2">
                   <button type="button" onclick="shPrintSelected()" class="sh-tool"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1"/></svg>선택 출력</button>
-                  <button type="button" onclick="shSync(true)" class="sh-tool"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg>동기화</button>
+                  <button type="button" id="shSyncBtn" onclick="shSync(true)" class="sh-tool"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg><span>동기화</span></button>
               </div>
           </div>
-          <div id="shAdminBar" class="hidden ts-card sh-admin">
-              <label for="shViewSel">관리자 · 조회/작성 대상</label>
-              <select id="shViewSel" onchange="shChangeView()"></select>
-          </div>
+          <p id="shScope" class="sh-scope"></p>
           <div class="sh-sum">
               <div><span>내가 줄 돈</span><b id="shTotalGive" class="text-[#E42939]">0원</b></div>
               <div><span>내가 받을 돈</span><b id="shTotalRecv" class="text-[#1B64DA]">0원</b></div>
@@ -1670,7 +1674,6 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   </button>
                   <div id="shFormBody" class="sh-form-body">
                       <p id="shAdminInfo" class="hidden sh-info"></p>
-                      <p id="shBlocked" class="hidden sh-info">전체 보기에서는 등록할 수 없어요. 위에서 사용자를 골라 주세요.</p>
                       <div id="shFields">
                           <div class="sh-row2">
                               <div><label for="shDate">계약일</label><input type="date" id="shDate"></div>
@@ -9141,6 +9144,7 @@ function openShareSettle() {
         if (window.innerWidth >= 1024) shToggleForm(true);
     }
     shInitUsers();
+    if (SH.loaded) shChangeView();
     shSync(false);
 }
 function shYmd(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
@@ -9155,41 +9159,54 @@ function shInitUsers() {
     document.getElementById('shP1').innerHTML = '<option value="">선택하세요</option>' + others.map(opt).join('');
     document.getElementById('shP2').innerHTML = '<option value="">(없음)</option>' + others.map(opt).join('');
 }
-function shInitAdmin() {
-    var bar = document.getElementById('shAdminBar'), sel = document.getElementById('shViewSel');
-    if (!SH.isAdmin) { bar.classList.add('hidden'); SH.view = 'ME'; return; }
-    bar.classList.remove('hidden');
-    if (!sel.options.length) {
-        var me = shMe();
-        sel.innerHTML = '<option value="ME">내 데이터 (본인)</option><option value="ALL">전체 사용자 (조회)</option>'
-            + SH.users.filter(function (u) { return u.name !== me; }).map(function (u) { return '<option value="' + bdEsc(u.name) + '">' + bdEsc(u.name) + ' ' + bdEsc(u.title) + '</option>'; }).join('');
-        sel.value = SH.view;
-    }
-}
+function shViewed() { var v = String((typeof currentUser !== 'undefined' && currentUser) || '').trim(); return v || shMe(); }
+// 보기 범위: 일반 사용자는 본인 건만 / 지사장·총무는 본인을 볼 때 전체, 위에서 다른 사람을 고르면 그 사람 건만
 function shChangeView() {
-    SH.view = SH.isAdmin ? document.getElementById('shViewSel').value : 'ME';
-    var fields = document.getElementById('shFields'), blocked = document.getElementById('shBlocked'), info = document.getElementById('shAdminInfo');
-    if (SH.view === 'ALL') {
-        fields.classList.add('opacity-50', 'pointer-events-none'); blocked.classList.remove('hidden'); info.classList.add('hidden');
-        document.getElementById('shListTitle').textContent = '쉐어 현황 · 전체 사용자';
-    } else {
-        fields.classList.remove('opacity-50', 'pointer-events-none'); blocked.classList.add('hidden');
-        if (SH.view !== 'ME') { info.classList.remove('hidden'); info.innerHTML = '<b>' + bdEsc(SH.view) + '</b> 님 명의로 등록돼요.'; document.getElementById('shListTitle').textContent = '쉐어 현황 · ' + SH.view; }
-        else { info.classList.add('hidden'); document.getElementById('shListTitle').textContent = '쉐어 현황'; }
-    }
+    var me = shMe(), viewed = shViewed();
+    if (!SH.isAdmin) SH.view = 'ME';
+    else SH.view = (viewed === me) ? 'ALL' : viewed;
+    var info = document.getElementById('shAdminInfo'), scope = document.getElementById('shScope');
+    if (SH.view === 'ALL') { info.classList.add('hidden'); scope.innerHTML = '<b>전체 사용자</b>의 쉐어 내역 · 위에서 사람을 고르면 그 사람 것만 보여요'; }
+    else if (SH.view === 'ME') { info.classList.add('hidden'); scope.innerHTML = '<b>' + bdEsc(me) + '</b> 님이 주거나 받을 쉐어 내역'; }
+    else { info.classList.remove('hidden'); info.innerHTML = '<b>' + bdEsc(SH.view) + '</b> 님 명의로 등록돼요.'; scope.innerHTML = '<b>' + bdEsc(SH.view) + '</b> 님의 쉐어 내역'; }
+    document.getElementById('shListTitle').textContent = SH.view === 'ALL' ? '쉐어 현황 · 전체' : '쉐어 현황';
+    SH.lastViewed = viewed;
     shRender();
+}
+// 상단에서 볼 사람을 바꾸면 쉐어 정산도 그 사람 기준으로 다시 그림
+setInterval(function () {
+    var pg = document.getElementById('page-share-settle');
+    if (!SH.loaded || !pg || pg.classList.contains('hidden')) return;
+    if (shViewed() !== SH.lastViewed) shChangeView();
+}, 700);
+function shSyncState(state, text) {
+    var btn = document.getElementById('shSyncBtn'); if (!btn) return;
+    btn.classList.toggle('is-busy', state === 'busy');
+    btn.disabled = state === 'busy';
+    btn.querySelector('span').textContent = state === 'busy' ? '동기화 중…' : '동기화';
+    var st = document.getElementById('shSyncStatus');
+    if (!st) { st = document.createElement('p'); st.id = 'shSyncStatus'; st.className = 'sh-sync-status'; st.setAttribute('role', 'status'); document.getElementById('shScope').after(st); }
+    st.className = 'sh-sync-status' + (state === 'error' ? ' is-err' : state === 'busy' ? ' is-busy' : '');
+    st.textContent = text || '';
 }
 function shSync(showToast) {
     var me = shMe(); if (!me) return;
     var box = document.getElementById('shList');
     if (!SH.loaded) box.innerHTML = '<div class="bd-empty">불러오는 중…</div>';
+    shSyncState('busy', '서버에서 최신 쉐어 내역을 받아오는 중이에요…');
+    var t0 = Date.now();
     google.script.run.withSuccessHandler(function (res) {
-        if (!res || !res.success) { box.innerHTML = '<div class="bd-empty"><b>불러오지 못했어요</b>' + bdEsc(res && res.error || '') + '</div>'; return; }
+        if (!res || !res.success) { shSyncState('error', '동기화하지 못했어요. 다시 눌러 주세요.'); if (!SH.loaded) box.innerHTML = '<div class="bd-empty"><b>불러오지 못했어요</b>' + bdEsc(res && res.error || '') + '</div>'; return; }
         SH.data = res.data || []; SH.isAdmin = !!res.isAdmin; SH.loaded = true;
-        shInitAdmin(); shChangeView();
-        if (showToast && typeof Swal !== 'undefined') Swal.fire({ toast: true, position: 'top', icon: 'success', title: '최신 내용으로 바꿨어요', showConfirmButton: false, timer: 1200 });
+        shChangeView();
+        var d = new Date();
+        var done = function () { shSyncState('ok', '동기화 완료 · ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ' 최신 내용'); };
+        // 너무 빨리 끝나도 '동기화 중'이 잠깐은 보이게
+        setTimeout(done, Math.max(0, 500 - (Date.now() - t0)));
+        if (showToast && typeof Swal !== 'undefined') Swal.fire({ toast: true, position: 'top', icon: 'success', title: '동기화 완료', showConfirmButton: false, timer: 1300 });
     }).withFailureHandler(function (err) {
-        box.innerHTML = '<div class="bd-empty"><b>불러오지 못했어요</b>잠시 후 동기화를 눌러 주세요.</div>';
+        shSyncState('error', '동기화하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.');
+        if (!SH.loaded) box.innerHTML = '<div class="bd-empty"><b>불러오지 못했어요</b>잠시 후 동기화를 눌러 주세요.</div>';
     }).shareGetData(me);
 }
 function shItems() {
@@ -9267,9 +9284,8 @@ function shPreview() {
     [1, 2].forEach(function (i) { var r = Math.min(100, Math.max(0, Number(document.getElementById('shR' + i).value) || 0)); document.getElementById('shA' + i).textContent = shWon(Math.round(total * r / 100)); });
 }
 function shAdd() {
-    if (SH.view === 'ALL') return;
     var me = shMe();
-    var writer = (SH.isAdmin && SH.view !== 'ME') ? SH.view : me;
+    var writer = (SH.isAdmin && SH.view !== 'ME' && SH.view !== 'ALL') ? SH.view : me;
     var g = function (id) { return document.getElementById(id).value; };
     var date = g('shDate'), due = g('shDue'), desc = g('shDesc').trim(), fee = g('shFee').trim(), memo = g('shMemo');
     var total = Number(g('shTotal').replace(/,/g, '')) || 0;

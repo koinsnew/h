@@ -956,6 +956,79 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .cal-li-time{display:inline-block;margin-right:6px;font-size:12.5px;font-weight:700;color:#1B64DA;background:#E8F3FF;border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums}
   .cal-li-meta{font-size:13px;color:#6B7684;margin:3px 0 0}
   .cal-none{font-size:14px;color:#8B95A1;padding:6px 0 12px;margin:0}
+  /* [A안] 리크루팅 */
+  .rc-add{height:40px;display:inline-flex;align-items:center;gap:4px;padding:0 14px;border-radius:12px;background:#1E6EE8;color:#fff;font-size:14px;font-weight:700;white-space:nowrap}
+  .rc-add:hover{background:#1A63D4}
+  .rc-pipe{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;margin:0 -2px;scrollbar-width:none}
+  .rc-pipe::-webkit-scrollbar{display:none}
+  .rc-tab{flex:1 1 0;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 10px;border-radius:14px;background:#fff;color:#6B7684;font-size:12.5px;font-weight:600;transition:background .15s,color .15s}
+  .rc-tab b{font-size:18px;font-weight:800;color:#191F28;font-variant-numeric:tabular-nums;line-height:1.2}
+  .rc-tab[aria-selected="true"]{background:#1E6EE8;color:#DCEBFF}
+  .rc-tab[aria-selected="true"] b{color:#fff}
+  .rc-search{display:flex;align-items:center;gap:8px;height:46px;padding:0 14px;border-radius:14px;background:#fff;color:#8B95A1;margin-bottom:10px}
+  .rc-search input{flex:1;min-width:0;border:0;outline:none;background:transparent;font-size:16px;color:#191F28}
+  .rc-list{display:grid;gap:8px}
+  @media (min-width:900px){.rc-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (min-width:1400px){.rc-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  .rc-list .bd-empty{grid-column:1/-1}
+  .rc-card{background:#fff;border-radius:18px;padding:16px;cursor:pointer;transition:box-shadow .15s}
+  .rc-card:hover{box-shadow:0 2px 10px rgba(0,0,0,.06)}
+  .rc-top{display:flex;align-items:center;gap:8px}
+  .rc-stage{flex:none;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 7px;background:#F2F4F6;color:#4E5968}
+  .rc-stageOT{background:#FFF4E5;color:#B25E00}.rc-stage2{background:#E8F3FF;color:#1B64DA}.rc-stage3{background:#F0EDFF;color:#5B47C9}.rc-stage4{background:#E5F7EE;color:#0E8A4F}
+  .rc-name{flex:1;min-width:0;font-size:17px;font-weight:700;color:#191F28;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rc-owner{flex:none;font-size:12.5px;color:#8B95A1}
+  .rc-mid{margin-top:6px}
+  .rc-tel{display:inline-flex;align-items:center;gap:5px;font-size:14px;color:#1B64DA;font-weight:600;font-variant-numeric:tabular-nums;padding:4px 0}
+  .rc-nophone{font-size:13px;color:#B0B8C1}
+  .rc-info{font-size:13px;color:#6B7684;margin:4px 0 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .rc-pill{display:inline-block;font-size:13px;font-weight:700;color:#5B47C9;background:#F0EDFF;border-radius:8px;padding:3px 8px;margin:6px 0 0;font-variant-numeric:tabular-nums}
+  .rc-prog{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .rc-bar{flex:1;height:6px;border-radius:3px;background:#F2F4F6;overflow:hidden}
+  .rc-bar i{display:block;height:100%;background:#0E8A4F;border-radius:3px;transition:width .3s}
+  .rc-prog span{font-size:12.5px;font-weight:700;color:#4E5968;font-variant-numeric:tabular-nums}
+  .rc-note{font-size:13px;color:#4E5968;background:#F9FAFB;border-radius:10px;padding:8px 10px;margin:8px 0 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}
+  .rc-actions{display:flex;gap:6px;margin-top:12px}
+  .rc-prev{flex:none;width:40px;height:40px;border-radius:12px;background:#F2F4F6;color:#4E5968;display:flex;align-items:center;justify-content:center}
+  .rc-next{flex:1;height:40px;border-radius:12px;background:#E8F3FF;color:#1B64DA;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:2px}
+  .rc-next:hover{background:#DCEBFF}
+  .rc-next.is-hire{background:#E5F7EE;color:#0E8A4F}
+  .rc-form > div,.rc-sec > div{margin-bottom:14px}
+  .rc-form label:not(.rc-file):not(.rc-task):not(.rc-chipchk){display:block;font-size:13px;font-weight:600;color:#4E5968;margin-bottom:6px}
+  .rc-form input[type=text],.rc-form input[type=tel],.rc-form input[type=date],.rc-form input[type=time],.rc-form select,.rc-form textarea{width:100%;min-height:48px;border:1px solid transparent!important;border-radius:12px!important;background:#F2F4F6!important;padding:10px 12px;font-size:16px;color:#191F28;outline:none;text-align:left;text-align-last:left}
+  .rc-form input:focus,.rc-form select:focus,.rc-form textarea:focus{background:#fff;border-color:#1E6EE8;box-shadow:0 0 0 3px rgba(30,110,232,.14)}
+  .rc-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .rc-stage-seg > button{font-size:14px}
+  .rc-sec{background:#F9FAFB;border-radius:16px;padding:14px 14px 2px;margin-bottom:14px}
+  .rc-sec h4{font-size:15px;font-weight:700;color:#191F28;margin:0 0 10px}
+  .rc-sec input,.rc-sec select{background:#fff!important}
+  .rc-form select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238B95A1' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 12px center!important;padding-right:36px!important}
+  .rc-sec .ts-seg{background:#fff}
+  .rc-sec .ts-seg > button[aria-pressed="true"]{background:#E8F3FF;color:#1B64DA;box-shadow:none}
+  .rc-file{display:flex;align-items:center;gap:8px;height:48px;padding:0 14px;border-radius:12px;background:#fff;border:1px dashed #C9D2DC;color:#1B64DA;font-size:14px;font-weight:700;cursor:pointer}
+  .rc-file em{font-style:normal;font-weight:500;color:#8B95A1;font-size:12.5px}
+  .rc-file:hover{background:#F2F8FF}
+  .rc-fitem{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 10px;border-radius:12px;background:#fff}
+  .rc-fname{flex:1;min-width:0;font-size:13.5px;font-weight:600;color:#333D4B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rc-fview{font-size:13px;font-weight:700;color:#1B64DA;padding:4px 6px}
+  .rc-fdel{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#8B95A1}
+  .rc-fdel:hover{background:#FFF0F1;color:#E42939}
+  .rc-chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .rc-chipchk{position:relative;cursor:pointer}
+  .rc-chipchk input{position:absolute;opacity:0;pointer-events:none}
+  .rc-chipchk span{display:flex;align-items:center;justify-content:center;height:42px;border-radius:12px;background:#fff;color:#4E5968;font-size:14px;font-weight:600}
+  .rc-chipchk input:checked + span{background:#E8F3FF;color:#1B64DA}
+  .rc-chipchk input:focus-visible + span{outline:2px solid #1E6EE8;outline-offset:2px}
+  .rc-okmsg{font-size:13px;font-weight:600;color:#0E8A4F;margin-top:-4px}
+  .rc-tasks{display:grid;gap:6px;margin-bottom:14px}
+  .rc-task{display:flex;align-items:center;gap:10px;height:48px;padding:0 14px;border-radius:12px;background:#fff;cursor:pointer}
+  .rc-task input{width:20px;height:20px;accent-color:#0E8A4F;flex:none}
+  .rc-task-name{flex:1;font-size:15px;font-weight:600;color:#333D4B}
+  .rc-task-st{font-size:12.5px;font-weight:700;color:#8B95A1}
+  .rc-task.is-done .rc-task-st{color:#0E8A4F}
+  .rc-task.is-done .rc-task-name{color:#0E8A4F}
+  .rc-hire{width:100%;height:50px;border-radius:14px;background:#0E8A4F;color:#fff;font-size:16px;font-weight:700;margin:2px 0 12px}
+  .rc-hire:hover{background:#0B7A45}
   /* [A안] 쉐어 정산 */
   .sh-tool{height:40px;display:inline-flex;align-items:center;gap:5px;padding:0 12px;border-radius:12px;background:#fff;color:#333D4B;font-size:14px;font-weight:700;white-space:nowrap}
   .sh-tool:hover{background:#E5E8EB}
@@ -2190,235 +2263,119 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
           </div>
       </div>
 
-      <div id="page-recruiting" class="page-section hidden p-4 sm:p-6 pb-20 sm:h-[85vh] flex flex-col">
-          <div class="flex justify-between items-center mb-4 shrink-0 gap-2">
-    <h2 class="text-xl font-bold flex items-center text-gray-800 min-w-0">
-        <span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2 shrink-0"></span>
-        <span class="truncate">리크루팅 현황</span>
-    </h2>
-    <div class="flex gap-1.5 shrink-0">
-        <button onclick="loadRecruitingData(true)" class="h-10 inline-flex items-center gap-1 text-sm text-gray-700 font-bold bg-white px-3 rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 transition whitespace-nowrap"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신</button>
-        <button onclick="openRecruitModal()" class="h-10 inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-3 rounded-lg text-sm font-bold shadow-sm transition whitespace-nowrap">후보자 등록</button>
-    </div>
-</div>
-          
-          <div id="recruitBoard" class="flex-1 overflow-x-auto flex gap-4 pb-4 items-start custom-scrollbar">
-              <div class="w-72 shrink-0 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
-                  <div class="p-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between bg-white rounded-t-xl">
-                      CIS <span id="cnt-stage2" class="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-700 tabular-nums">0</span>
-                  </div>
-                  <div id="stage2" class="p-2 flex-1 overflow-y-auto space-y-2 custom-scrollbar min-h-[100px]"></div>
+      <div id="page-recruiting" class="page-section hidden p-4 pb-24">
+          <div class="flex justify-between items-center mb-3 gap-2">
+              <h2 class="text-xl font-bold flex items-center text-gray-800 min-w-0"><span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2 shrink-0"></span><span class="truncate">리크루팅 현황</span></h2>
+              <div class="flex gap-2 shrink-0">
+                  <button type="button" onclick="loadRecruitingData(true)" class="sh-tool"><svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg>갱신</button>
+                  <button type="button" onclick="openRecruitModal()" class="rc-add"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>후보자 등록</button>
               </div>
-              <div class="w-72 shrink-0 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
-                  <div class="p-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between bg-white rounded-t-xl">
-                      면접 진행 <span id="cnt-stage3" class="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-700 tabular-nums">0</span>
-                  </div>
-                  <div id="stage3" class="p-2 flex-1 overflow-y-auto space-y-2 custom-scrollbar min-h-[100px]"></div>
-              </div>
-              <div class="w-72 shrink-0 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
-                  <div class="p-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between bg-white rounded-t-xl">
-                      위촉 진행 <span id="cnt-stage4" class="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-700 tabular-nums">0</span>
-                  </div>
-                  <div id="stage4" class="p-2 flex-1 overflow-y-auto space-y-2 custom-scrollbar min-h-[100px]"></div>
-              </div>
-              <div class="w-72 shrink-0 bg-gray-50 rounded-xl flex flex-col max-h-full border border-gray-200">
-                  <div class="p-3 border-b border-gray-200 font-bold text-gray-800 flex justify-between bg-white rounded-t-xl">
-                      보류 <span id="cnt-stage5" class="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-700 tabular-nums">0</span>
-                  </div>
-                  <div id="stage5" class="p-2 flex-1 overflow-y-auto space-y-2 custom-scrollbar min-h-[100px]"></div>
-              </div>
-              </div>
+          </div>
+          <div id="rcPipe" class="rc-pipe" role="tablist" aria-label="진행 단계"></div>
+          <div class="rc-search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="rcSearch" placeholder="이름·연락처·도입자 검색" oninput="renderRecruitingBoard()" aria-label="후보자 검색"></div>
+          <div id="rcList" class="rc-list" aria-live="polite"><div class="bd-empty">불러오는 중…</div></div>
+          <!-- 예전 칸반 영역(다른 코드 호환용, 화면에는 안 보임) -->
+          <div class="hidden" aria-hidden="true"><div id="stage2"></div><div id="stage3"></div><div id="stage4"></div><div id="stage5"></div><span id="cnt-stage2"></span><span id="cnt-stage3"></span><span id="cnt-stage4"></span><span id="cnt-stage5"></span></div>
       </div>
 
-      <div id="recruitModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-[10000] flex items-center justify-center hidden px-4" style="backdrop-filter:blur(3px)">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col max-h-[90vh]">
-        <div class="bg-rose-50 border-b border-rose-100 px-5 py-4 rounded-t-2xl flex justify-between items-center">
-            <h3 id="recruitModalTitle" class="text-rose-900 font-bold text-lg">후보자 등록</h3>
-            <button onclick="closeRecruitModal()" class="text-gray-500 hover:text-gray-600 font-bold text-2xl">&times;</button>
+      <div id="recruitModal" class="ts-modal fixed inset-0 z-[10000] flex hidden" role="dialog" aria-modal="true" aria-labelledby="recruitModalTitle">
+    <div class="ts-sheet max-w-lg">
+        <div class="ts-sheet-head">
+            <h3 id="recruitModalTitle">후보자 등록</h3>
+            <button type="button" onclick="closeRecruitModal()" class="ts-x" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
         </div>
-        <div class="p-5 flex-1 overflow-y-auto space-y-4 custom-scrollbar">
+        <div class="ts-sheet-body custom-scrollbar rc-form">
             <input type="hidden" id="recruitId">
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">후보자 이름</label>
-                    <input type="text" id="recruitName" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none text-sm" placeholder="이름">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">연락처</label>
-                    <input type="tel" id="recruitPhone" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none text-sm font-mono" placeholder="010-0000-0000">
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">진행 단계</label>
-                    <select id="recruitStage" onchange="updateStageSpecificFields(this.value)" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none font-bold text-gray-700 text-sm">
-                        <option value="stage2">CIS</option>
-                        <option value="stage3">면접 진행</option>
-                        <option value="stage4">위촉 진행</option>
-                        <option value="stage5">보류</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">도입 예정자</label>
-                    <select id="recruitOwner" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none text-sm"></select>
-                </div>
+            <div class="rc-row2">
+                <div><label for="recruitName">후보자 이름</label><input type="text" id="recruitName" placeholder="이름" autocomplete="off"></div>
+                <div><label for="recruitPhone">연락처</label><input type="tel" id="recruitPhone" placeholder="010-0000-0000" inputmode="tel"></div>
             </div>
             <div>
-                <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">특이사항 (메모)</label>
-                <textarea id="recruitNotes" rows="3" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none resize-none text-sm leading-relaxed" placeholder="상담 내용, 성향, 특이사항 등을 기록하세요."></textarea>
+                <label id="lbRecruitStage">진행 단계</label>
+                <div id="rcStageChips" class="ts-seg rc-stage-seg" role="group" aria-labelledby="lbRecruitStage"></div>
+                <select id="recruitStage" class="hidden" aria-hidden="true" tabindex="-1" onchange="updateStageSpecificFields(this.value)">
+                    <option value="stageOT">OT</option>
+                    <option value="stage2">CIS</option>
+                    <option value="stage3">면접</option>
+                    <option value="stage4">위촉</option>
+                    <option value="stage5">보류</option>
+                </select>
             </div>
+            <div><label for="recruitOwner">도입 예정자</label><select id="recruitOwner"></select></div>
 
-            <!-- ====== CIS 전용 필드 ====== -->
-            <div id="cisFields" class="hidden space-y-3 border-t-2 border-blue-100 pt-4">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="w-1 h-4 bg-blue-500 rounded-full"></span>
-                    <span class="text-xs font-bold text-blue-700">프로필 파일 첨부</span>
-                </div>
-                <div id="cisFilePreview" class="hidden"></div>
-                <label class="flex items-center gap-2 px-3 py-2.5 bg-blue-50 border border-blue-200 border-dashed rounded-lg cursor-pointer hover:bg-blue-100 transition">
-                    <span class="text-blue-500 text-base">📎</span>
-                    <span class="text-sm font-bold text-blue-700">파일 선택</span>
-                    <span class="text-xs text-blue-400">(이미지·PDF·Word)</span>
-                    <input type="file" id="cisFileInput" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="hidden" onchange="handleCisFile(this)">
-                </label>
-            </div>
-
-            <!-- ====== 면접 진행 전용 필드 ====== -->
-            <div id="interviewFields" class="hidden space-y-3 border-t-2 border-purple-100 pt-4">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="w-1 h-4 bg-purple-500 rounded-full"></span>
-                    <span class="text-xs font-bold text-purple-700">면접 일정</span>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">면접 날짜</label>
-                        <input type="date" id="recruitInterviewDate" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-400 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">면접 시간</label>
-                        <input type="time" id="recruitInterviewTime" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-400 transition">
-                    </div>
+            <!-- OT(초기접촉) -->
+            <div id="otFields" class="hidden rc-sec">
+                <h4>OT · 초기 접촉</h4>
+                <div class="rc-row2">
+                    <div><label for="recruitOtDate">첫 접촉일</label><input type="date" id="recruitOtDate"></div>
+                    <div><label for="recruitOtSource">접촉 경로</label>
+                        <select id="recruitOtSource"><option value="">선택</option><option>지인 소개</option><option>SNS·광고</option><option>DB 상담</option><option>세미나</option><option>기타</option></select></div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-2 ml-1">면접 참여 가능 여부</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="flex items-center gap-2 p-2.5 bg-purple-50 rounded-lg cursor-pointer border border-purple-100 hover:border-purple-300 transition">
-                            <input type="checkbox" id="int_지사장" class="accent-purple-600 w-4 h-4 shrink-0" onchange="updateInterviewerDisplay()">
-                            <span class="text-sm font-bold text-gray-700">지사장</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-2.5 bg-purple-50 rounded-lg cursor-pointer border border-purple-100 hover:border-purple-300 transition">
-                            <input type="checkbox" id="int_RM" class="accent-purple-600 w-4 h-4 shrink-0" onchange="updateInterviewerDisplay()">
-                            <span class="text-sm font-bold text-gray-700">RM</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-2.5 bg-purple-50 rounded-lg cursor-pointer border border-purple-100 hover:border-purple-300 transition">
-                            <input type="checkbox" id="int_BM" class="accent-purple-600 w-4 h-4 shrink-0" onchange="updateInterviewerDisplay()">
-                            <span class="text-sm font-bold text-gray-700">BM</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-2.5 bg-purple-50 rounded-lg cursor-pointer border border-purple-100 hover:border-purple-300 transition">
-                            <input type="checkbox" id="int_CM" class="accent-purple-600 w-4 h-4 shrink-0" onchange="updateInterviewerDisplay()">
-                            <span class="text-sm font-bold text-gray-700">CM</span>
-                        </label>
+                    <label id="lbOtInterest">관심도</label>
+                    <div class="ts-seg" id="rcInterestSeg" role="group" aria-labelledby="lbOtInterest">
+                        <button type="button" data-v="상" aria-pressed="false">높음</button><button type="button" data-v="중" aria-pressed="false">보통</button><button type="button" data-v="하" aria-pressed="false">낮음</button>
                     </div>
+                    <input type="hidden" id="recruitOtInterest">
                 </div>
-                <div id="interviewerMsg" class="hidden space-y-1.5 rounded-lg bg-green-50 border border-green-200 p-3"></div>
+            </div>
 
-                <!-- 이력서 파일 첨부 -->
-                <div class="border-t border-purple-50 pt-3">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="w-1 h-4 bg-purple-400 rounded-full"></span>
-                        <span class="text-xs font-bold text-purple-700">이력서 파일 첨부</span>
-                    </div>
+            <!-- CIS -->
+            <div id="cisFields" class="hidden rc-sec">
+                <h4>CIS · 프로필 파일</h4>
+                <div id="cisFilePreview" class="hidden"></div>
+                <label class="rc-file"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg><span>파일 선택</span><em>이미지·PDF·Word</em>
+                    <input type="file" id="cisFileInput" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="hidden" onchange="handleCisFile(this)"></label>
+            </div>
+
+            <!-- 면접 -->
+            <div id="interviewFields" class="hidden rc-sec">
+                <h4>면접 일정</h4>
+                <div class="rc-row2">
+                    <div><label for="recruitInterviewDate">면접 날짜</label><input type="date" id="recruitInterviewDate"></div>
+                    <div><label for="recruitInterviewTime">면접 시간</label><input type="time" id="recruitInterviewTime"></div>
+                </div>
+                <div><label>면접 참여 가능</label><div class="rc-chips"><label class="rc-chipchk"><input type="checkbox" id="int_지사장" onchange="updateInterviewerDisplay()"><span>지사장</span></label><label class="rc-chipchk"><input type="checkbox" id="int_RM" onchange="updateInterviewerDisplay()"><span>RM</span></label><label class="rc-chipchk"><input type="checkbox" id="int_BM" onchange="updateInterviewerDisplay()"><span>BM</span></label><label class="rc-chipchk"><input type="checkbox" id="int_CM" onchange="updateInterviewerDisplay()"><span>CM</span></label></div></div>
+                <div id="interviewerMsg" class="hidden rc-okmsg"></div>
+                <div><label>이력서</label>
                     <div id="interviewFilePreview" class="hidden mb-2"></div>
-                    <label class="flex items-center gap-2 px-3 py-2.5 bg-purple-50 border border-purple-200 border-dashed rounded-lg cursor-pointer hover:bg-purple-100 transition">
-                        <span class="text-purple-500 text-base">📄</span>
-                        <span class="text-sm font-bold text-purple-700">이력서 선택</span>
-                        <span class="text-xs text-purple-400">(이미지·PDF·Word)</span>
-                        <input type="file" id="interviewFileInput" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.hwp" class="hidden" onchange="handleInterviewFile(this)">
-                    </label>
+                    <label class="rc-file"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg><span>이력서 선택</span><em>이미지·PDF·Word·HWP</em>
+                        <input type="file" id="interviewFileInput" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.hwp" class="hidden" onchange="handleInterviewFile(this)"></label>
                 </div>
             </div>
 
-            <!-- ====== 위촉 진행 전용 필드 ====== -->
-            <div id="commissionFields" class="hidden space-y-3 border-t-2 border-green-100 pt-4">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="w-1 h-4 bg-green-500 rounded-full"></span>
-                    <span class="text-xs font-bold text-green-700">위촉 진행 체크리스트</span>
+            <!-- 위촉 -->
+            <div id="commissionFields" class="hidden rc-sec">
+                <h4>위촉 진행 체크리스트</h4>
+                <div class="rc-tasks">
+                        <label id="label_입사서류" class="rc-task"><input type="checkbox" id="task_입사서류" onchange="updateTaskDisplay('입사서류')"><span class="rc-task-name">입사 서류 준비</span><span id="status_입사서류" class="rc-task-st">대기</span></label>
+                        <label id="label_위촉서류" class="rc-task"><input type="checkbox" id="task_위촉서류" onchange="updateTaskDisplay('위촉서류')"><span class="rc-task-name">위촉 서류 작성</span><span id="status_위촉서류" class="rc-task-st">대기</span></label>
+                        <label id="label_생보시험" class="rc-task"><input type="checkbox" id="task_생보시험" onchange="updateTaskDisplay('생보시험')"><span class="rc-task-name">생보 시험 합격</span><span id="status_생보시험" class="rc-task-st">대기</span></label>
+                        <label id="label_손보시험" class="rc-task"><input type="checkbox" id="task_손보시험" onchange="updateTaskDisplay('손보시험')"><span class="rc-task-name">손보 시험 합격</span><span id="status_손보시험" class="rc-task-st">대기</span></label>
+                        <label id="label_보증보험" class="rc-task"><input type="checkbox" id="task_보증보험" onchange="updateTaskDisplay('보증보험')"><span class="rc-task-name">보증보험 가입</span><span id="status_보증보험" class="rc-task-st">대기</span></label>
                 </div>
-                <div class="space-y-2">
-                    <label id="label_입사서류" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg cursor-pointer border border-gray-200 hover:border-green-300 transition">
-                        <input type="checkbox" id="task_입사서류" class="accent-green-600 w-4 h-4 shrink-0" onchange="updateTaskDisplay('입사서류')">
-                        <span class="text-sm font-bold text-gray-700 flex-1">입사 서류 준비</span>
-                        <span id="status_입사서류" class="text-xs font-bold text-gray-500 shrink-0">대기중</span>
-                    </label>
-                    <label id="label_위촉서류" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg cursor-pointer border border-gray-200 hover:border-green-300 transition">
-                        <input type="checkbox" id="task_위촉서류" class="accent-green-600 w-4 h-4 shrink-0" onchange="updateTaskDisplay('위촉서류')">
-                        <span class="text-sm font-bold text-gray-700 flex-1">위촉 서류 작성</span>
-                        <span id="status_위촉서류" class="text-xs font-bold text-gray-500 shrink-0">대기중</span>
-                    </label>
-                    <label id="label_생보시험" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg cursor-pointer border border-gray-200 hover:border-green-300 transition">
-                        <input type="checkbox" id="task_생보시험" class="accent-green-600 w-4 h-4 shrink-0" onchange="updateTaskDisplay('생보시험')">
-                        <span class="text-sm font-bold text-gray-700 flex-1">생보 시험 합격</span>
-                        <span id="status_생보시험" class="text-xs font-bold text-gray-500 shrink-0">대기중</span>
-                    </label>
-                    <label id="label_손보시험" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg cursor-pointer border border-gray-200 hover:border-green-300 transition">
-                        <input type="checkbox" id="task_손보시험" class="accent-green-600 w-4 h-4 shrink-0" onchange="updateTaskDisplay('손보시험')">
-                        <span class="text-sm font-bold text-gray-700 flex-1">손보 시험 합격</span>
-                        <span id="status_손보시험" class="text-xs font-bold text-gray-500 shrink-0">대기중</span>
-                    </label>
-                    <label id="label_보증보험" class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg cursor-pointer border border-gray-200 hover:border-green-300 transition">
-                        <input type="checkbox" id="task_보증보험" class="accent-green-600 w-4 h-4 shrink-0" onchange="updateTaskDisplay('보증보험')">
-                        <span class="text-sm font-bold text-gray-700 flex-1">보증보험 가입</span>
-                        <span id="status_보증보험" class="text-xs font-bold text-gray-500 shrink-0">대기중</span>
-                    </label>
+                <div class="rc-row2">
+                    <div><label for="recruitLifeCommDate">생보 위촉 예정일</label><input type="date" id="recruitLifeCommDate"></div>
+                    <div><label for="recruitNonlifeCommDate">손보 위촉 예정일</label><input type="date" id="recruitNonlifeCommDate"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-3 mt-2">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">생보 위촉 예정일</label>
-                        <input type="date" id="recruitLifeCommDate" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-400 transition">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1 ml-1">손보 위촉 예정일</label>
-                        <input type="date" id="recruitNonlifeCommDate" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-teal-400 transition">
-                    </div>
-                </div>
-
-                <!-- 위촉 서류 파일 첨부 (최대 4개) -->
-                <div class="border-t border-green-50 pt-3">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1 h-4 bg-green-400 rounded-full"></span>
-                            <span class="text-xs font-bold text-green-700">위촉 서류 첨부</span>
-                            <span id="commFileCount" class="text-xs text-gray-500 font-bold">0/4</span>
-                        </div>
-                    </div>
+                <div><label>위촉 서류 <span id="commFileCount" class="font-normal text-[#8B95A1]">0/4</span></label>
                     <div id="commFilePreviews" class="space-y-2 mb-2"></div>
-                    <label id="commFileAddBtn" class="flex items-center gap-2 px-3 py-2.5 bg-green-50 border border-green-200 border-dashed rounded-lg cursor-pointer hover:bg-green-100 transition">
-                        <span class="text-green-500 text-base">📎</span>
-                        <span class="text-sm font-bold text-green-700">서류 파일 추가</span>
-                        <span class="text-xs text-green-400">(최대 4개)</span>
-                        <input type="file" id="commFileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.hwp" class="hidden" onchange="handleCommFiles(this)">
-                    </label>
+                    <label id="commFileAddBtn" class="rc-file"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg><span>서류 파일 추가</span><em>최대 4개</em>
+                        <input type="file" id="commFileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.hwp" class="hidden" onchange="handleCommFiles(this)"></label>
                 </div>
-
-                <!-- 입사 완료 버튼 -->
-                <div class="flex justify-end pt-3 border-t border-gray-100 mt-2">
-                    <button type="button" onclick="confirmHire()" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center gap-2 active:scale-95">
-                        🎉 입사 완료
-                    </button>
-                </div>
+                <button type="button" onclick="confirmHire()" class="rc-hire">입사 완료 확정</button>
             </div>
+
+            <div><label for="recruitNotes">메모</label><textarea id="recruitNotes" rows="3" placeholder="상담 내용, 성향, 특이사항"></textarea></div>
         </div>
-
-        <div class="p-4 border-t border-gray-100 flex items-center gap-2 bg-gray-50 rounded-b-2xl">
-            <button id="btnDeleteRecruit" onclick="deleteRecruit()" class="shrink-0 whitespace-nowrap px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-lg text-sm transition hidden">삭제</button>
-            <button id="btnHoldRecruit" onclick="holdRecruit()" class="shrink-0 whitespace-nowrap px-3 py-2 bg-orange-50 text-orange-600 hover:bg-orange-100 font-bold rounded-lg text-sm transition hidden">보류</button>
-            <div class="flex gap-2 justify-end flex-1">
-                <button onclick="closeRecruitModal()" class="whitespace-nowrap px-4 py-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold rounded-lg text-sm transition">취소</button>
-                <button onclick="saveRecruit()" class="whitespace-nowrap px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-sm transition shadow-md">저장하기</button>
-            </div>
+        <div class="flex gap-2 px-5 pt-3 border-t border-[#F2F4F6]" style="padding-bottom:calc(14px + env(safe-area-inset-bottom))">
+            <button id="btnDeleteRecruit" onclick="deleteRecruit()" class="bd-btn bd-btn-red hidden" style="padding:0 14px">삭제</button>
+            <button id="btnHoldRecruit" onclick="holdRecruit()" class="bd-btn bd-btn-gray hidden" style="padding:0 14px">보류</button>
+            <button onclick="saveRecruit()" class="bd-btn bd-btn-blue flex-1">저장하기</button>
         </div>
     </div>
 </div>
+
 
     <!-- 사진첩 페이지 -->
 <div id="page-gallery" class="page-section hidden p-4 pb-20">
@@ -13673,7 +13630,26 @@ function loadRecruitingData(forceRefresh = false) {
 }
 
 // ── 단계별 필드 토글 ──
+var RC_STAGES = [['stageOT','OT'],['stage2','CIS'],['stage3','면접'],['stage4','위촉'],['stage5','보류']];
+var RC_FLOW = ['stageOT','stage2','stage3','stage4'];
+var rcFilter = 'all';
+function rcStageName(k) { var f = RC_STAGES.find(function (x) { return x[0] === k; }); return f ? f[1] : k; }
+function rcSetStage(v) {
+    var sel = document.getElementById('recruitStage'); sel.value = v;
+    [].forEach.call(document.querySelectorAll('#rcStageChips button'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === v)); });
+    updateStageSpecificFields(v);
+}
+function rcSetInterest(v) {
+    document.getElementById('recruitOtInterest').value = v || '';
+    [].forEach.call(document.querySelectorAll('#rcInterestSeg button'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === v)); });
+}
+(function () {
+    var box = document.getElementById('rcStageChips');
+    if (box) RC_STAGES.forEach(function (x) { var b = document.createElement('button'); b.type = 'button'; b.dataset.v = x[0]; b.textContent = x[1]; b.onclick = function () { rcSetStage(x[0]); }; box.appendChild(b); });
+    [].forEach.call(document.querySelectorAll('#rcInterestSeg button'), function (b) { b.onclick = function () { rcSetInterest(document.getElementById('recruitOtInterest').value === b.dataset.v ? '' : b.dataset.v); }; });
+})();
 function updateStageSpecificFields(stage) {
+    document.getElementById('otFields').classList.toggle('hidden', stage !== 'stageOT');
     document.getElementById('cisFields').classList.toggle('hidden', stage !== 'stage2');
     document.getElementById('interviewFields').classList.toggle('hidden', stage !== 'stage3');
     document.getElementById('commissionFields').classList.toggle('hidden', stage !== 'stage4');
@@ -13693,9 +13669,7 @@ function updateInterviewerDisplay() {
         return;
     }
     msgEl.classList.remove('hidden');
-    msgEl.innerHTML = available.map(r =>
-        '<div class="text-green-700 font-bold text-sm flex items-center gap-1">✅ ' + r + '님 면접 가능합니다</div>'
-    ).join('');
+    msgEl.innerHTML = available.join(' · ') + ' 면접 가능';
 }
 
 // ── 체크리스트 시각 상태 ──
@@ -13704,30 +13678,20 @@ function updateTaskDisplay(taskId) {
     const label = document.getElementById('label_' + taskId);
     const statusEl = document.getElementById('status_' + taskId);
     if (!el || !label || !statusEl) return;
-    if (el.checked) {
-        statusEl.innerText = '✅ 완료';
-        statusEl.className = 'text-xs font-bold text-green-600 shrink-0';
-        label.classList.add('bg-green-50', 'border-green-300');
-        label.classList.remove('bg-gray-50', 'border-gray-200');
-    } else {
-        statusEl.innerText = '대기중';
-        statusEl.className = 'text-xs font-bold text-gray-500 shrink-0';
-        label.classList.remove('bg-green-50', 'border-green-300');
-        label.classList.add('bg-gray-50', 'border-gray-200');
-    }
+    statusEl.innerText = el.checked ? '완료' : '대기';
+    label.classList.toggle('is-done', el.checked);
 }
 
 // ── 파일 첨부 헬퍼 ──
 function _makeFilePreviewHtml(f, removeCall, isImage) {
-    const icon = isImage ? '🖼️' : '📄';
     const viewBtn = f.viewUrl
-        ? '<a href="' + f.viewUrl + '" target="_blank" class="text-xs text-blue-600 font-bold underline shrink-0">보기</a>'
+        ? '<a href="' + f.viewUrl + '" target="_blank" rel="noopener" class="rc-fview">보기</a>'
         : '';
-    return '<div class="flex items-center gap-2 p-2 rounded-lg border text-sm">' +
-        '<span class="text-base shrink-0">' + icon + '</span>' +
-        '<span class="flex-1 font-bold text-gray-700 truncate text-xs">' + f.name + '</span>' +
+    return '<div class="rc-fitem">' +
+        '<span class="bd-ficon">' + (isImage ? '사진' : '문서') + '</span>' +
+        '<span class="rc-fname">' + bdEsc(f.name) + '</span>' +
         viewBtn +
-        '<button type="button" onclick="' + removeCall + '" class="text-red-400 hover:text-red-600 font-bold text-sm shrink-0">✕</button>' +
+        '<button type="button" onclick="' + removeCall + '" class="rc-fdel" aria-label="파일 빼기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' +
         '</div>';
 }
 
@@ -13753,7 +13717,6 @@ function renderCisFilePreview() {
     const isImg = cisFileData.data ? cisFileData.data.startsWith('data:image') : false;
     el.classList.remove('hidden');
     el.innerHTML = _makeFilePreviewHtml(cisFileData, 'removeCisFile()', isImg);
-    el.querySelector('div').classList.add('bg-blue-50', 'border-blue-100');
 }
 
 // 면접 이력서 파일
@@ -13778,7 +13741,6 @@ function renderInterviewFilePreview() {
     const isImg = interviewFileData.data ? interviewFileData.data.startsWith('data:image') : false;
     el.classList.remove('hidden');
     el.innerHTML = _makeFilePreviewHtml(interviewFileData, 'removeInterviewFile()', isImg);
-    el.querySelector('div').classList.add('bg-purple-50', 'border-purple-100');
 }
 
 // 위촉 서류 파일 (최대 4개)
@@ -13811,117 +13773,107 @@ function renderCommFilePreviews() {
         const div = document.createElement('div');
         div.innerHTML = _makeFilePreviewHtml(f, 'removeCommFile(' + idx + ')', isImg);
         const inner = div.querySelector('div');
-        if (inner) inner.classList.add('bg-green-50', 'border-green-100');
         container.appendChild(div);
     });
     if (countEl) countEl.innerText = commFilesList.length + '/4';
     if (addBtn) addBtn.style.display = commFilesList.length >= 4 ? 'none' : 'flex';
 }
 
-// ── 칸반 보드 렌더 ──
+// ── [A안] 리크루팅 목록 렌더 (단계 필터 + 카드) ──
+function rcVisible() {
+    const myRole = getRole(loggedInUser) || '';
+    return recruitingDB.filter(r => {
+        if (r.isCompleted) return false;
+        if (!RC_STAGES.some(x => x[0] === r.stage)) return false;
+        if (myRole === 'FC') return r.owner === loggedInUser;
+        return true;
+    });
+}
+function rcSetFilter(f) { rcFilter = f; renderRecruitingBoard(); }
 function renderRecruitingBoard() {
-    ['stage2', 'stage3', 'stage4', 'stage5'].forEach(stage => {
-        const el = document.getElementById(stage);
-        const cnt = document.getElementById('cnt-' + stage);
-        if (el) el.innerHTML = '';
-        if (cnt) cnt.innerText = '0';
-    });
-
-    const myRole = getRole(loggedInUser);
-    const myBranch = findUser(loggedInUser)?.branch;
-
-    const visibleData = recruitingDB.filter(r => {
-    if (r.isCompleted) return false;
-    if (r.stage === 'stage1') return false;
-    if (myRole === 'FC') return r.owner === loggedInUser;
-    return true;
-});
-    let counts = { stage2: 0, stage3: 0, stage4: 0, stage5: 0 };
-
-    visibleData.forEach(r => {
-        if (!counts[r.stage] && counts[r.stage] !== 0) return;
-        counts[r.stage]++;
-        const col = document.getElementById(r.stage);
-        if (!col) return;
-
-        const stages = ['stage2', 'stage3', 'stage4', 'stage5'];
-        const curIdx = stages.indexOf(r.stage);
-        const prevBtn = (curIdx > 0 && r.stage !== 'stage5')
-            ? '<button onclick="moveStage(event,\'' + r.id + '\',-1)" class="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded whitespace-nowrap">◀ 이전</button>'
-            : '<div></div>';
-        const nextBtn = curIdx < stages.length - 1
-            ? '<button onclick="moveStage(event,\'' + r.id + '\',1)" class="px-2 py-1 text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded whitespace-nowrap">다음 ▶</button>'
-            : '<div></div>';
-
-        // 단계별 추가 표시
-        let extraInfo = '';
-        if (r.stage === 'stage2' && r.cisFile) {
-            extraInfo = '<div class="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded mb-1">📎 ' + r.cisFile.name + '</div>';
-        }
-        if (r.stage === 'stage3') {
-            if (r.interviewDate) {
-                const t = r.interviewTime ? ' ' + r.interviewTime : '';
-                extraInfo += '<div class="text-xs text-purple-700 font-bold bg-purple-50 px-2 py-1 rounded mb-1">🗓️ ' + r.interviewDate + t + '</div>';
-            }
-            const interviewers = r.interviewers || {};
-            const avail = Object.keys(interviewers).filter(k => interviewers[k]);
-            if (avail.length > 0) {
-                extraInfo += '<div class="flex flex-wrap gap-1 mb-1">' +
-                    avail.map(role => '<span class="text-xs font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700">✅ ' + role + '</span>').join('') +
-                    '</div>';
-            }
-            if (r.interviewFile) {
-                extraInfo += '<div class="text-xs text-purple-500 font-bold">📄 ' + r.interviewFile.name + '</div>';
-            }
-        }
-        if (r.stage === 'stage4') {
-            const tasks = r.commissionTasks || {};
-            const taskKeys = ['입사서류', '위촉서류', '생보시험', '손보시험', '보증보험'];
-            const done = taskKeys.filter(k => tasks[k]).length;
-            extraInfo += '<div class="text-xs font-bold text-gray-500 mb-1">진행: ' + done + '/' + taskKeys.length + '</div>';
-            extraInfo += '<div class="flex flex-wrap gap-0.5 mb-1">' +
-                taskKeys.map(k => '<span class="text-xs font-bold px-1 py-0.5 rounded ' + (tasks[k] ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500') + '">' + (tasks[k] ? '✅ ' : '○ ') + k + '</span>').join('') +
-                '</div>';
-            if (r.lifeCommDate) extraInfo += '<div class="text-xs text-blue-600 font-bold">생보: ' + r.lifeCommDate + '</div>';
-            if (r.nonlifeCommDate) extraInfo += '<div class="text-xs text-teal-600 font-bold">손보: ' + r.nonlifeCommDate + '</div>';
-            if (r.commissionFiles && r.commissionFiles.length > 0) {
-                extraInfo += '<div class="text-xs text-green-600 font-bold mt-0.5">📎 서류 ' + r.commissionFiles.length + '개</div>';
-            }
-        }
-
-        const card = document.createElement('div');
-        card.className = 'bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:border-rose-300 transition-colors';
-        card.onclick = () => openRecruitModal(r.id);
-        card.innerHTML =
-            '<div class="flex justify-between items-start mb-1">' +
-                '<span class="font-bold text-gray-800 text-sm">' + r.name + '</span>' +
-                '<span class="text-xs text-gray-500 bg-gray-50 px-1 border rounded shrink-0 ml-1">도입: ' + r.owner + '</span>' +
-            '</div>' +
-            '<div class="text-xs text-gray-500 font-mono mb-1.5">' + (r.phone || '연락처 없음') + '</div>' +
-            (extraInfo ? '<div class="mb-1.5">' + extraInfo + '</div>' : '') +
-            (r.notes ? '<div class="text-xs text-gray-600 bg-gray-50 p-1.5 rounded mb-2 line-clamp-2 break-words">' + r.notes + '</div>' : '') +
-            '<div class="flex justify-between mt-2 pt-2 border-t border-gray-100">' + prevBtn + nextBtn + '</div>';
-        col.appendChild(card);
-    });
-
-    for (const key in counts) {
-        const el = document.getElementById('cnt-' + key);
-        if (el) el.innerText = counts[key];
+    const all = rcVisible();
+    const counts = {}; RC_STAGES.forEach(x => counts[x[0]] = 0);
+    all.forEach(r => counts[r.stage]++);
+    const pipe = document.getElementById('rcPipe');
+    if (pipe) {
+        const tab = (k, label, n) => '<button type="button" role="tab" aria-selected="' + (rcFilter === k) + '" class="rc-tab' + (k === 'stage5' ? ' is-hold' : '') + '" onclick="rcSetFilter(\'' + k + '\')"><span>' + label + '</span><b>' + n + '</b></button>';
+        pipe.innerHTML = tab('all', '전체', all.filter(r => r.stage !== 'stage5').length) + RC_STAGES.map(x => tab(x[0], x[1], counts[x[0]])).join('');
     }
-    setTimeout(setupRecruitScrollAnimation, 80);
+    const q = ((document.getElementById('rcSearch') || {}).value || '').trim();
+    let list = all.filter(r => rcFilter === 'all' ? r.stage !== 'stage5' : r.stage === rcFilter);
+    if (q) list = list.filter(r => [r.name, r.phone, r.owner].join(' ').indexOf(q) >= 0);
+    const order = { stageOT: 0, stage2: 1, stage3: 2, stage4: 3, stage5: 4 };
+    list.sort((a, b) => (order[a.stage] - order[b.stage]) || String(b.dateAdded || '').localeCompare(String(a.dateAdded || '')));
+    const box = document.getElementById('rcList');
+    if (!box) return;
+    if (!list.length) {
+        box.innerHTML = '<div class="bd-empty"><b>' + (q ? '검색 결과가 없어요' : (rcFilter === 'all' ? '진행 중인 후보자가 없어요' : rcStageName(rcFilter) + ' 단계 후보자가 없어요')) + '</b>' + (q ? '' : '오른쪽 위 후보자 등록으로 추가해 보세요.') + '</div>';
+        return;
+    }
+    box.innerHTML = list.map(rcCardHtml).join('');
+}
+function rcCardHtml(r) {
+    const e = bdEsc;
+    let info = '';
+    if (r.stage === 'stageOT') {
+        const bits = [];
+        if (r.otDate) bits.push('첫 접촉 ' + e(String(r.otDate).slice(5).replace('-', '.')));
+        if (r.otSource) bits.push(e(r.otSource));
+        if (r.otInterest) bits.push('관심도 ' + ({ '상': '높음', '중': '보통', '하': '낮음' }[r.otInterest] || e(r.otInterest)));
+        if (bits.length) info += '<p class="rc-info">' + bits.join(' · ') + '</p>';
+    }
+    if (r.stage === 'stage2' && r.cisFile) info += '<p class="rc-info"><span class="bd-ficon">파일</span> ' + e(r.cisFile.name) + '</p>';
+    if (r.stage === 'stage3') {
+        if (r.interviewDate) info += '<p class="rc-pill">면접 ' + e(r.interviewDate.slice(5).replace('-', '.')) + (r.interviewTime ? ' ' + e(r.interviewTime) : '') + '</p>';
+        const iv = r.interviewers || {}; const av = Object.keys(iv).filter(k => iv[k]);
+        if (av.length) info += '<p class="rc-info">참여 ' + av.map(e).join(' · ') + '</p>';
+    }
+    if (r.stage === 'stage4') {
+        const t = r.commissionTasks || {}; const keys = ['입사서류', '위촉서류', '생보시험', '손보시험', '보증보험'];
+        const d = keys.filter(k => t[k]).length;
+        info += '<div class="rc-prog"><div class="rc-bar"><i style="width:' + (d / keys.length * 100) + '%"></i></div><span>' + d + '/' + keys.length + '</span></div>';
+        const next = keys.find(k => !t[k]);
+        if (next) info += '<p class="rc-info">다음 할 일 · ' + e(next) + '</p>';
+        const dates = [r.lifeCommDate ? '생보 ' + e(r.lifeCommDate.slice(5).replace('-', '.')) : '', r.nonlifeCommDate ? '손보 ' + e(r.nonlifeCommDate.slice(5).replace('-', '.')) : ''].filter(Boolean);
+        if (dates.length) info += '<p class="rc-info">위촉 예정 ' + dates.join(' · ') + '</p>';
+    }
+    const idx = RC_FLOW.indexOf(r.stage);
+    const id = String(r.id).replace(/'/g, '');
+    let actions = '';
+    if (r.stage === 'stage5') {
+        actions = '<button type="button" class="rc-next" onclick="rcResume(event,\'' + id + '\')">다시 진행 · ' + rcStageName(r.heldFrom || 'stageOT') + '</button>';
+    } else {
+        if (idx > 0) actions += '<button type="button" class="rc-prev" onclick="moveStage(event,\'' + id + '\',-1)" aria-label="이전 단계로"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>';
+        if (idx >= 0 && idx < RC_FLOW.length - 1) actions += '<button type="button" class="rc-next" onclick="moveStage(event,\'' + id + '\',1)">' + rcStageName(RC_FLOW[idx + 1]) + ' 단계로<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>';
+        if (r.stage === 'stage4') actions += '<button type="button" class="rc-next is-hire" onclick="event.stopPropagation();openRecruitModal(\'' + id + '\')">입사 확정하기</button>';
+    }
+    const tel = r.phone ? '<a class="rc-tel" href="tel:' + e(String(r.phone).replace(/[^\d+]/g, '')) + '" onclick="event.stopPropagation()" aria-label="' + e(r.name) + '에게 전화"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>' + e(r.phone) + '</a>' : '<span class="rc-nophone">연락처 없음</span>';
+    return '<div class="rc-card" role="button" tabindex="0" onclick="openRecruitModal(\'' + id + '\')" onkeydown="if(event.key===\'Enter\')openRecruitModal(\'' + id + '\')">'
+        + '<div class="rc-top"><span class="rc-stage rc-' + r.stage + '">' + rcStageName(r.stage) + '</span><span class="rc-name">' + e(r.name) + '</span><span class="rc-owner">도입 ' + e(r.owner || '-') + '</span></div>'
+        + '<div class="rc-mid">' + tel + '</div>'
+        + info
+        + (r.notes ? '<p class="rc-note">' + e(r.notes) + '</p>' : '')
+        + (actions ? '<div class="rc-actions">' + actions + '</div>' : '')
+        + '</div>';
+}
+function rcResume(event, id) {
+    event.stopPropagation();
+    const r = recruitingDB.find(x => x.id === id); if (!r) return;
+    r.stage = r.heldFrom && RC_FLOW.indexOf(r.heldFrom) >= 0 ? r.heldFrom : 'stageOT';
+    delete r.heldFrom;
+    renderRecruitingBoard(); saveRecruitingToServer(r.name + '님을 ' + rcStageName(r.stage) + ' 단계로 옮겼어요');
 }
 
 function moveStage(event, id, direction) {
     event.stopPropagation();
     const idx = recruitingDB.findIndex(r => r.id === id);
     if (idx === -1) return;
-    const stages = ['stage2', 'stage3', 'stage4'];
-    const curIdx = stages.indexOf(recruitingDB[idx].stage);
+    const curIdx = RC_FLOW.indexOf(recruitingDB[idx].stage);
     const newIdx = curIdx + direction;
-    if (newIdx >= 0 && newIdx < stages.length) {
-        recruitingDB[idx].stage = stages[newIdx];
+    if (curIdx >= 0 && newIdx >= 0 && newIdx < RC_FLOW.length) {
+        recruitingDB[idx].stage = RC_FLOW[newIdx];
         renderRecruitingBoard();
-        saveRecruitingToServer();
+        saveRecruitingToServer(recruitingDB[idx].name + '님을 ' + rcStageName(RC_FLOW[newIdx]) + ' 단계로 옮겼어요');
     }
 }
 
@@ -13965,16 +13917,22 @@ function openRecruitModal(id = null) {
     document.getElementById('recruitInterviewTime').value = '';
     document.getElementById('recruitLifeCommDate').value = '';
     document.getElementById('recruitNonlifeCommDate').value = '';
+    document.getElementById('recruitOtDate').value = '';
+    document.getElementById('recruitOtSource').value = '';
+    rcSetInterest('');
 
     if (id) {
         const data = recruitingDB.find(r => r.id === id);
         if (!data) return;
-        title.innerHTML = '✏️ 후보자 정보 수정';
+        title.innerHTML = '후보자 정보';
         document.getElementById('recruitId').value = data.id;
         document.getElementById('recruitName').value = data.name;
         document.getElementById('recruitPhone').value = data.phone || '';
-        document.getElementById('recruitStage').value = data.stage;
+        rcSetStage(RC_STAGES.some(x => x[0] === data.stage) ? data.stage : 'stageOT');
         document.getElementById('recruitOwner').value = data.owner;
+        document.getElementById('recruitOtDate').value = data.otDate || '';
+        document.getElementById('recruitOtSource').value = data.otSource || '';
+        rcSetInterest(data.otInterest || '');
         document.getElementById('recruitNotes').value = data.notes || '';
         delBtn.classList.remove('hidden');
         if (holdBtn) holdBtn.classList.remove('hidden');
@@ -14003,18 +13961,18 @@ function openRecruitModal(id = null) {
         document.getElementById('recruitLifeCommDate').value = data.lifeCommDate || '';
         document.getElementById('recruitNonlifeCommDate').value = data.nonlifeCommDate || '';
 
-        updateStageSpecificFields(data.stage);
+        if (holdBtn) holdBtn.classList.toggle('hidden', data.stage === 'stage5');
     } else {
         title.innerHTML = '후보자 등록';
         document.getElementById('recruitId').value = '';
         document.getElementById('recruitName').value = '';
         document.getElementById('recruitPhone').value = '';
-        document.getElementById('recruitStage').value = 'stage2';
+        rcSetStage(rcFilter !== 'all' && rcFilter !== 'stage5' ? rcFilter : 'stageOT');
         document.getElementById('recruitOwner').value = loggedInUser;
+        document.getElementById('recruitOtDate').value = new Date().toISOString().slice(0, 10);
         document.getElementById('recruitNotes').value = '';
         delBtn.classList.add('hidden');
         if (holdBtn) holdBtn.classList.add('hidden');
-        updateStageSpecificFields('stage2');
     }
 
     modal.classList.remove('hidden');
@@ -14056,6 +14014,12 @@ function saveRecruit() {
         commissionTasks,
         lifeCommDate: document.getElementById('recruitLifeCommDate').value,
         nonlifeCommDate: document.getElementById('recruitNonlifeCommDate').value,
+        otDate: document.getElementById('recruitOtDate').value,
+        otSource: document.getElementById('recruitOtSource').value,
+        otInterest: document.getElementById('recruitOtInterest').value,
+        heldFrom: stage === 'stage5' ? (existing.stage && existing.stage !== 'stage5' ? existing.stage : existing.heldFrom) : undefined,
+        dismissedAlerts: existing.dismissedAlerts,
+        completedDate: existing.completedDate,
         cisFile: cisFileData,
         interviewFile: interviewFileData,
         commissionFiles: [...commFilesList],
@@ -14071,14 +14035,14 @@ function saveRecruit() {
 
     closeRecruitModal();
     renderRecruitingBoard();
-    saveRecruitingToServer();
+    saveRecruitingToServer(id ? '저장했어요' : name + '님을 등록했어요');
 }
 
 function deleteRecruit() {
     const id = document.getElementById('recruitId').value;
     if (!id) return;
     Swal.fire({
-        title: '삭제하시겠습니까?', text: '후보자 정보를 삭제합니다.', icon: 'warning',
+        title: '후보자를 삭제할까요?', text: '삭제하면 되돌릴 수 없어요.',
         showCancelButton: true, confirmButtonColor: '#ef4444',
         confirmButtonText: '삭제', cancelButtonText: '취소'
     }).then(res => {
@@ -14086,7 +14050,7 @@ function deleteRecruit() {
             recruitingDB = recruitingDB.filter(r => r.id !== id);
             closeRecruitModal();
             renderRecruitingBoard();
-            saveRecruitingToServer();
+            saveRecruitingToServer('삭제했어요');
         }
     });
 }
@@ -14100,27 +14064,22 @@ function holdRecruit() {
     if (!data) return;
 
     Swal.fire({
-        title: '보류 처리',
-        html: `<strong>${data.name}</strong> 후보자를 보류 상태로 변경하시겠습니까?<br><span class="text-xs text-gray-500">입력된 모든 정보와 파일은 안전하게 유지됩니다.</span>`,
-        icon: 'question',
+        title: `${bdEsc(data.name)}님을 보류할까요?`,
+        html: '입력한 정보와 파일은 그대로 남고, 보류 탭에서 다시 진행할 수 있어요.',
         showCancelButton: true,
-        confirmButtonColor: '#f97316',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: '보류 처리',
+        confirmButtonText: '보류',
         cancelButtonText: '취소'
     }).then(res => {
         if (res.isConfirmed) {
             const idx = recruitingDB.findIndex(r => r.id === id);
             if (idx !== -1) {
-                // 단계만 stage5로 변경 (나머지 데이터 일체 보존)
+                // 단계만 stage5로 변경 (나머지 데이터 일체 보존, 돌아갈 단계 기억)
+                if (recruitingDB[idx].stage !== 'stage5') recruitingDB[idx].heldFrom = recruitingDB[idx].stage;
                 recruitingDB[idx].stage = 'stage5';
             }
             closeRecruitModal();
             renderRecruitingBoard();
-            saveRecruitingToServer();
-            
-            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-            Toast.fire({ icon: 'success', title: `${data.name}님이 보류 탭으로 이동되었습니다.` });
+            saveRecruitingToServer(`${data.name}님을 보류로 옮겼어요`);
         }
     });
 }
@@ -14133,13 +14092,10 @@ function confirmHire() {
     if (!data) return;
 
     Swal.fire({
-        title: '🎉 입사 완료 확정',
-        html: '<strong>' + data.name + '</strong> 후보자의 입사를 최종 확정하시겠습니까?<br><br><span style="color:#6b7280;font-size:13px">확정 후 리크루팅 목록에서 제거됩니다.</span>',
-        icon: 'question',
+        title: bdEsc(data.name) + '님 입사를 확정할까요?',
+        html: '확정하면 리크루팅 목록에서 빠져요.',
         showCancelButton: true,
-        confirmButtonColor: '#16a34a',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: '✅ 네, 입사 확정합니다',
+        confirmButtonText: '입사 확정',
         cancelButtonText: '취소'
     }).then(result => {
         if (result.isConfirmed) {
@@ -14150,26 +14106,23 @@ function confirmHire() {
             }
             closeRecruitModal();
             renderRecruitingBoard();
-            saveRecruitingToServer();
-            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
-            Toast.fire({ icon: 'success', title: '🎉 ' + data.name + ' 입사 완료 처리되었습니다!' });
+            saveRecruitingToServer(data.name + '님 입사를 확정했어요');
         }
     });
 }
 
-function saveRecruitingToServer() {
+function saveRecruitingToServer(okMsg) {
     const jsonStr = JSON.stringify(recruitingDB);
-    Swal.fire({
-        title: '저장 중...', text: '파일이 있으면 업로드 중입니다.',
-        allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }
-    });
+    const hasUpload = jsonStr.indexOf('"data:') >= 0;
+    if (hasUpload) Swal.fire({ title: '파일 올리는 중…', text: '잠시만 기다려 주세요.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     if (typeof google !== 'undefined' && typeof google.script !== 'undefined') {
         google.script.run
             .withSuccessHandler(function(res) {
                 if (res && res.success === false) {
-                    Swal.fire('저장 실패', res.error, 'error');
+                    Swal.fire('저장하지 못했어요', res.error, 'error');
                 } else {
-                    Swal.fire({ icon: 'success', title: '저장 완료', timer: 1200, showConfirmButton: false });
+                    if (hasUpload) Swal.close();
+                    if (typeof shToast === 'function') shToast(okMsg || '저장했어요');
                     // 저장 후 서버에서 최신 데이터(Drive URL 포함) 다시 로드
                     google.script.run.withSuccessHandler(function(data) {
                         recruitingDB = data || [];
@@ -14178,7 +14131,7 @@ function saveRecruitingToServer() {
                 }
             })
             .withFailureHandler(function(err) {
-                Swal.fire('통신 오류', (err.message || err), 'error');
+                Swal.fire('저장하지 못했어요', '인터넷 연결을 확인하고 다시 시도해 주세요.', 'error');
             })
             .saveRecruitingData(jsonStr);
     } else {
@@ -14212,11 +14165,11 @@ function checkInterviewNotifications() {
         const interviewers = r.interviewers || {};
         const avail = Object.keys(interviewers).filter(k => interviewers[k]);
         interviewHtml +=
-            '<div style="margin-bottom:10px;padding:10px 12px;background:#f0f9ff;border-radius:10px;border-left:4px solid #3b82f6">' +
-            '<div style="font-weight:bold;color:#1e3a5f;margin-bottom:3px">👤 ' + r.name + ' 후보자</div>' +
-            '<div style="color:#374151;font-size:13px">🗓️ ' + r.interviewDate + (r.interviewTime ? ' ' + r.interviewTime : '') + '</div>' +
-            (r.owner ? '<div style="color:#6b7280;font-size:12px;margin-top:2px">도입: ' + r.owner + '</div>' : '') +
-            (avail.length > 0 ? '<div style="color:#059669;font-size:12px;margin-top:4px;font-weight:bold">✅ 참여가능: ' + avail.join(', ') + '</div>' : '') +
+            '<div style="margin-bottom:8px;padding:12px 14px;background:#F2F4F6;border-radius:14px">' +
+            '<div style="font-weight:700;color:#191F28;margin-bottom:2px">' + bdEsc(r.name) + ' 후보자</div>' +
+            '<div style="color:#1B64DA;font-size:13px;font-weight:700">' + r.interviewDate + (r.interviewTime ? ' ' + r.interviewTime : '') + '</div>' +
+            (r.owner ? '<div style="color:#6B7684;font-size:12px;margin-top:2px">도입 ' + bdEsc(r.owner) + '</div>' : '') +
+            (avail.length > 0 ? '<div style="color:#4E5968;font-size:12px;margin-top:2px">참여 가능 ' + avail.join(' · ') + '</div>' : '') +
             '</div>';
     });
 
@@ -14234,10 +14187,9 @@ function checkInterviewNotifications() {
 
     setTimeout(() => {
         Swal.fire({
-            title: '📋 면접 일정 알림',
+            title: '다가오는 면접 일정',
             html: fullHtml,
-            confirmButtonText: '확인했습니다',
-            confirmButtonColor: '#4f46e5',
+            confirmButtonText: '확인',
             width: '420px',
             // ★ preConfirm: 팝업 닫히기 전에 체크박스 상태 캡처
             preConfirm: () => {

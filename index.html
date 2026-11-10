@@ -2345,7 +2345,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
             </div>
             <div><label for="ceCompany">보험사</label><select id="ceCompany" onchange="ctrEditFillProducts()"></select></div>
             <div><label for="ceProduct">상품</label><select id="ceProduct" onchange="ceSyncKrw()"></select>
-                <p id="ceProductRead" class="text-xs text-[#8B95A1] mt-1.5"></p></div>
+                <p class="text-xs text-[#8B95A1] mt-1.5">수수료는 이 상품 기준으로 계산해요.</p></div>
+            <div><label for="ceProductRead">표시 상품명</label><input type="text" id="ceProductRead" autocomplete="off" placeholder="비우면 위 상품명으로 표시돼요">
+                <p class="text-xs text-[#8B95A1] mt-1.5">청약 리스트와 고객관리 시트에 이 이름으로 보여요.</p></div>
             <div class="rc-sec">
                 <h4>계약 옵션</h4>
                 <div class="ce-chips" role="group" aria-label="계약 옵션">
@@ -6688,7 +6690,7 @@ if (item.isSharedView) {
                 <td class="px-4 py-3 text-left text-gray-600 break-words min-w-[200px]">
                     <label class="inline-flex items-start gap-1.5 cursor-pointer" title="특별 프로모션 합산 대상">
                         <input type="checkbox" class="promo-chk mt-0.5 shrink-0" ${item.promoChecked ? 'checked' : ''} onclick="event.stopPropagation()" onchange="togglePromoCheck(${item.id}, this.checked)">
-                        <span>${item.productName}${shareBadge}</span>
+                        <span>${bdEsc(ctrDispName(item))}${shareBadge}</span>
                     </label>
                 </td>
                 <td class="px-4 py-3 text-right text-gray-600 whitespace-nowrap">${item.premium.toLocaleString()}</td>
@@ -11263,7 +11265,7 @@ function renderPerformancePage() {
                     userName: userName,
                     userBranch: wBranch,
                     company: item.company || '-',
-                    product: item.productName || '-',
+                    product: ctrDispName(item) || '-',
                     premium: basePrem,
                     pPoint: displayPPoint,      // 리스트에도 Gross 값으로 표시
                     sumPPoint: displayPPoint,   // 정렬 등을 위한 매핑
@@ -13894,12 +13896,20 @@ function ocrShowResult(it) {
     var box = document.getElementById('ocrResult');
     box.innerHTML = '<div class="ocr-res-main"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0E8A4F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>'
         + '<span><b>' + bdEsc(it.contractor || '계약자 없음') + '</b> · ' + bdEsc(it.company) + ' · ' + Number(it.premium).toLocaleString() + '원 저장했어요'
-        + '<em>' + bdEsc(it.productName) + (it.policyNo ? ' · 증권 ' + bdEsc(it.policyNo) : '') + '</em></span></div>'
+        + '<em>' + bdEsc(ctrDispName(it)) + (it.policyNo ? ' · 증권 ' + bdEsc(it.policyNo) : '') + '</em></span></div>'
         + '<button type="button" onclick="ctrEditOpen(' + it.id + ')">수정</button>';
     box.classList.remove('hidden');
     shToast('청약을 저장했어요');
 }
 
+// 화면 표시용 상품명: 캡처에서 읽은 이름이 있으면 그 이름 + 옵션 태그(본인·익월 등)
+function ctrDispName(it) {
+    if (!it) return '';
+    var pn = String(it.productName || ''), rd = String(it.productNameRead || '').trim();
+    if (!rd) return pn;
+    var m = pn.match(/\s\(([^()]*(?:본인|원화고정|익월|13회|환산|실손|재물)[^()]*)\)$/);
+    return rd + (m ? ' (' + m[1] + ')' : '');
+}
 // ── 청약 수정 시트 ──
 var CE = { cat: 'life' };
 function ctrEditSetCat(cat, keep) {
@@ -14000,7 +14010,7 @@ function ctrEditOpen(id) {
     var cat = String(it.productKey || '').indexOf('sonbo') === 0 || (companies.sonbo || []).indexOf(it.company) >= 0 && (companies.life || []).indexOf(it.company) < 0 ? 'sonbo' : 'life';
     ctrEditSetCat(cat, it.company);
     ctrEditFillProducts(it.productKey);
-    document.getElementById('ceProductRead').textContent = it.productNameRead ? '캡처에서 읽은 상품명: ' + it.productNameRead : '';
+    document.getElementById('ceProductRead').value = it.productNameRead || '';
     // 입력창의 쉐어·시책·환산 값은 잠시 보관했다가 닫을 때 되돌린다
     CE.saved = { sh: currentShareData, ba: currentBonusAdj, bm: currentBonusAmt, br: currentBonus13Rate, b13a: currentBonus13Adj, pr: currentPrateAdj };
     var at = it.attributes || {}, bf = at.briefing && at.briefing.on ? at.briefing : null;
@@ -14081,6 +14091,7 @@ function ctrEditSave() {
         if (tot >= 1) { Swal.fire('쉐어 비율을 확인해 주세요', '쉐어 비율 합계는 100% 미만이어야 해요.', 'warning'); return; }
         it.shares = JSON.parse(JSON.stringify(currentShareData || []));
     }
+    it.productNameRead = g('ceProductRead');
     it.policyNo = g('cePolicy'); it.contractor = g('ceContractor'); it.payYears = g('cePayYears');
     it.category = cat === 'sonbo' ? '손보' : '생보';
     it.contractorBirth = ocrDigits(g('ceBirth')).slice(0, 8); it.contractorPhone = g('cePhone'); it.contractorAddress = g('ceAddress');
@@ -15374,7 +15385,7 @@ function briefCollect() {
                 var brf = calc({ isSharedView: true, isBriefView: true }, bf.briefer);
                 var nx = function (x) { return (x.nextMoney || 0) + (x.bonusMoney || 0); };   // 익월소득 = 익월수수료 + 익월시책
                 rows.push({
-                    month: d.month, owner: d.name, date: it.date, company: it.company, name: it.productName, premium: it.premium,
+                    month: d.month, owner: d.name, date: it.date, company: it.company, name: ctrDispName(it), premium: it.premium,
                     contractor: it.contractor || '', withdrawn: !!it.isWithdrawn, bf: bf,
                     total: full.totalMoney || 0, totalNext: nx(full),
                     mainInc: main.totalMoney || 0, mainNext: nx(main),

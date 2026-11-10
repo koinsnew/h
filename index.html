@@ -956,6 +956,22 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .cal-li-time{display:inline-block;margin-right:6px;font-size:12.5px;font-weight:700;color:#1B64DA;background:#E8F3FF;border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums}
   .cal-li-meta{font-size:13px;color:#6B7684;margin:3px 0 0}
   .cal-none{font-size:14px;color:#8B95A1;padding:6px 0 12px;margin:0}
+  /* [A안] 청약 수정 · 계약 옵션 */
+  .ce-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .ce-chip{height:40px;padding:0 14px;border-radius:999px;border:1px solid #E5E8EB;background:#fff;font-size:14px;font-weight:600;color:#4E5968;display:inline-flex;align-items:center;gap:6px;transition:background .15s,border-color .15s,color .15s}
+  .ce-chip svg{display:none}
+  .ce-chip[aria-pressed="true"]{background:#E8F3FF;border-color:#B7D6FF;color:#1B64DA}
+  .ce-chip[aria-pressed="true"] svg{display:block}
+  .ce-chip.hidden{display:none}
+  .ce-chip:focus-visible,.ce-adj>button:focus-visible{outline:2px solid #3182F6;outline-offset:2px}
+  .ce-adj{margin-top:12px;background:#fff;border-radius:12px;overflow:hidden}
+  .ce-adj>button{width:100%;min-height:48px;display:flex;align-items:center;gap:8px;padding:0 12px 0 14px;font-size:15px;font-weight:600;color:#191F28;text-align:left}
+  .ce-adj>button+button{border-top:1px solid #F2F4F6}
+  .ce-adj>button span{flex:none}
+  .ce-adj>button em{flex:1;min-width:0;font-style:normal;text-align:right;font-size:13px;font-weight:600;color:#1B64DA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ce-adj>button em:empty::before{content:'없음';color:#B0B8C1;font-weight:500}
+  .ce-adj>button:active{background:#F9FAFB}
+  .ce-adj>button[disabled]{opacity:.45}
   /* [A안] 청약 이미지 붙여넣기 */
   .ocr-drop{display:flex;align-items:center;gap:12px;padding:14px 16px;margin:0 0 14px;border-radius:16px;border:1.5px dashed #B5D3FF;background:#F5F9FF;cursor:pointer;transition:background .15s,border-color .15s;outline:none}
   .ocr-drop:hover,.ocr-drop:focus-visible{background:#E8F3FF;border-color:#1E6EE8}
@@ -2328,8 +2344,27 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     <div class="ts-seg" id="ceCatSeg" role="group" aria-labelledby="lbCeCat"><button type="button" data-v="life" aria-pressed="false">생보</button><button type="button" data-v="sonbo" aria-pressed="false">손보</button></div></div>
             </div>
             <div><label for="ceCompany">보험사</label><select id="ceCompany" onchange="ctrEditFillProducts()"></select></div>
-            <div><label for="ceProduct">상품</label><select id="ceProduct"></select>
+            <div><label for="ceProduct">상품</label><select id="ceProduct" onchange="ceSyncKrw()"></select>
                 <p id="ceProductRead" class="text-xs text-[#8B95A1] mt-1.5"></p></div>
+            <div class="rc-sec">
+                <h4>계약 옵션</h4>
+                <div class="ce-chips" role="group" aria-label="계약 옵션">
+                    <button type="button" id="ceOptBrief" class="ce-chip" aria-pressed="false" onclick="ceToggle('brief')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>브리핑</button>
+                    <button type="button" id="ceOptSelf" class="ce-chip" aria-pressed="false" onclick="ceToggle('self')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>본인</button>
+                    <button type="button" id="ceOptKrw" class="ce-chip hidden" aria-pressed="false" onclick="ceToggle('krw')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>원화고정</button>
+                </div>
+                <p id="ceKrwNote" class="hidden text-xs text-[#8B95A1] mt-2">원화고정은 표시만 해요. 보험료는 110%로 계산한 금액을 그대로 입력하세요.</p>
+                <div id="ceBriefBox" class="hidden mt-3">
+                    <label for="ceBriefBroker">브리핑 섭외자</label>
+                    <select id="ceBriefBroker" onchange="ceBriefStatus()"></select>
+                    <p id="ceBriefStatus" class="text-xs text-[#8B95A1] mt-1.5 tabular-nums"></p>
+                </div>
+                <div class="ce-adj">
+                    <button type="button" id="ceAdjShare" onclick="ceOpenShare()"><span>쉐어</span><em id="ceShareSt"></em><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0B8C1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+                    <button type="button" onclick="ceOpenBonus()"><span>시책조정</span><em id="ceBonusSt"></em><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0B8C1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+                    <button type="button" onclick="ceOpenPrate()"><span>환산조정</span><em id="cePrateSt"></em><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B0B8C1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+                </div>
+            </div>
             <div class="rc-sec">
                 <h4>계약자 정보</h4>
                 <div class="rc-row2">
@@ -5315,7 +5350,7 @@ function updateSummary(premium, p, next, bonus, total) {
                     if (savedBonusAdj !== 0) {
                         let rawAdj = savedBonusAdj / 100;
                         // 원화고정이 아닌 메트라이프만 1.1배 보정 (기존 로직 유지)
-                        if (['met5', 'met7'].includes(item.productKey) && !isMetFixed) rawAdj *= 1.1;
+                        if (['met5', 'met7'].includes(item.productKey) && !isMetFixed && !(item.attributes && item.attributes.krwFixed)) rawAdj *= 1.1;
                         adjRate = rawAdj;
                     }
                     
@@ -5456,7 +5491,7 @@ function updateSummary(premium, p, next, bonus, total) {
                     if (savedBonusAdj !== 0) {
                         let rawAdj = savedBonusAdj / 100;
                         const isMetFixed = (item.productKey === 'met5' || item.productKey === 'met7') && item.attributes && item.attributes.isKrwFixed;
-                        if ((item.productKey === 'met5' || item.productKey === 'met7') && !isMetFixed) rawAdj = rawAdj * 1.1;
+                        if ((item.productKey === 'met5' || item.productKey === 'met7') && !isMetFixed && !(item.attributes && item.attributes.krwFixed)) rawAdj = rawAdj * 1.1;
                         adjRate = rawAdj;
                     }
                     let finalRate = bonusRate + adjRate;
@@ -5790,12 +5825,11 @@ function updateFormUI() {
     const productVal = document.getElementById('productSelect').value;
     const krwFixedWrapper = document.getElementById('metKrwFixedWrapper');
     
-    if (company === "메트라이프" && productVal) {
+    if (productVal) {
          const prodIdx = parseInt(productVal);
          if (productsData[prodIdx]) {
-             // [수정] key가 아니라 specialCode를 확인
-             const sCode = productsData[prodIdx].specialCode;
-             if (sCode === 'met5' || sCode === 'met7') { 
+             // 메트라이프·AIA 달러보험이면 원화고정 체크 표시
+             if (ceIsDollar(company, productsData[prodIdx].name)) { 
                  if(krwFixedWrapper) krwFixedWrapper.classList.remove('hidden'); 
              } 
              else { 
@@ -6160,6 +6194,7 @@ function calculateCumulativeBonus() {
     let pRateOverride = null; 
     let isGroupExcluded = false; 
     let isKrwFixed = false;
+    let krwFixed = false;
     
     // [신규 변수] 실손, 재물, 단기납 여부 플래그
     let isSilson = false;
@@ -6171,7 +6206,7 @@ function calculateCumulativeBonus() {
         if (_selfEl && _selfEl.checked) { isBonusExcluded = true; tags.push("본인"); }
         const krwFixedEl = document.getElementById('met_krw_fixed');
         if (krwFixedEl && krwFixedEl.checked && !krwFixedEl.closest('div').classList.contains('hidden')) {
-            isKrwFixed = true; tags.push("원화고정(110%)");
+            krwFixed = true; tags.push("원화고정");
         }
     } else if (category === 'sonbo') {
         const _selfElS = document.getElementById('self_contract');
@@ -6228,6 +6263,7 @@ function calculateCumulativeBonus() {
             bonus13Adj: currentBonus13Adj,       // 13회 원
             prateAdj: currentPrateAdj, 
             isKrwFixed: isKrwFixed,
+            krwFixed: krwFixed,
             isSilson: isSilson,
             isJaemul: isJaemul,
             isShortTerm: isShortTerm
@@ -6445,7 +6481,7 @@ function calculateCumulativeBonus() {
         
         updateBonusAdjStatus(); // 화면 갱신
                 if (item.attributes && item.attributes.prateAdj) { currentPrateAdj = item.attributes.prateAdj; updatePrateAdjStatus(); }
-                if (item.attributes && item.attributes.isKrwFixed) { const krwEl = document.getElementById('met_krw_fixed'); if(krwEl && !krwEl.closest('div').classList.contains('hidden')) { krwEl.checked = true; krwEl.setAttribute('data-checked', 'true'); } }
+                if (item.attributes && (item.attributes.isKrwFixed || item.attributes.krwFixed)) { const krwEl = document.getElementById('met_krw_fixed'); if(krwEl && !krwEl.closest('div').classList.contains('hidden')) { krwEl.checked = true; krwEl.setAttribute('data-checked', 'true'); } }
                 if (item.shares && item.shares.length > 0) { currentShareData = JSON.parse(JSON.stringify(item.shares)); updateShareStatus(); } else { currentShareData = []; updateShareStatus(); }
                 try { openEntryPanel(); } catch (e) { } const formEl = document.getElementById('calcForm'); if(formEl) { formEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => document.getElementById('premiumInput').focus(), 500); }
                 deleteRow(id, true);
@@ -13876,14 +13912,84 @@ function ctrEditSetCat(cat, keep) {
     ctrEditFillProducts();
 }
 function ctrEditFillProducts(keepKey) {
+    setTimeout(function () { try { if (CE.open) ceSyncKrw(); } catch (e) { } }, 0);
     var ps = document.getElementById('ceProduct'), comp = document.getElementById('ceCompany').value;
     var c = comp ? ocrProductCandidates(CE.cat, comp) : [];
     ps.innerHTML = '<option value="">선택하세요</option>' + c.map(function (x) { return '<option value="' + x.index + '">' + bdEsc(x.name) + '</option>'; }).join('');
     if (keepKey) { var m = c.find(function (x) { return productsData[x.index].key === keepKey; }); if (m) ps.value = String(m.index); }
 }
 (function () { [].forEach.call(document.querySelectorAll('#ceCatSeg button'), function (b) { b.onclick = function () { ctrEditSetCat(b.dataset.v); }; }); })();
+function ceIsDollar(company, name) { return /메트라이프|AIA/i.test(String(company || '')) && /달러|달려/.test(String(name || '')); }
+function cePressed(id, on) { var b = document.getElementById(id); if (b) b.setAttribute('aria-pressed', String(!!on)); }
+function ceCurProd() { var v = document.getElementById('ceProduct').value; return v === '' ? null : productsData[Number(v)]; }
+function ceSyncKrw() {
+    var p = ceCurProd(), show = !!(p && CE.cat === 'life' && ceIsDollar(document.getElementById('ceCompany').value, p.name));
+    document.getElementById('ceOptKrw').classList.toggle('hidden', !show);
+    if (!show) CE.krw = false;
+    cePressed('ceOptKrw', CE.krw);
+    document.getElementById('ceKrwNote').classList.toggle('hidden', !(show && CE.krw && !CE.krwLegacy));
+}
+function ceToggle(k) {
+    if (k === 'brief' && !CE.brief && currentShareData && currentShareData.length) {
+        var who = currentShareData.map(function (x) { return x.user + ' ' + Math.round((parseFloat(x.rate) || 0) * 100) + '%'; }).join(', ');
+        Swal.fire({ icon: 'warning', title: '쉐어 설정이 해제됩니다', html: '현재 쉐어(' + bdEsc(who) + ')가 해제되고<br>' + BRIEF_RECEIVER + ' 본부장 ' + Math.round(BRIEF_RECV_RATE * 100) + '% 브리핑 계약으로 바뀝니다.', showCancelButton: true, confirmButtonText: '브리핑으로 변경', cancelButtonText: '취소' })
+            .then(function (r) { if (r.isConfirmed) { currentShareData = []; ceToggle('brief'); } });
+        return;
+    }
+    CE[k] = !CE[k];
+    if (k === 'krw') CE.krwLegacy = false;
+    ceRender();
+}
+function ceBriefFill() {
+    var sel = document.getElementById('ceBriefBroker'), prev = sel.value || CE.broker || '';
+    var mon = (document.getElementById('ceDate').value || currentMonth).slice(0, 7);
+    var list = briefNames().filter(function (n) { return n !== BRIEF_RECEIVER; });
+    sel.innerHTML = '<option value="">섭외자 선택</option>' + list.map(function (n) { return '<option value="' + bdEsc(n) + '">' + bdEsc(n) + ' (' + Math.round((briefRateAt(n, mon) || 0) * 100) + '%)</option>'; }).join('');
+    if (prev) sel.value = prev;
+}
+function ceBriefStatus() {
+    var el = document.getElementById('ceBriefStatus'), n = document.getElementById('ceBriefBroker').value, r = BRIEF_RECV_RATE;
+    CE.broker = n;
+    var br = n ? Math.min(r, briefRateAt(n, (document.getElementById('ceDate').value || currentMonth).slice(0, 7)) || 0) : 0;
+    var p = function (x) { return Math.round(x * 100) + '%'; };
+    el.textContent = n ? '익월분: ' + currentUser + ' ' + p(1 - r) + ' · ' + BRIEF_RECEIVER + ' ' + p(r - br) + ' · ' + n + ' ' + p(br)
+        : '예상 분배: ' + currentUser + ' ' + p(1 - r) + ' / ' + BRIEF_RECEIVER + ' ' + p(r) + ' · 섭외자를 골라 주세요';
+}
+function ceRender() {
+    var adm = false; try { adm = briefIsAdmin(); } catch (e) { }
+    document.getElementById('ceOptBrief').classList.toggle('hidden', !adm && !CE.brief);
+    cePressed('ceOptBrief', CE.brief); cePressed('ceOptSelf', CE.self);
+    var bb = document.getElementById('ceBriefBox'); bb.classList.toggle('hidden', !(CE.brief && adm));
+    if (CE.brief && adm) { ceBriefFill(); ceBriefStatus(); if (!window.briefBrokers && !CE.loadingBrokers) { CE.loadingBrokers = true; try { briefLoadBrokers(function () { CE.loadingBrokers = false; if (CE.open) { ceBriefFill(); ceBriefStatus(); } }); } catch (e) { CE.loadingBrokers = false; } } }
+    ceSyncKrw();
+    var sh = document.getElementById('ceShareSt'), shb = document.getElementById('ceAdjShare');
+    shb.disabled = !!CE.brief;
+    sh.textContent = CE.brief ? '브리핑 계약 · ' + BRIEF_RECEIVER + ' ' + Math.round(BRIEF_RECV_RATE * 100) + '%'
+        : (currentShareData || []).map(function (x) { return x.user + ' ' + Math.round((parseFloat(x.rate) || 0) * 100) + '%'; }).join(', ');
+    var sg = function (n) { return (n > 0 ? '+' : '') + n; }, bt = [];
+    if (currentBonusAdj) bt.push('익월 ' + sg(currentBonusAdj) + '%');
+    if (currentBonusAmt) bt.push('익월 ' + sg(currentBonusAmt.toLocaleString()) + '원');
+    if (currentBonus13Rate) bt.push('13회 ' + sg(currentBonus13Rate) + '%');
+    if (currentBonus13Adj) bt.push('13회 ' + sg(currentBonus13Adj.toLocaleString()) + '원');
+    document.getElementById('ceBonusSt').textContent = bt.join(' · ');
+    document.getElementById('cePrateSt').textContent = currentPrateAdj ? '환산 ' + sg(currentPrateAdj) + '%' : '';
+}
+function ceOpenShare() {
+    if (CE.brief) return;
+    var m = document.getElementById('shareModal'); m.style.zIndex = '10050';
+    openShareModal();
+}
+function ceOpenBonus() { setBonusAdj(); }
+function ceOpenPrate() { setPrateAdj(); }
+// 기존 쉐어·시책·환산 팝업이 값을 바꾸면 수정 시트에도 반영
+(function () {
+    var wrap = function (name) { var f = window[name]; if (typeof f !== 'function') return; window[name] = function () { var r = f.apply(this, arguments); try { if (CE.open) ceRender(); } catch (e) { } return r; }; };
+    wrap('updateShareStatus'); wrap('updateBonusAdjStatus'); wrap('updatePrateAdjStatus');
+    var cs = window.closeShareModal; if (typeof cs === 'function') window.closeShareModal = function () { cs.apply(this, arguments); document.getElementById('shareModal').style.zIndex = ''; try { if (CE.open) ceRender(); } catch (e) { } };
+})();
 function ctrEditOpen(id) {
     var it = savedList.find(function (x) { return x.id === id; }); if (!it) return;
+    if (it.isSharedView) { showAlert('warning', '알림', '쉐어받은 계약은 원청자만 수정할 수 있습니다.'); return; }
     document.getElementById('ceId').value = id;
     var v = function (k, val) { document.getElementById(k).value = val == null ? '' : val; };
     v('ceDate', it.date); v('cePolicy', it.policyNo); v('ceContractor', it.contractor);
@@ -13895,9 +14001,29 @@ function ctrEditOpen(id) {
     ctrEditSetCat(cat, it.company);
     ctrEditFillProducts(it.productKey);
     document.getElementById('ceProductRead').textContent = it.productNameRead ? '캡처에서 읽은 상품명: ' + it.productNameRead : '';
+    // 입력창의 쉐어·시책·환산 값은 잠시 보관했다가 닫을 때 되돌린다
+    CE.saved = { sh: currentShareData, ba: currentBonusAdj, bm: currentBonusAmt, br: currentBonus13Rate, b13a: currentBonus13Adj, pr: currentPrateAdj };
+    var at = it.attributes || {}, bf = at.briefing && at.briefing.on ? at.briefing : null;
+    currentShareData = bf ? [] : JSON.parse(JSON.stringify(it.shares || []));
+    currentBonusAdj = Number(at.bonusAdj) || 0; currentBonusAmt = Number(at.bonusAmt) || 0;
+    currentBonus13Rate = Number(at.bonus13Rate) || 0; currentBonus13Adj = Number(at.bonus13Adj) || 0;
+    currentPrateAdj = Number(at.prateAdj) || 0;
+    CE.brief = !!bf; CE.broker = bf ? (bf.briefer || '') : '';
+    document.getElementById('ceBriefBroker').innerHTML = ''; 
+    CE.self = !!(at.isBonusExcluded && /본인/.test(String(it.productName || '')));
+    CE.krw = !!(at.krwFixed || at.isKrwFixed); CE.krwLegacy = !!at.isKrwFixed;
+    CE.open = true;
+    ceRender();
     document.getElementById('ctrEditModal').classList.remove('hidden');
 }
-function ctrEditClose() { document.getElementById('ctrEditModal').classList.add('hidden'); }
+function ctrEditClose() {
+    document.getElementById('ctrEditModal').classList.add('hidden');
+    if (!CE.open) return;
+    CE.open = false;
+    var o = CE.saved || {};
+    currentShareData = o.sh || []; currentBonusAdj = o.ba || 0; currentBonusAmt = o.bm || 0; currentBonus13Rate = o.br || 0; currentBonus13Adj = o.b13a || 0; currentPrateAdj = o.pr || 0;
+    try { updateShareStatus(); updateBonusAdjStatus(); updatePrateAdjStatus(); } catch (e) { }
+}
 function ctrEditSave() {
     var id = Number(document.getElementById('ceId').value);
     var idx = savedList.findIndex(function (x) { return x.id === id; }); if (idx < 0) return;
@@ -13906,21 +14032,62 @@ function ctrEditSave() {
     if (!date || date.slice(0, 7) !== currentMonth) { Swal.fire('계약일자를 확인해 주세요', '지금 보고 있는 달(' + currentMonth + ') 안의 날짜만 저장할 수 있어요.', 'warning'); return; }
     if (!comp || pIdx === '') { Swal.fire('보험사와 상품을 골라 주세요', '', 'warning'); return; }
     if (!(prem > 0)) { Swal.fire('보험료를 입력해 주세요', '', 'warning'); return; }
-    var it = JSON.parse(JSON.stringify(old));
     var prod = productsData[Number(pIdx)];
-    if (prod && (prod.key !== old.productKey || comp !== old.company)) {
-        var rates = JSON.parse(JSON.stringify(prod));
-        if (old.attributes && old.attributes.isBonusExcluded) rates.bonus = 0;
-        it.rates = rates; it.productKey = prod.key; it.productName = prod.name;
+    if (!prod) { Swal.fire('상품 정보를 찾지 못했어요', '상품을 다시 골라 주세요.', 'warning'); return; }
+    // 브리핑 검증
+    var brief = null;
+    if (CE.brief) {
+        if (currentUser === BRIEF_RECEIVER) { Swal.fire(BRIEF_RECEIVER + ' 본부장 본인 계약은 브리핑 계약으로 등록할 수 없어요', '', 'warning'); return; }
+        var adm = false; try { adm = briefIsAdmin(); } catch (e) { }
+        var bn = adm ? document.getElementById('ceBriefBroker').value : (CE.broker || '');
+        if (adm && !bn) { Swal.fire('브리핑 섭외자를 골라 주세요', '', 'warning'); return; }
+        var bRate = bn ? (briefRateAt(bn, date.slice(0, 7)) || 0) : 0;
+        if (bn && bRate > BRIEF_RECV_RATE) { Swal.fire('쉐어율을 확인해 주세요', bdEsc(bn) + ' 쉐어율(' + Math.round(bRate * 100) + '%)이 본부장 쉐어(' + Math.round(BRIEF_RECV_RATE * 100) + '%)보다 커요.', 'warning'); return; }
+        brief = { on: true, receiver: BRIEF_RECEIVER, recvRate: BRIEF_RECV_RATE, briefer: bn, brieferRate: bRate };
     }
+    // 상품 요율을 다시 만들고 옵션을 반영 (리스트 추가와 같은 규칙)
+    var cat = CE.cat, rates = JSON.parse(JSON.stringify(prod));
+    if (rates.name.indexOf(' (') >= 0 && ['원화고정', '시책', '익월', '환산', '본인', '실손', '재물', '년납'].some(function (k) { return rates.name.indexOf(k) >= 0; })) rates.name = rates.name.split(' (')[0];
+    var tags = [], bonusEx = false, groupEx = false, silson = false, pOver = null;
+    var dollar = cat === 'life' && ceIsDollar(comp, prod.name);
+    var krwOn = dollar && CE.krw, legacy = krwOn && CE.krwLegacy;
+    if (CE.self) { bonusEx = true; if (cat === 'sonbo') groupEx = true; tags.push('본인'); }
+    if (krwOn) tags.push(legacy ? '원화고정(110%)' : '원화고정');
+    if (cat === 'sonbo' && rates.key === 'sonbo_silson_only') { bonusEx = true; groupEx = true; silson = true; pOver = 0.3; rates.bonus = 0; rates.bonus13 = 0; rates.y2 = 0; rates.y3 = 0; }
+    var nt = [], bt = [];
+    if (currentBonusAdj) nt.push((currentBonusAdj > 0 ? '+' : '') + currentBonusAdj + '%');
+    if (currentBonusAmt) nt.push((currentBonusAmt > 0 ? '+' : '') + currentBonusAmt.toLocaleString());
+    if (nt.length) tags.push('익월(' + nt.join(',') + ')');
+    if (currentBonus13Rate) bt.push((currentBonus13Rate > 0 ? '+' : '') + currentBonus13Rate + '%');
+    if (currentBonus13Adj) bt.push((currentBonus13Adj > 0 ? '+' : '') + currentBonus13Adj.toLocaleString());
+    if (bt.length) tags.push('13회(' + bt.join(',') + ')');
+    if (currentPrateAdj) tags.push('환산' + (currentPrateAdj > 0 ? '+' : '') + currentPrateAdj + '%');
+    if (tags.length) rates.name += ' (' + tags.join(', ') + ')';
+    if (bonusEx) rates.bonus = 0;
+    if (pOver !== null) rates.pRate = pOver;
+    var it = JSON.parse(JSON.stringify(old));
+    it.rates = rates; it.productKey = rates.key; it.productName = rates.name;
     it.company = comp; it.date = date; it.premium = prem;
+    it.attributes = Object.assign({}, old.attributes || {}, {
+        isBonusExcluded: bonusEx, isGroupExcluded: groupEx,
+        bonusAdj: currentBonusAdj, bonusAmt: currentBonusAmt, bonus13Rate: currentBonus13Rate, bonus13Adj: currentBonus13Adj,
+        prateAdj: currentPrateAdj, isKrwFixed: legacy, krwFixed: krwOn && !legacy, isSilson: silson
+    });
+    if (brief) { it.attributes.briefing = brief; it.shares = [{ user: brief.receiver, rate: brief.recvRate }]; }
+    else {
+        delete it.attributes.briefing;
+        var tot = (currentShareData || []).reduce(function (a, x) { return a + (parseFloat(x.rate) || 0); }, 0);
+        if ((currentShareData || []).some(function (x) { return !x.user; })) { Swal.fire('쉐어 대상을 골라 주세요', '', 'warning'); return; }
+        if (tot >= 1) { Swal.fire('쉐어 비율을 확인해 주세요', '쉐어 비율 합계는 100% 미만이어야 해요.', 'warning'); return; }
+        it.shares = JSON.parse(JSON.stringify(currentShareData || []));
+    }
     it.policyNo = g('cePolicy'); it.contractor = g('ceContractor'); it.payYears = g('cePayYears');
-    it.category = CE.cat === 'sonbo' ? '손보' : '생보';
+    it.category = cat === 'sonbo' ? '손보' : '생보';
     it.contractorBirth = ocrDigits(g('ceBirth')).slice(0, 8); it.contractorPhone = g('cePhone'); it.contractorAddress = g('ceAddress');
     savedList[idx] = calculateItemMetrics(it);
     savedList.sort(function (a, b) { return new Date(a.date) - new Date(b.date); });
     try { recalcSonboBonus(); } catch (e) { }
-    renderList(); updateDashboard(); try { updateSonboGapDisplay(); } catch (e) { }
+    renderList(); updateDashboard(); try { updateSonboGapDisplay(); } catch (e) { } try { checkNotifications(); } catch (e) { }
     saveData(true);
     ctrEditClose();
     var r = document.getElementById('ocrResult'); if (r && !r.classList.contains('hidden') && r.innerHTML.indexOf('ctrEditOpen(' + id + ')') >= 0) ocrShowResult(savedList.find(function (x) { return x.id === id; }));

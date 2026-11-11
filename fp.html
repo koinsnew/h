@@ -679,81 +679,215 @@
     }
 
     
+    // ── PDF 리포트 (A4 전용 레이아웃) ──
+    const RP_CSS = `
+      .rp,.rp *{box-sizing:border-box;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;letter-spacing:-0.01em}
+      .rp-page{position:relative;width:794px;height:1123px;background:#fff;color:#191F28;overflow:hidden}
+      .rp-body{position:absolute;left:56px;right:56px}
+      .rp-head{position:absolute;left:56px;right:56px;top:34px;height:30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E5E8EB;padding-bottom:12px;font-size:11.5px;color:#8B95A1}
+      .rp-head b{color:#191F28;font-weight:800;font-size:13px;letter-spacing:-0.02em}
+      .rp-head b i{font-style:normal;color:#1E6EE8}
+      .rp-foot{position:absolute;left:56px;right:56px;bottom:30px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #E5E8EB;padding-top:11px;font-size:10.5px;color:#8B95A1}
+      .rp-foot b{font-weight:600;color:#6B7684}
+      .rp-blk{padding-bottom:26px}
+      .rp-blk.tight{padding-bottom:10px}
+      .rp-brand{display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;border-bottom:2px solid #191F28}
+      .rp-brand b{font-size:19px;font-weight:800;letter-spacing:-0.03em}
+      .rp-brand b i{font-style:normal;color:#1E6EE8}
+      .rp-brand span{font-size:11.5px;color:#6B7684;text-align:right;line-height:1.5}
+      .rp-kind{margin:34px 0 10px;font-size:13px;font-weight:700;color:#1E6EE8}
+      .rp-title{margin:0;font-size:34px;line-height:1.28;font-weight:800;letter-spacing:-0.035em}
+      .rp-title i{font-style:normal;color:#1E6EE8}
+      .rp-prof{display:flex;flex-wrap:wrap;margin:18px 0 0}
+      .rp-prof span{display:inline-block;margin:0 6px 6px 0;padding:6px 11px;border-radius:8px;background:#F2F4F6;font-size:12px;font-weight:600;color:#4E5968}
+      .rp-prof span.goal{background:#E8F3FF;color:#1B64DA}
+      .rp-figs{display:flex;margin-top:26px}
+      .rp-fig{flex:1;padding:18px 18px 17px;border-radius:14px;background:#F7F8FA;margin-right:10px}
+      .rp-fig:last-child{margin-right:0}
+      .rp-fig p{margin:0;font-size:12px;font-weight:600;color:#6B7684}
+      .rp-fig strong{display:block;margin-top:7px;font-size:21px;font-weight:800;letter-spacing:-0.03em}
+      .rp-fig strong small{font-size:13px;font-weight:700;margin-left:1px}
+      .rp-fig.main{background:#1E6EE8;flex:1.25}
+      .rp-fig.main p{color:#D6E6FF}.rp-fig.main strong{color:#fff;font-size:24px}
+      .rp-op{flex:none;width:0;position:relative}
+      .rp-h{display:flex;align-items:baseline;margin:0 0 13px;font-size:17px;font-weight:800;letter-spacing:-0.025em}
+      .rp-h em{font-style:normal;color:#1E6EE8;margin-right:8px;font-size:15px}
+      .rp-h span{margin-left:auto;font-size:11.5px;font-weight:500;color:#8B95A1}
+      .rp-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#F2F4F6}
+      .rp-bar span{display:block;height:14px}
+      .rp-tiles{display:flex;margin-top:12px}
+      .rp-tile{flex:1;margin-right:10px;padding:14px 14px 13px;border:1px solid #E5E8EB;border-radius:12px}
+      .rp-tile:last-child{margin-right:0}
+      .rp-tile .k{display:flex;align-items:center;font-size:12px;font-weight:700;color:#4E5968}
+      .rp-tile .k i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
+      .rp-tile .v{margin-top:8px;font-size:17px;font-weight:800;letter-spacing:-0.03em}
+      .rp-tile .p{margin-top:2px;font-size:12px;font-weight:600;color:#8B95A1}
+      .rp-text{font-size:13.5px;line-height:1.85;color:#333D4B;word-break:keep-all;padding:18px 20px;background:#F7F8FA;border-radius:14px}
+      .rp-text strong,.rp-text b{color:#191F28;font-weight:800}
+      .rp-text span{color:#1B64DA;font-weight:700}
+      .rp-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+      .rp-tbl th{padding:9px 12px;text-align:left;font-size:11.5px;font-weight:700;color:#6B7684;background:#F7F8FA;border-top:1px solid #191F28;border-bottom:1px solid #E5E8EB}
+      .rp-tbl td{padding:8px 12px;border-bottom:1px solid #F2F4F6;color:#333D4B}
+      .rp-tbl .r{text-align:right}
+      .rp-tbl td.r{font-weight:700;color:#191F28}
+      .rp-tbl td.pc{color:#8B95A1;font-weight:500}
+      .rp-tbl tr.sum td{border-top:1px solid #191F28;border-bottom:0;padding-top:11px;font-weight:800;color:#191F28;font-size:13.5px}
+      .rp-row{display:flex;border:1px solid #E5E8EB;border-radius:14px;overflow:hidden}
+      .rp-row .l{flex:none;width:176px;padding:18px 18px 16px;background:#F7F8FA}
+      .rp-row .l .n{display:flex;align-items:center;font-size:14px;font-weight:800}
+      .rp-row .l .n i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px}
+      .rp-row .l .a{margin-top:9px;font-size:19px;font-weight:800;letter-spacing:-0.03em}
+      .rp-row .l .a small{font-size:12px;font-weight:700}
+      .rp-row .l .p{margin-top:3px;font-size:12px;font-weight:600;color:#8B95A1}
+      .rp-row .c{flex:1;padding:17px 20px 15px;font-size:13px;line-height:1.75;color:#333D4B;word-break:keep-all}
+      .rp-row .c .t{font-size:13.5px;font-weight:700;color:#191F28;margin-bottom:3px}
+      .rp-row .c .s{font-size:12px;color:#6B7684}
+      .rp-row .c b{color:#1B64DA;font-weight:700}
+      .rp-term{display:flex;padding:11px 0;border-bottom:1px solid #F2F4F6}
+      .rp-term:first-child{padding-top:1px}
+      .rp-term:last-child{border-bottom:0;padding-bottom:1px}
+      .rp-term .tg{flex:none;width:92px}
+      .rp-term .tg span{display:inline-block;padding:4px 9px;border-radius:6px;font-size:11px;font-weight:700;background:#E8F3FF;color:#1B64DA}
+      .rp-term .tg span.m{background:#EEF0FF;color:#3B4CC0}.rp-term .tg span.g{background:#E6F6EE;color:#0E8A4F}
+      .rp-term .it{flex:1;font-size:12.5px;line-height:1.7;color:#333D4B}
+      .rp-term .it div{display:flex;justify-content:space-between}
+      .rp-term .it strong{font-weight:800;color:#191F28}
+      .rp-rec{display:flex;padding:14px 0;border-bottom:1px solid #F2F4F6}
+      .rp-rec:first-of-type{border-top:1px solid #191F28}
+      .rp-rec .tg{flex:none;width:150px;font-size:13px;font-weight:800}
+      .rp-rec .tg small{display:block;margin-top:2px;font-size:11.5px;font-weight:500;color:#8B95A1}
+      .rp-rec .it{flex:1;font-size:13px;line-height:1.8;color:#191F28;font-weight:600}
+      .rp-rec .it small{display:inline-block;width:62px;font-size:11.5px;font-weight:600;color:#8B95A1}
+      .rp-note{margin-top:9px;font-size:11px;color:#8B95A1;line-height:1.6}
+      .rp-steps{display:flex}
+      .rp-step{flex:1;margin-right:10px;padding:16px 16px 15px;border-radius:14px;background:#F7F8FA}
+      .rp-step:last-child{margin-right:0}
+      .rp-step i{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:12px;background:#191F28;color:#fff;font-style:normal;font-size:12px;font-weight:800}
+      .rp-step b{display:block;margin-top:10px;font-size:13.5px;font-weight:800}
+      .rp-step p{margin:5px 0 0;font-size:12px;line-height:1.65;color:#4E5968;word-break:keep-all}
+      .rp-sign{display:flex;align-items:center;padding:20px 22px;border-radius:14px;background:#0F2A52;color:#fff}
+      .rp-sign .m{flex:1}
+      .rp-sign .m p{margin:0;font-size:14.5px;line-height:1.65;font-weight:600;word-break:keep-all}
+      .rp-sign .m p b{font-weight:800;color:#9CC4FF}
+      .rp-sign .w{flex:none;margin-left:24px;padding-left:24px;border-left:1px solid #3A5580;text-align:right}
+      .rp-sign .w small{display:block;font-size:11px;color:#A9BBD6}
+      .rp-sign .w strong{display:block;margin-top:3px;font-size:15px;font-weight:800}
+      .rp-disc{margin-top:12px;font-size:10.5px;line-height:1.7;color:#8B95A1;word-break:keep-all}
+    `;
+    function rpEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    function rpWon(n) { return (Number(n) || 0).toLocaleString() + '<small>원</small>'; }
+    // 서버가 준 문장에서 색·크기 인라인 스타일만 걷어내고 강조 태그는 유지
+    function rpClean(html) { return String(html || '').replace(/\sstyle\s*=\s*("[^"]*"|'[^']*')/gi, '').replace(/<\/?(script|iframe|img|link|style)[^>]*>/gi, '').trim(); }
+    function rpConsultant() {
+      try { const p = window.parent; if (p && p !== window && p.loggedInUser) { let role = ''; try { role = p.getRole(p.loggedInUser) || ''; } catch (e) { } return { name: String(p.loggedInUser), role: role }; } } catch (e) { }
+      return null;
+    }
+    function rpBlocks(resp) {
+      const data = resp.data, info = resp.userInfo, al = data.allocation, d = al.detail || {};
+      const avail = Math.max(Number(info.salary) - Number(info.expense), 1);
+      const now = new Date(), ymd = now.getFullYear() + '. ' + (now.getMonth() + 1) + '. ' + now.getDate() + '.';
+      const segs = [['생활비', al.living, '#1E6EE8'], ['저축·투자', al.saving, '#0B3D91'], ['비상금', al.emergency, '#8FBFFF'], ['보장자산', al.insurance, '#B0B8C1']];
+      const sum = segs.reduce((a, x) => a + (Number(x[1]) || 0), 0) || 1;
+      const pct = v => Math.round((Number(v) || 0) / avail * 100) || 0;
+      const who = rpConsultant();
+      const prof = [];
+      if (info.age) prof.push(info.age + '세');
+      if (info.marriage) prof.push(info.marriage);
+      if (info.children) prof.push('자녀 ' + info.children);
+      if (info.housing) prof.push(info.housing);
+      const B = [];
+      // 표지 + 핵심 숫자
+      B.push(`<div class="rp-brand"><b>Heritage <i>Financial</i></b><span>한국보험금융 직영채널 헤리티지 지사<br>작성일 ${ymd}</span></div>
+        <p class="rp-kind">맞춤 재무설계 리포트</p>
+        <h1 class="rp-title"><i>${rpEsc(info.name)}</i> 고객님의<br>매달 돈의 흐름을 설계했습니다</h1>
+        <div class="rp-prof"><span class="goal">목표 · ${rpEsc(info.goal)}</span>${prof.map(x => '<span>' + rpEsc(x) + '</span>').join('')}</div>
+        <div class="rp-figs">
+          <div class="rp-fig"><p>세후 월 급여</p><strong>${rpWon(info.salary)}</strong></div>
+          <div class="rp-fig"><p>월 고정지출</p><strong>${rpWon(info.expense)}</strong></div>
+          <div class="rp-fig main"><p>매달 나눌 수 있는 돈</p><strong>${rpWon(avail)}</strong></div>
+        </div>`);
+      B.push(`<h2 class="rp-h">한눈에 보는 배분<span>나눌 수 있는 돈 기준 비율</span></h2>
+        <div class="rp-bar">${segs.map(x => `<span style="width:${(Number(x[1]) || 0) / sum * 100}%;background:${x[2]}"></span>`).join('')}</div>
+        <div class="rp-tiles">${segs.map(x => `<div class="rp-tile"><div class="k"><i style="background:${x[2]}"></i>${x[0]}</div><div class="v">${(Number(x[1]) || 0).toLocaleString()}원</div><div class="p">${pct(x[1])}%</div></div>`).join('')}</div>`);
+      B.push(`<h2 class="rp-h"><em>1</em>재무 현황 분석</h2><div class="rp-text">${rpClean(data.analysis)}</div>`);
+      // 고정지출 상세
+      const exp = getExpenseDetails();
+      if (exp.length) {
+        const tot = exp.reduce((s, i) => s + i.amount, 0);
+        B.push(`<h2 class="rp-h">월 고정지출 상세<span>${exp.length}개 항목</span></h2>
+          <table class="rp-tbl"><thead><tr><th>항목</th><th class="r" style="width:150px">금액</th><th class="r" style="width:90px">비중</th></tr></thead><tbody>
+          ${exp.map(i => `<tr><td>${rpEsc(i.label)}</td><td class="r">${i.amount.toLocaleString()}원</td><td class="r pc">${tot > 0 ? Math.round(i.amount / tot * 100) : 0}%</td></tr>`).join('')}
+          <tr class="sum"><td>합계</td><td class="r">${tot.toLocaleString()}원</td><td class="r">100%</td></tr></tbody></table>`);
+      }
+      // 배분 전략
+      const row = (i, body) => `<div class="rp-row"><div class="l"><div class="n"><i style="background:${segs[i][2]}"></i>${segs[i][0]}</div><div class="a">${rpWon(segs[i][1])}</div><div class="p">${pct(segs[i][1])}%</div></div><div class="c">${body}</div></div>`;
+      const won = v => (Number(v) || 0).toLocaleString() + '원';
+      B.push({ cls: 'tight', html: `<h2 class="rp-h"><em>2</em>자금 배분과 실행 전략</h2>` + row(0, `<div class="t">소비 통장을 따로 두고 체크카드로만 씁니다</div>정해진 생활비 안에서만 쓰도록 통장을 분리하고, <b>뱅크샐러드 가계부</b>로 지출을 확인합니다.`) });
+      B.push({ cls: 'tight', html: row(1, `
+        <div class="rp-term"><div class="tg"><span>단기 1~3년</span></div><div class="it"><div><span>은행 적금</span><strong>${won(d.bank)}</strong></div><div><span>적립식 펀드 · 주식 모으기</span><strong>${won(d.fund)}</strong></div></div></div>
+        <div class="rp-term"><div class="tg"><span class="m">중기 5년 이상</span></div><div class="it"><div><span>변액저축 (주식형·ETF) · 적립식 달러투자</span><strong>${won(d.midTerm)}</strong></div></div></div>
+        <div class="rp-term"><div class="tg"><span class="g">장기 10년 이상</span></div><div class="it"><div><span>비과세 변액연금 · 비과세 확정연금</span><strong>${won(d.longTerm)}</strong></div></div></div>`) });
+      B.push({ cls: 'tight', html: row(2, `<div class="t">CMA·파킹통장에 모아 둡니다</div>경조사처럼 갑자기 생기는 지출에 대비합니다.<div class="s">이자가 매일 붙고, 목돈이 되면 다시 투자로 옮깁니다.</div>`) });
+      B.push(row(3, `<div class="t">실손의료비 · 3대 질병</div>수술 · 입원 · 사망 · 기타 보장을 이 금액 안에서 점검합니다.`));
+      B.push(`<h2 class="rp-h"><em>3</em>리스크 관리</h2><div class="rp-text">${rpClean(data.risk)}</div>`);
+      B.push(`<h2 class="rp-h"><em>4</em>추천 금융상품<span>${ymd} 기준</span></h2>
+        <div class="rp-rec"><div class="tg">단기<small>1~3년</small></div><div class="it"><div><small>은행 적금</small>세람저축은행 펫밀리 정기적금 (최고 연 5.0%)</div><div><small>국내 펀드</small>키움 차세대 모빌리티 증권 자투자신탁 제1호</div><div><small>해외 펀드</small>피델리티 글로벌 테크놀로지 증권 자투자신탁</div></div></div>
+        <div class="rp-rec"><div class="tg">중기<small>5년 이상</small></div><div class="it"><div>카디프생명 시그니처ETF변액저축보험</div><div>메트라이프 백만인을 위한 달러종신보험Plus</div></div></div>
+        <div class="rp-rec"><div class="tg">장기<small>10년 이상</small></div><div class="it"><div>iM라이프 마이솔루션AI변액연금S</div><div>IBK 연금액평생보증받는 변액연금보험</div></div></div>
+        <p class="rp-note">금리와 상품 조건은 작성일 기준이며 바뀔 수 있습니다. 가입 전 상품설명서와 약관을 꼭 확인해 주세요.</p>`);
+      B.push(`<h2 class="rp-h">앞으로 이렇게 진행합니다</h2>
+        <div class="rp-steps">
+          <div class="rp-step"><i>1</i><b>통장 나누기</b><p>생활비 · 저축 · 비상금 통장을 나누고 급여일 다음 날로 자동이체를 겁니다.</p></div>
+          <div class="rp-step"><i>2</i><b>보장 점검</b><p>지금 가진 보험을 함께 살펴 겹치는 보장과 빠진 보장을 정리합니다.</p></div>
+          <div class="rp-step"><i>3</i><b>정기 점검</b><p>소득과 지출이 바뀌면 배분을 다시 맞추고, 목표까지의 진행을 확인합니다.</p></div>
+        </div>`);
+      B.push(`<div class="rp-sign"><div class="m"><p>${rpEsc(info.name)} 고객님의 <b>${rpEsc(info.goal)}</b> 목표,<br>끝까지 함께 챙기겠습니다.</p></div>
+        <div class="w"><small>${who ? '담당 컨설턴트' : '재무설계'}</small><strong>${who ? rpEsc(who.name) + (who.role ? ' ' + rpEsc(who.role) : '') : '헤리티지 금융지사'}</strong><small style="margin-top:3px">한국보험금융 직영채널 헤리티지 지사</small></div></div>
+        <p class="rp-disc">본 리포트는 입력하신 정보를 바탕으로 만든 재무설계 참고 자료이며, 수익이나 원금을 보장하지 않습니다. 투자 상품은 원금 손실이 생길 수 있고, 보험 상품은 가입 조건에 따라 보장 내용이 달라집니다. 자세한 내용은 담당 컨설턴트와 상담해 주세요.</p>`);
+      return B.map(b => typeof b === 'string' ? { cls: '', html: b } : b);
+    }
+
     async function downloadPDF() {
       if (!currentResponse) return;
-
       const btn = document.getElementById('downloadBtn');
       const originalText = btn.textContent;
       btn.textContent = 'PDF 생성 중...';
       btn.disabled = true;
-
-      const part1Content = document.getElementById('report-part-1').innerHTML;
-      const part2Content = document.getElementById('report-part-2').innerHTML;
       const info = currentResponse.userInfo;
-
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const scale = isMobile ? 1.5 : 2;
-
-      const pdfWrap = document.createElement('div');
-      pdfWrap.style.cssText = 'width:760px; padding:30px; box-sizing:border-box; background:white; position:fixed; top:0; left:0; z-index:-9999;';
-
-      const styleBlock = `
-        <style>
-          .strategy-table { width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed; }
-          .strategy-table th, .strategy-table td { padding:8px 4px; border:1px solid #e5e7eb; word-wrap:break-word; }
-          .strategy-table th { background-color:#f8fafc; color:#333; }
-          .strategy-list li { margin-bottom:5px; list-style:none; }
-          .item-row { font-size:12px; display:flex; justify-content:space-between; margin-bottom:2px; }
-          .tag { padding:2px 4px; font-size:10px; font-weight:bold; border-radius:4px; display:inline-block; margin-bottom:4px; }
-          .tag.short { background:#dbeafe; color:#1e40af; }
-          .tag.mid   { background:#fae8ff; color:#86198f; }
-          .tag.long  { background:#dcfce7; color:#166534; }
-          .recommend-box { padding:10px; margin-bottom:10px; border:1px solid #eee; border-left:4px solid #f59e0b; background:#f8fafc; }
-          .recommend-title { font-size:13px; font-weight:bold; margin-bottom:5px; color:#191F28; }
-          .recommend-item  { font-size:12px; margin-bottom:3px; }
-          .analysis-text  { font-size:13px; line-height:1.5; text-align:justify; margin-bottom:15px; }
-          .report-title   { font-size:16px; font-weight:bold; margin-bottom:10px; border-bottom:2px solid #eee; padding-bottom:5px; color:#191F28; }
-          .item-amt        { font-weight:600; color:#191F28; }
-          .amount-display  { font-size:0.9em; color:#666; font-weight:normal; }
-          .item-header     { margin-bottom:2px; }
-          .indent          { padding-left:5px; }
-        </style>
-      `;
-
-      const headerHtml = `
-        <div style="font-family:sans-serif; color:#1f2937;">
-          <div style="text-align:center; border-bottom:2px solid #1e3a8a; padding-bottom:15px; margin-bottom:20px;">
-            <h1 style="color:#191F28; margin:0; font-size:24px;">HERITAGE FINANCIAL</h1>
-            <p style="color:#6b7280; margin:5px 0 0; font-size:12px;">[${info.name} 고객님 맞춤형 재무설계]</p>
-          </div>
-      `;
-      const footerHtml = `
-          <div style="margin-top:30px; text-align:center; font-size:10px; color:#9ca3af; padding-top:10px; border-top:1px solid #e5e7eb;">
-            본 보고서는 재무설계 참고용 자료입니다. 자세한 상담은 담당 컨설턴트에게 문의하세요.<br>
-            Heritage Financial Co., Ltd. | ${new Date().toLocaleDateString()}
-          </div>
-        </div>
-      `;
-
+      const PW = 794, PH = 1123, TOP1 = 46, TOP = 92, BOT = 78;
+      const stage = document.createElement('div');
+      stage.className = 'rp';
+      stage.style.cssText = 'position:fixed;top:0;left:0;width:' + PW + 'px;z-index:-9999;background:#fff;pointer-events:none';
       try {
-        document.body.appendChild(pdfWrap);
+        document.body.appendChild(stage);
+        // 1) 블록 높이를 재서 A4 페이지에 나눠 담기
+        const blocks = rpBlocks(currentResponse);
+        stage.innerHTML = '<style>' + RP_CSS + '</style><div id="rpMeasure" style="width:' + (PW - 112) + 'px;margin:0 56px">' + blocks.map(b => '<div class="rp-blk ' + b.cls + '">' + b.html + '</div>').join('') + '</div>';
+        try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) { }
+        await new Promise(r => setTimeout(r, 350));
+        const hs = [].map.call(stage.querySelectorAll('#rpMeasure > .rp-blk'), el => el.getBoundingClientRect().height);
+        const pages = [[]]; let used = 0;
+        const cap = () => PH - (pages.length === 1 ? TOP1 : TOP) - BOT;
+        blocks.forEach((b, i) => {
+          if (pages[pages.length - 1].length && used + hs[i] - 16 > cap()) { pages.push([]); used = 0; }
+          pages[pages.length - 1].push(b); used += hs[i];
+        });
+        // 2) 페이지별로 그려서 PDF에 담기
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210;
-
-        btn.textContent = 'PDF 생성 중 (1/2)...';
-        pdfWrap.innerHTML = styleBlock + headerHtml + `<div style="font-size:13px">${part1Content}</div>` + footerHtml;
-        await new Promise(r => setTimeout(r, 500));
-        const canvas1 = await html2canvas(pdfWrap, { scale, useCORS: true, logging: false, windowWidth: 760, backgroundColor: '#ffffff' });
-        doc.addImage(canvas1.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, imgWidth, (canvas1.height * imgWidth) / canvas1.width);
-
-        btn.textContent = 'PDF 생성 중 (2/2)...';
-        doc.addPage();
-        pdfWrap.innerHTML = styleBlock + headerHtml + `<div style="font-size:13px">${part2Content}</div>` + footerHtml;
-        await new Promise(r => setTimeout(r, 500));
-        const canvas2 = await html2canvas(pdfWrap, { scale, useCORS: true, logging: false, windowWidth: 760, backgroundColor: '#ffffff' });
-        doc.addImage(canvas2.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, imgWidth, (canvas2.height * imgWidth) / canvas2.width);
-
+        const day = new Date(), dstr = day.getFullYear() + '. ' + (day.getMonth() + 1) + '. ' + day.getDate() + '.';
+        for (let p = 0; p < pages.length; p++) {
+          btn.textContent = 'PDF 생성 중 (' + (p + 1) + '/' + pages.length + ')...';
+          const top = p === 0 ? TOP1 : TOP;
+          stage.innerHTML = '<style>' + RP_CSS + '</style><div class="rp-page">'
+            + (p > 0 ? '<div class="rp-head"><b>Heritage <i>Financial</i></b><span>' + rpEsc(info.name) + ' 고객님 재무설계 리포트</span></div>' : '')
+            + '<div class="rp-body" style="top:' + top + 'px">' + pages[p].map(b => '<div class="rp-blk ' + b.cls + '">' + b.html + '</div>').join('') + '</div>'
+            + '<div class="rp-foot"><b>헤리티지 금융지사 · 한국보험금융 직영채널</b><span>' + dstr + ' · ' + (p + 1) + ' / ' + pages.length + '</span></div></div>';
+          await new Promise(r => setTimeout(r, 120));
+          const canvas = await html2canvas(stage.querySelector('.rp-page'), { scale: 2, useCORS: true, logging: false, windowWidth: PW, backgroundColor: '#ffffff' });
+          if (p > 0) doc.addPage();
+          doc.addImage(canvas.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, 210, 297);
+        }
         btn.textContent = '파일 저장 중...';
         const blob = doc.output('blob');
         const url  = URL.createObjectURL(blob);
@@ -761,12 +895,11 @@
         a.href = url; a.download = `${info.name}_재무설계리포트.pdf`;
         document.body.appendChild(a); a.click();
         setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
-
       } catch (err) {
         console.error(err);
         alert('PDF 생성 오류: ' + err.message);
       } finally {
-        if (document.body.contains(pdfWrap)) document.body.removeChild(pdfWrap);
+        if (document.body.contains(stage)) document.body.removeChild(stage);
         btn.textContent = originalText;
         btn.disabled = false;
       }

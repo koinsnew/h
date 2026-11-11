@@ -797,7 +797,7 @@
       if (info.housing) prof.push(info.housing);
       const B = [];
       // 표지 + 핵심 숫자
-      B.push(`<div class="rp-brand"><b>Heritage <i>Financial</i></b><span>한국보험금융 직영채널 헤리티지 지사<br>작성일 ${ymd}</span></div>
+      B.push(`<div class="rp-brand"><b>Heritage <i>Finance</i></b><span>헤리티지 금융지사<br>작성일 ${ymd}</span></div>
         <p class="rp-kind">맞춤 재무설계 리포트</p>
         <h1 class="rp-title"><i>${rpEsc(info.name)}</i> 고객님의<br>매달 돈의 흐름을 설계했습니다</h1>
         <div class="rp-prof"><span class="goal">목표 · ${rpEsc(info.goal)}</span>${prof.map(x => '<span>' + rpEsc(x) + '</span>').join('')}</div>
@@ -842,7 +842,7 @@
           <div class="rp-step"><i>3</i><b>정기 점검</b><p>소득과 지출이 바뀌면 배분을 다시 맞추고, 목표까지의 진행을 확인합니다.</p></div>
         </div>`);
       B.push(`<div class="rp-sign"><div class="m"><p>${rpEsc(info.name)} 고객님의 <b>${rpEsc(info.goal)}</b> 목표,<br>끝까지 함께 챙기겠습니다.</p></div>
-        <div class="w"><small>${who ? '담당 컨설턴트' : '재무설계'}</small><strong>${who ? rpEsc(who.name) + (who.role ? ' ' + rpEsc(who.role) : '') : '헤리티지 금융지사'}</strong><small style="margin-top:3px">한국보험금융 직영채널 헤리티지 지사</small></div></div>
+        <div class="w"><strong style="margin-top:0">헤리티지 금융지사</strong>${who ? '<small style="margin-top:5px;font-size:12.5px;color:#D6E2F5;font-weight:600">' + rpEsc(who.name) + (who.role ? ' ' + rpEsc(who.role) : '') + '</small>' : ''}</div></div>
         <p class="rp-disc">본 리포트는 입력하신 정보를 바탕으로 만든 재무설계 참고 자료이며, 수익이나 원금을 보장하지 않습니다. 투자 상품은 원금 손실이 생길 수 있고, 보험 상품은 가입 조건에 따라 보장 내용이 달라집니다. 자세한 내용은 담당 컨설턴트와 상담해 주세요.</p>`);
       return B.map(b => typeof b === 'string' ? { cls: '', html: b } : b);
     }
@@ -880,9 +880,9 @@
           btn.textContent = 'PDF 생성 중 (' + (p + 1) + '/' + pages.length + ')...';
           const top = p === 0 ? TOP1 : TOP;
           stage.innerHTML = '<style>' + RP_CSS + '</style><div class="rp-page">'
-            + (p > 0 ? '<div class="rp-head"><b>Heritage <i>Financial</i></b><span>' + rpEsc(info.name) + ' 고객님 재무설계 리포트</span></div>' : '')
+            + (p > 0 ? '<div class="rp-head"><b>Heritage <i>Finance</i></b><span>' + rpEsc(info.name) + ' 고객님 재무설계 리포트</span></div>' : '')
             + '<div class="rp-body" style="top:' + top + 'px">' + pages[p].map(b => '<div class="rp-blk ' + b.cls + '">' + b.html + '</div>').join('') + '</div>'
-            + '<div class="rp-foot"><b>헤리티지 금융지사 · 한국보험금융 직영채널</b><span>' + dstr + ' · ' + (p + 1) + ' / ' + pages.length + '</span></div></div>';
+            + '<div class="rp-foot"><b>헤리티지 금융지사 · 한국보험금융 신채널</b><span>' + dstr + ' · ' + (p + 1) + ' / ' + pages.length + '</span></div></div>';
           await new Promise(r => setTimeout(r, 120));
           const canvas = await html2canvas(stage.querySelector('.rp-page'), { scale: 2, useCORS: true, logging: false, windowWidth: PW, backgroundColor: '#ffffff' });
           if (p > 0) doc.addPage();

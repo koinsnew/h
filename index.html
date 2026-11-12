@@ -987,7 +987,12 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .og-tbox h4 span{font-size:11.5px;font-weight:500;color:#8B95A1}
   .og-tbox-items{display:grid;gap:6px}
   .og-tbox .og-tcard{background:#F2F4F6;border-radius:12px;padding:10px 8px 9px}
-  .og-tbox.is-hq .og-tcard{background:#E8F3FF}
+  .og-tbox .og-tcard.is-hq{background:#E8F3FF}
+  .og-toprow.no-left{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+  .og-toprow.no-left::before{left:30%;right:30%}
+  .og-toprow.no-left .og-thead::after{background:transparent}
+  .og-toprow.no-left + .og-stem{background:transparent;height:14px}
+  .og-toprow.no-left .og-tside{padding:0 0 0 7%}
   .og-tbox .og-tcard .n{font-size:17px}
   .og-tbox .og-tcard .n em{font-size:13px}
   .og-tnone{font-size:12px;color:#8B95A1;text-align:center;padding:8px 0}
@@ -1044,6 +1049,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     .og-tbox{padding:11px 8px 8px}
     .og-tbox .og-tcard .n{font-size:16px}
     .og-tside{align-self:start}
+    .og-toprow.no-left .og-tside{grid-column:1 / -1;padding:0}
     .og-tcard.is-head{padding:16px 12px}
     .og-tcard.is-head .n{font-size:22px}
     .og-stem{height:14px}
@@ -1058,6 +1064,21 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .og-editable [data-og]:hover{box-shadow:0 0 0 2px #B7D6FF inset}
   .og-editable [data-og]:active{transform:scale(.98)}
   .og-editable [data-og]:focus-visible{outline:2px solid #3182F6;outline-offset:2px}
+  .og-save{display:flex;align-items:center;gap:10px;padding:0 6px 0 14px;min-height:44px;border-radius:14px;background:#fff}
+  .og-save span{font-size:13px;font-weight:600;color:#8B95A1;max-width:340px;line-height:1.35}
+  .og-save span.is-dirty{color:#E5484D}
+  .og-save span.is-ok{color:#0E8A4F}
+  .og-save span.is-busy{color:#1B64DA}
+  .og-save span.is-err{color:#E5484D}
+  .og-save button{height:34px;padding:0 14px;border-radius:10px;background:#F2F4F6;color:#B0B8C1;font-size:14px;font-weight:700;white-space:nowrap;transition:background .15s,color .15s}
+  .og-save button.is-on{background:#3182F6;color:#fff}
+  .og-save button.is-on:active{background:#1B64DA}
+  .og-save button:focus-visible{outline:2px solid #3182F6;outline-offset:2px}
+  .og-editable [data-dirty]{position:relative;box-shadow:0 0 0 2px #3182F6 inset}
+  .og-editable [data-dirty]::after{content:'수정됨';position:absolute;top:-8px;right:8px;padding:1px 7px;border-radius:9px;background:#3182F6;color:#fff;font-size:10.5px;font-weight:700;line-height:1.6}
+  #ogPrintRoot [data-dirty]{box-shadow:none}
+  #ogPrintRoot [data-dirty]::after,#ogPrintRoot .og-save{display:none}
+  @media (max-width:720px){ .og-save{justify-content:space-between;width:100%} .og-save span{max-width:none} }
   .og-ed-who{display:flex;align-items:baseline;gap:8px;padding:2px 2px 4px}
   .og-ed-who b{font-size:22px;font-weight:800;letter-spacing:-.03em;color:#191F28}
   .og-ed-who span{font-size:13px;color:#8B95A1}
@@ -1080,6 +1101,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   #ogPrintRoot .og-toprow::before{display:block}
   #ogPrintRoot .og-thead{grid-column:auto;order:0}
   #ogPrintRoot .og-tside{padding:0 6%;align-self:center}
+  #ogPrintRoot .og-toprow.no-left{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+  #ogPrintRoot .og-toprow.no-left .og-tside{grid-column:auto;padding:0 0 0 7%}
   #ogPrintRoot .og-tbox{border:1px solid #E5E8EB;padding:11px 12px 11px}
   #ogPrintRoot .og-tbox .og-tcard{border:0}
   #ogPrintRoot .og-stem{height:18px}
@@ -1850,6 +1873,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   </div>
                   <div class="og-top-r">
                       <div id="ogStats" class="og-stats"></div>
+                      <div id="ogSaveBox" class="og-save hidden no-print"><span id="ogSaveSt" role="status" aria-live="polite"></span><button type="button" id="ogSaveBtn" onclick="ogSaveAll()" disabled>저장</button></div>
                       <button onclick="ogPrint()" class="no-print og-print" aria-label="조직도 인쇄"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>인쇄</button>
                   </div>
               </div>
@@ -2537,11 +2561,11 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <input type="text" id="ogEdBranchNew" class="hidden mt-2" maxlength="20" placeholder="새 지점·본부 이름 (예: 프라임)" autocomplete="off">
                 <p class="text-xs text-[#8B95A1] mt-1.5">새 소속은 이 사람을 옮기면 조직도에 바로 생겨요.</p></div>
             <div><label for="ogEdRecruiter">도입자</label><select id="ogEdRecruiter"></select></div>
-            <p class="text-xs text-[#8B95A1] mb-3">직급·소속·도입자는 수수료 계산에도 쓰여요. 저장하면 2026년 9월 이후 계산에 함께 반영돼요.</p>
+            <p class="text-xs text-[#8B95A1] mb-3">적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요.</p>
         </div>
         <div class="flex gap-2 px-5 pt-3 border-t border-[#F2F4F6]" style="padding-bottom:calc(14px + env(safe-area-inset-bottom))">
             <button onclick="ogEditClose()" class="bd-btn bd-btn-gray">취소</button>
-            <button id="ogEdSave" onclick="ogEditSave()" class="bd-btn bd-btn-blue flex-1">저장하기</button>
+            <button id="ogEdSave" onclick="ogEditSave()" class="bd-btn bd-btn-blue flex-1">적용</button>
         </div>
     </div>
 </div>
@@ -14930,7 +14954,7 @@ let orgChartData = null;
 function loadOrgChart() { renderOrgChart(); }
 
 // ── 조직도 수정 (지사장·총무만) ──
-var OGE = { name: '', role: '', branch: '' };
+var OGE = { name: '', role: '', branch: '', pending: {}, last: '', busy: false };
 function ogCanEdit() { try { return /지사장|총무/.test(getRole(loggedInUser) || ''); } catch (e) { return false; } }
 function ogBranchLabel(b) { b = String(b || '').trim(); if (!b || b === '직할') return b; if (/본부$/.test(b)) return b.replace(/\s*본부$/, '') + ' 본부'; return b.replace(/\s*지점$/, '') + ' 지점'; }
 function ogChips(boxId, list, cur, key, newId, newLabel, labelOf) {
@@ -14978,21 +15002,80 @@ function ogEditSave() {
     if (!role) { shToast('직급을 골라 주세요', 'error'); return; }
     if (!branch) { shToast('소속을 골라 주세요', 'error'); return; }
     var u = userDB.find(function (x) { return x.name === OGE.name; }); if (!u) return;
-    if (String(u.role || '').trim() === role && String(u.branch || '').trim() === branch && String(u.recruiter || '').trim() === rec) { ogEditClose(); return; }
-    var btn = document.getElementById('ogEdSave'); btn.disabled = true; btn.textContent = '저장 중…';
-    var end = function () { btn.disabled = false; btn.textContent = '저장하기'; };
-    var apply = function () {
-        u.role = role; u.branch = branch; u.recruiter = rec;
-        end(); ogEditClose(); renderOrgChart();
-        shToast(OGE.name + ' 님 정보를 저장했어요');
-    };
-    if (typeof google === 'undefined' || typeof google.script === 'undefined') { apply(); return; }
-    google.script.run.withSuccessHandler(function (r) {
-        if (r && r.ok) apply(); else { end(); shToast((r && r.error) || '저장하지 못했어요', 'error'); }
-    }).withFailureHandler(function (err) {
-        end(); shToast('저장하지 못했어요 · ' + String(err && err.message || err).slice(0, 60), 'error');
-    }).orgUpdateMember(loggedInUser, { name: OGE.name, role: role, branch: branch, recruiter: rec });
+    var cur = { role: String(u.role || '').trim(), branch: String(u.branch || '').trim(), recruiter: String(u.recruiter || '').trim() };
+    if (cur.role === role && cur.branch === branch && cur.recruiter === rec) { ogEditClose(); return; }
+    var p = OGE.pending[OGE.name] || { orig: cur };
+    u.role = role; u.branch = branch; u.recruiter = rec;
+    if (p.orig.role === role && p.orig.branch === branch && p.orig.recruiter === rec) delete OGE.pending[OGE.name];
+    else OGE.pending[OGE.name] = p;
+    OGE.last = '';
+    ogEditClose(); renderOrgChart();
+    if (Object.keys(OGE.pending).length) shToast('저장 버튼을 눌러야 시트에 저장돼요', 'light');
 }
+// 저장 버튼·상태 표시
+function ogSaveUi(msg, kind) {
+    var box = document.getElementById('ogSaveBox'); if (!box) return;
+    var can = ogCanEdit(); box.classList.toggle('hidden', !can); if (!can) return;
+    var n = Object.keys(OGE.pending).length, st = document.getElementById('ogSaveSt'), btn = document.getElementById('ogSaveBtn');
+    btn.disabled = !n || OGE.busy;
+    btn.textContent = OGE.busy ? '저장 중…' : (n ? '변경 ' + n + '건 저장' : '저장');
+    btn.classList.toggle('is-on', !!n && !OGE.busy);
+    st.className = kind || (n ? 'is-dirty' : (OGE.last ? 'is-ok' : ''));
+    st.textContent = msg || (n ? '저장 안 된 변경 ' + n + '건' : (OGE.last || '변경 사항 없음'));
+}
+function ogCall(fn, args) {
+    return new Promise(function (res, rej) {
+        if (typeof google === 'undefined' || typeof google.script === 'undefined') { res(fn === 'getUserInfo' ? null : { ok: true }); return; }
+        var r = google.script.run.withSuccessHandler(res).withFailureHandler(function (e) { rej(new Error(String(e && e.message || e))); });
+        r[fn].apply(r, args);
+    });
+}
+async function ogSaveAll() {
+    var names = Object.keys(OGE.pending); if (!names.length || OGE.busy || !ogCanEdit()) return;
+    OGE.busy = true; ogSaveUi('시트에 저장하는 중…', 'is-busy');
+    var done = [], fail = [];
+    for (var i = 0; i < names.length; i++) {
+        var n = names[i], u = userDB.find(function (x) { return x.name === n; });
+        if (!u) { delete OGE.pending[n]; continue; }
+        try {
+            ogSaveUi('저장 중 ' + (i + 1) + '/' + names.length + ' · ' + n, 'is-busy');
+            var r = await ogCall('orgUpdateMember', [loggedInUser, { name: n, role: String(u.role || '').trim(), branch: String(u.branch || '').trim(), recruiter: String(u.recruiter || '').trim() }]);
+            if (r && r.ok) done.push(n); else fail.push(n + ' (' + ((r && r.error) || '실패') + ')');
+        } catch (e) { fail.push(n + ' (' + String(e.message || e).slice(0, 50) + ')'); }
+    }
+    // 시트를 다시 읽어서 실제로 반영됐는지 확인
+    var checked = false, miss = [];
+    if (done.length) {
+        try {
+            ogSaveUi('시트에 반영됐는지 확인하는 중…', 'is-busy');
+            var d = new Date(), ymNow = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+            var fresh = await ogCall('getUserInfo', [ymNow]);
+            if (fresh && fresh.length) {
+                checked = true;
+                done.forEach(function (n) {
+                    var u = userDB.find(function (x) { return x.name === n; }), f = fresh.find(function (x) { return x.name === n; });
+                    var same = f && String(f.role || '').trim() === String(u.role || '').trim() && String(f.branch || '').trim() === String(u.branch || '').trim() && String(f.recruiter || '').trim() === String(u.recruiter || '').trim();
+                    if (!same) miss.push(n);
+                });
+            }
+        } catch (e) { }
+    }
+    done.forEach(function (n) { if (miss.indexOf(n) < 0) delete OGE.pending[n]; });
+    OGE.busy = false;
+    var t = new Date(), hm = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+    var okN = done.length - miss.length;
+    if (!fail.length && !miss.length) {
+        OGE.last = hm + ' 저장 완료 · ' + okN + '건' + (checked ? ' · 시트 반영 확인' : '');
+        renderOrgChart(); shToast(okN + '건 저장했어요' + (checked ? ' · 시트 반영 확인' : ''));
+    } else {
+        OGE.last = '';
+        renderOrgChart();
+        var why = fail.concat(miss.map(function (n) { return n + ' (시트에 반영 안 됨)'; }));
+        ogSaveUi((okN ? okN + '건 저장, ' : '') + why.length + '건 실패 · ' + why.join(', '), 'is-err');
+        shToast('저장하지 못한 변경이 있어요', 'error');
+    }
+}
+window.addEventListener('beforeunload', function (e) { if (Object.keys(OGE.pending).length) { e.preventDefault(); e.returnValue = ''; } });
 (function () {
     var box = document.getElementById('ogChart'); if (!box) return;
     var hit = function (e) { var c = e.target.closest ? e.target.closest('[data-og]') : null; return c ? c.getAttribute('data-og') : ''; };
@@ -15036,7 +15119,8 @@ function renderOrgChart() {
     var role = function (u) { return String(u.role || '').trim() || 'FC'; };
     var meta = function (u, long) { var a = ym(u), r = String(u.recruiter || '').trim(); return [a ? a + (long ? ' 입사' : '') : '', r ? (long ? '도입 ' : '') + r : ''].filter(Boolean).join(' · '); };
     var canEdit = ogCanEdit();
-    var ed = function (u) { return canEdit ? ' data-og="' + esc(u.name) + '" role="button" tabindex="0" aria-label="' + esc(u.name) + ' 정보 수정"' : ''; };
+    var ed = function (u) { return canEdit ? ' data-og="' + esc(u.name) + '" role="button" tabindex="0" aria-label="' + esc(u.name) + ' 정보 수정"' + (OGE.pending[u.name] ? ' data-dirty="1"' : '') : ''; };
+    ogSaveUi();
     box.classList.toggle('og-editable', canEdit);
     var hint = document.getElementById('ogEditHint'); if (hint) hint.classList.toggle('hidden', !canEdit);
     var isHead = function (u) { return /지사장/.test(role(u)); };
@@ -15046,7 +15130,9 @@ function renderOrgChart() {
     var direct = list.filter(function (u) { return String(u.branch).trim() === '직할'; });
     var head = list.filter(isHead)[0] || null;
     var hqs = list.filter(isHq);
-    var staff = direct.filter(function (u) { return !isHead(u) && !isHq(u); });
+    var hqLeft = hqs.filter(function (u) { return String(u.branch).trim() !== '직할'; });
+    var srank = function (u) { var r = role(u); return isHq(u) ? 0 : /사업단장/.test(r) ? 1 : /지점장/.test(r) ? 2 : /팀장/.test(r) ? 3 : /총무/.test(r) ? 4 : 5; };
+    var staff = direct.filter(function (u) { return !isHead(u); }).sort(function (x, y) { return srank(x) - srank(y) || jt(x) - jt(y); });
     // 지점 묶기 (인원 많은 순)
     var bmap = {}, order = [];
     list.forEach(function (u) { var b = String(u.branch).trim(); if (b === '직할') return; if (!bmap[b]) { bmap[b] = []; order.push(b); } bmap[b].push(u); });
@@ -15057,10 +15143,10 @@ function renderOrgChart() {
     document.getElementById('ogStats').innerHTML = st.map(function (x) { return '<div class="og-stat' + (x[2] ? ' is-main' : '') + '"><span>' + esc(x[0]) + '</span><b>' + x[1] + '<small>명</small></b></div>'; }).join('');
     // 상단: 본부장 — 지사장 — 총무
     var topCard = function (u, cls) { return '<div class="og-tcard ' + (cls || '') + '"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div>' + (meta(u, true) ? '<div class="m">' + esc(meta(u, true)) + '</div>' : '') + '</div>'; };
-    var topHtml = '<div class="og-toprow">'
-        + '<div class="og-tside">' + (hqs.length ? '<div class="og-tbox is-hq"><h4>본부<b>' + hqs.length + '명</b></h4><div class="og-tbox-items">' + hqs.map(function (u) { return topCard(u); }).join('') + '</div></div>' : '') + '</div>'
+    var topHtml = '<div class="og-toprow' + (hqLeft.length ? '' : ' no-left') + '">'
+        + (hqLeft.length ? '<div class="og-tside"><div class="og-tbox"><h4>본부<b>' + hqLeft.length + '명</b></h4><div class="og-tbox-items">' + hqLeft.map(function (u) { return topCard(u, 'is-hq'); }).join('') + '</div></div></div>' : '')
         + (head ? '<div class="og-thead">' + topCard(head, 'is-head') + '</div>' : '')
-        + '<div class="og-tside">' + (direct.length ? '<div class="og-tbox"><h4>직할<b>' + direct.length + '명</b>' + (function () { var inc = []; if (head && String(head.branch).trim() === '직할') inc.push('지사장'); if (hqs.some(function (u) { return String(u.branch).trim() === '직할'; })) inc.push('본부장'); return inc.length ? '<span>' + inc.join('·') + ' 포함</span>' : ''; })() + '</h4><div class="og-tbox-items">' + (staff.length ? staff.map(function (u) { return topCard(u); }).join('') : '<p class="og-tnone">소속 인원 없음</p>') + '</div></div>' : '') + '</div></div>';
+        + '<div class="og-tside">' + (direct.length ? '<div class="og-tbox"><h4>직할<b>' + direct.length + '명</b>' + (head && String(head.branch).trim() === '직할' ? '<span>지사장 포함</span>' : '') + '</h4><div class="og-tbox-items">' + (staff.length ? staff.map(function (u) { return topCard(u, isHq(u) ? 'is-hq' : ''); }).join('') : '<p class="og-tnone">소속 인원 없음</p>') + '</div></div>' : '') + '</div></div>';
     // 지점 카드
     var brHtml = order.map(function (b) {
         var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return rank(x) - rank(y) || jt(x) - jt(y); });

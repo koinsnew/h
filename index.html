@@ -956,6 +956,90 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .cal-li-time{display:inline-block;margin-right:6px;font-size:12.5px;font-weight:700;color:#1B64DA;background:#E8F3FF;border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums}
   .cal-li-meta{font-size:13px;color:#6B7684;margin:3px 0 0}
   .cal-none{font-size:14px;color:#8B95A1;padding:6px 0 12px;margin:0}
+  /* [A안] 조직도 */
+  .og-wrap{max-width:1240px;margin:0 auto}
+  .og-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .og-title h2{font-size:26px;font-weight:800;letter-spacing:-.03em;color:#191F28;line-height:1.25}
+  .og-title p{margin-top:4px;font-size:14px;color:#8B95A1}
+  .og-top-r{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+  .og-stats{display:flex;gap:8px;flex-wrap:wrap}
+  .og-stat{min-width:76px;padding:10px 14px 9px;background:#fff;border-radius:14px;text-align:center}
+  .og-stat span{display:block;font-size:12px;font-weight:600;color:#8B95A1;white-space:nowrap}
+  .og-stat b{display:block;margin-top:2px;font-size:22px;font-weight:800;letter-spacing:-.03em;color:#191F28}
+  .og-stat b small{font-size:13px;font-weight:600;margin-left:1px}
+  .og-stat.is-main b{color:#3182F6}
+  .og-stat.is-main b small{color:#191F28}
+  .og-print{display:inline-flex;align-items:center;gap:6px;padding:0 14px;min-height:44px;border-radius:14px;background:#fff;font-size:14px;font-weight:600;color:#4E5968}
+  .og-print:active{background:#F2F4F6}
+  .og-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+  .og-side{display:grid;gap:16px}
+  .og-card{background:#fff;border-radius:20px;padding:20px 22px 22px}
+  .og-card h3{font-size:17px;font-weight:700;color:#191F28}
+  .og-sub{margin-top:2px;font-size:12px;color:#8B95A1}
+  .og-empty{background:#fff;border-radius:20px;padding:56px 16px;text-align:center;font-size:14px;color:#8B95A1}
+  .og-none{font-size:13px;color:#8B95A1;padding:16px 0}
+  .og-toprow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr);align-items:center;position:relative}
+  .og-toprow::before{content:'';position:absolute;left:12%;right:12%;top:50%;height:2px;background:#D9DEE3}
+  .og-tside{display:grid;gap:8px;position:relative;padding:0 8%}
+  .og-tside:empty{visibility:hidden}
+  .og-thead{position:relative}
+  .og-tcard{background:#fff;border-radius:16px;padding:13px 12px 12px;text-align:center}
+  .og-tcard .n,.og-lead .n{font-size:19px;font-weight:800;letter-spacing:-.03em;color:#191F28;white-space:nowrap}
+  .og-tcard .n em,.og-lead .n em{font-style:normal;font-size:14px;font-weight:700;color:#3182F6;margin-left:6px}
+  .og-tcard .m,.og-lead .m{margin-top:3px;font-size:12px;color:#8B95A1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .og-tcard.is-head{background:#3182F6;padding:20px 12px}
+  .og-tcard.is-head .n{color:#fff;font-size:26px}
+  .og-tcard.is-head .n em{color:#DCEBFF;font-size:16px;font-weight:600}
+  .og-tcard.is-head .m{display:none}
+  .og-stem{width:2px;height:22px;margin:0 auto;background:#D9DEE3}
+  .og-branches{display:flex;gap:14px;align-items:flex-start;position:relative}
+  .og-branch{min-width:0;background:#fff;border-radius:20px;padding:18px 16px 16px}
+  .og-branch h3{display:flex;align-items:baseline;gap:8px;padding:0 4px 12px;font-size:19px;font-weight:800;letter-spacing:-.03em;color:#191F28}
+  .og-branch h3 b{font-size:15px;font-weight:800;color:#3182F6}
+  .og-branch h3 span{font-size:12px;font-weight:500;color:#8B95A1}
+  .og-leads{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:10px}
+  .og-lead{background:#E8F3FF;border-radius:14px;padding:13px 10px 12px;text-align:center;min-width:0}
+  .og-fcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+  .og-fc{background:#F2F4F6;border-radius:12px;padding:10px 6px 9px;text-align:center;min-width:0}
+  .og-fc .n{font-size:16px;font-weight:700;letter-spacing:-.02em;color:#191F28;white-space:nowrap}
+  .og-fc .n em{font-style:normal;font-size:11px;font-weight:600;color:#8B95A1;margin-left:4px}
+  .og-fc .m{margin-top:2px;font-size:11.5px;color:#8B95A1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .og-monthly{display:flex;align-items:flex-end;gap:6px;height:168px;margin-top:18px}
+  .og-mcol{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+  .og-mcol b{font-size:13px;font-weight:800;color:#191F28;margin-bottom:4px}
+  .og-mcol i{display:block;width:100%;max-width:26px;background:#3182F6;border-radius:5px 5px 0 0}
+  .og-mcol span{margin-top:6px;font-size:10px;color:#6B7684;white-space:nowrap;letter-spacing:-.03em}
+  .og-rank{margin-top:16px;display:grid;gap:10px}
+  .og-rrow{display:grid;grid-template-columns:56px minmax(0,1fr) 22px;align-items:center;gap:8px}
+  .og-rrow span{font-size:14px;font-weight:600;color:#333D4B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .og-rrow div{height:20px;background:#F2F4F6;border-radius:6px;overflow:hidden}
+  .og-rrow i{display:block;height:100%;background:#3182F6;border-radius:6px;min-width:6px}
+  .og-rrow b{font-size:14px;font-weight:800;color:#191F28;text-align:right}
+  .og-legend{margin-top:12px;font-size:12px;color:#8B95A1;padding:0 4px}
+  @media (max-width:1100px){ .og-grid{grid-template-columns:minmax(0,1fr)} .og-side{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:720px){
+    .og-title h2{font-size:22px}
+    .og-top{align-items:stretch;flex-direction:column;gap:12px}
+    .og-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));flex:1}
+    .og-stat{min-width:0;padding:9px 4px 8px}
+    .og-stat b{font-size:19px}
+    .og-print{display:none}
+    .og-toprow{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .og-toprow::before{display:none}
+    .og-thead{grid-column:1 / -1;order:-1}
+    .og-tside{padding:0}
+    .og-tcard .n{font-size:17px}
+    .og-tcard.is-head{padding:16px 12px}
+    .og-tcard.is-head .n{font-size:22px}
+    .og-stem{height:14px}
+    .og-branches{flex-direction:column}
+    .og-branch{width:100%;flex:none!important;padding:16px 12px 12px}
+    .og-fcs{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+    .og-fc .n{font-size:15px}
+    .og-fc .n em{display:none}
+    .og-side{grid-template-columns:minmax(0,1fr)}
+  }
+  @media print{ #page-orgchart{padding:0!important} .og-stat,.og-card,.og-branch,.og-tcard{border:1px solid #E5E8EB} .og-tcard.is-head,.og-lead,.og-fc,.og-mcol i,.og-rrow i{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
   /* [A안] 청약 수정 · 계약 옵션 */
   .ce-chips{display:flex;flex-wrap:wrap;gap:8px}
   .ce-chip{height:40px;padding:0 14px;border-radius:999px;border:1px solid #E5E8EB;background:#fff;font-size:14px;font-weight:600;color:#4E5968;display:inline-flex;align-items:center;gap:6px;transition:background .15s,border-color .15s,color .15s}
@@ -1704,26 +1788,25 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
 
       <!-- 헤리티지 조직도 페이지 -->
       <div id="page-orgchart" class="page-section hidden p-4 sm:p-6 pb-20">
-          <div class="flex justify-between items-center mb-4">
-              <h2 class="text-xl font-bold flex items-center text-gray-800">
-                  <span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-2"></span>
-                  헤리티지 조직도
-              </h2>
-              <div class="flex items-center gap-2">
-                  <button onclick="window.print()" class="no-print bg-gray-800 hover:bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-sm transition flex items-center gap-1 active:scale-95">
-                      <svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg> 인쇄
-                  </button>
+          <div class="og-wrap">
+              <div class="og-top">
+                  <div class="og-title">
+                      <h2>헤리티지금융지사 조직도</h2>
+                      <p id="ogAsOf"></p>
+                  </div>
+                  <div class="og-top-r">
+                      <div id="ogStats" class="og-stats"></div>
+                      <button onclick="window.print()" class="no-print og-print" aria-label="조직도 인쇄"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>인쇄</button>
+                  </div>
               </div>
-          </div>
-
-          <!-- 통계 요약 영역 -->
-          <div id="orgChartStats" class="mb-6 grid grid-cols-2 sm:grid-cols-5 gap-2 text-center bg-white p-3 rounded-xl shadow-sm border border-gray-200"></div>
-
-          <!-- 조직도 트리 영역 (모바일 가로 스크롤 지원) -->
-          <div id="orgChartContainer" class="w-full overflow-x-auto pb-10 custom-scrollbar relative p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-              <div class="min-w-[700px] flex flex-col items-center pt-4">
-                  <div class="text-center py-10 text-gray-500"><div class="loader mx-auto mb-2"></div>조직도를 불러오는 중입니다...</div>
+              <div class="og-grid">
+                  <div id="ogChart" class="og-chart"><div class="og-empty"><div class="loader mx-auto mb-2"></div>조직도를 불러오는 중이에요</div></div>
+                  <div class="og-side">
+                      <section class="og-card"><h3>월별 입사 인원</h3><p class="og-sub">입사월 기준 · 단위 명</p><div id="ogMonthly" class="og-monthly"></div></section>
+                      <section class="og-card"><h3>도입 기여 TOP 5</h3><p class="og-sub">도입자별 도입 인원 · 단위 명</p><div id="ogTop" class="og-rank"></div></section>
+                  </div>
               </div>
+              <p class="og-legend">카드 표기: 입사 연.월 · 도입자</p>
           </div>
       </div>
 
@@ -14765,264 +14848,65 @@ function setupRecruitScrollAnimation() {
 // ==========================================
 let orgChartData = null;
 
-function loadOrgChart() {
-    const container = document.querySelector('#orgChartContainer > div');
-    
-    if (orgChartData) {
-        renderOrgChart();
-        return;
-    }
+function loadOrgChart() { renderOrgChart(); }
 
-    container.innerHTML = '<div class="text-center py-10 text-gray-500"><div class="loader mx-auto mb-2"></div>조직도를 불러오는 중입니다...</div>';
-
-    if (typeof google === 'undefined' || typeof google.script === 'undefined') {
-        // 로컬 테스트용 더미 데이터
-        orgChartData = [
-            { parentDept: '헤리티지금융지사', subDept: '', role: '지사장', name: '옥영훈' },
-            { parentDept: '일반영업본부', subDept: '', role: '본부장', name: '김일반' },
-            { parentDept: '일반영업본부', subDept: '아너스 지점', role: '지점장', name: '이아너스' },
-            { parentDept: '일반영업본부', subDept: '아너스 지점', role: 'FC', name: '김에프시' },
-            { parentDept: '일반영업본부', subDept: '리더스 지점', role: '지점장', name: '박리더스' },
-            { parentDept: '특수영업본부', subDept: '', role: '본부장', name: '최특수' },
-            { parentDept: '특수영업본부', subDept: '세미나팀', role: '팀장', name: '정세미나' },
-            { parentDept: '특수영업본부', subDept: '세미나팀', role: 'FC', name: '오발표' },
-            { parentDept: '영업지원팀', subDept: '', role: '팀장', name: '정지원' },
-            { parentDept: '영업지원팀', subDept: '', role: '총무', name: '최총무' },
-            { parentDept: '마케팅임원', subDept: '', role: '이사', name: '강마케' }
-        ];
-        setTimeout(renderOrgChart, 500);
-    } else {
-        google.script.run.withSuccessHandler(function(data) {
-            orgChartData = data;
-            renderOrgChart();
-        }).withFailureHandler(function(err) {
-            container.innerHTML = `<div class="text-center py-10 text-red-500">데이터를 불러오는데 실패했습니다.<br>${err}</div>`;
-        }).getOrgChartData();
-    }
-}
-
+// 조직도: 사용자 정보(지점·직급·입사일·도입자) 기준으로 그린다
 function renderOrgChart() {
-    const container = document.querySelector('#orgChartContainer > div');
-    const statsContainer = document.getElementById('orgChartStats');
-    
-    if (!orgChartData || orgChartData.length === 0) {
-        container.innerHTML = '<div class="text-center py-10 text-gray-500">등록된 조직도 정보가 없습니다.</div>';
-        if(statsContainer) statsContainer.innerHTML = '';
-        return;
-    }
-
-    // 1. 인원 통계 계산 (관리자 통합, 마케팅/후보자 분리)
-    let total = orgChartData.length;
-    let roleCounts = { '관리자': 0, 'FC': 0, '마케팅임원': 0, '후보자': 0, '기타': 0 };
-    
-    orgChartData.forEach(m => {
-        const r = m.role.trim();
-        const dept = m.parentDept ? m.parentDept.trim() : '';
-        
-        if (r.includes('지사장') || r.includes('본부장') || r.includes('지점장') || r.includes('팀장') || r.includes('총무')) {
-            roleCounts['관리자']++;
-        } else if (r.includes('FC')) {
-            roleCounts['FC']++;
-        } else if (r.includes('후보자')) {
-            roleCounts['후보자']++;
-        } else if (r.includes('마케팅') || dept.includes('마케팅') || r.includes('이사')) {
-            roleCounts['마케팅임원']++;
-        } else {
-            roleCounts['기타']++;
-        }
+    var box = document.getElementById('ogChart'); if (!box) return;
+    var esc = function (t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    var today = new Date();
+    var list = (typeof userDB !== 'undefined' && userDB ? userDB : []).filter(function (u) {
+        if (!u || !u.name || !String(u.branch || '').trim()) return false;
+        if (u.resignDate) { var rd = new Date(u.resignDate); if (!isNaN(rd.getTime()) && rd <= today) return false; }
+        return true;
     });
-
-    if(statsContainer) {
-        statsContainer.innerHTML = `
-            <div class="bg-indigo-50 rounded-lg p-2 border border-indigo-100"><div class="text-xs sm:text-xs text-indigo-600 font-bold mb-0.5">총 인원</div><div class="text-base sm:text-lg font-black text-indigo-800">${total}명</div></div>
-            <div class="bg-blue-50 rounded-lg p-2 border border-blue-100"><div class="text-xs sm:text-xs text-blue-600 font-bold mb-0.5">관리자</div><div class="text-base sm:text-lg font-black text-blue-800">${roleCounts['관리자']}명</div></div>
-            <div class="bg-gray-50 rounded-lg p-2 border border-gray-100"><div class="text-xs sm:text-xs text-gray-500 font-bold mb-0.5">FC</div><div class="text-base sm:text-lg font-black text-gray-800">${roleCounts['FC']}명</div></div>
-            <div class="bg-teal-50 rounded-lg p-2 border border-teal-100"><div class="text-xs sm:text-xs text-teal-600 font-bold mb-0.5">마케팅임원</div><div class="text-base sm:text-lg font-black text-teal-800">${roleCounts['마케팅임원']}명</div></div>
-            <div class="bg-orange-50 rounded-lg p-2 border border-orange-100"><div class="text-xs sm:text-xs text-orange-600 font-bold mb-0.5">후보자</div><div class="text-base sm:text-lg font-black text-orange-800">${roleCounts['후보자']}명</div></div>
-        `;
-    }
-
-    // 2. 데이터 계층화
-    const hierarchy = {
-        '헤리티지금융지사': { direct: [], subs: {} },
-        '마스터본부': { direct: [], subs: {} },
-        '영업지원팀': { direct: [], subs: {} },
-        '마케팅임원': { direct: [], subs: {} }
-    };
-
-    orgChartData.forEach(m => {
-        // [조직개편] 특수영업본부·일반영업본부를 '마스터본부'로 통합
-        let p = m.parentDept;
-        if (p === '일반영업본부' || p === '특수영업본부') p = '마스터본부';
-        const s = m.subDept;
-        if (!hierarchy[p]) hierarchy[p] = { direct: [], subs: {} };
-        if (s && s !== '') {
-            if (!hierarchy[p].subs[s]) hierarchy[p].subs[s] = [];
-            hierarchy[p].subs[s].push(m);
-        } else {
-            hierarchy[p].direct.push(m);
-        }
-    });
-
-    // 3. 개별 카드 생성 함수 (디자인 요구사항 및 위촉년월 적용)
-    const createCard = (m, isTop) => {
-        const r = m.role.trim();
-        let borderClass = 'border-gray-200 border';
-        let bgClass = 'bg-gray-100 text-gray-500';
-        let icon = '👤';
-        let textClass = 'text-gray-500';
-
-        if (isTop || r.includes('지사장')) {
-            borderClass = 'border-indigo-400 border-2';
-            bgClass = 'bg-indigo-100 text-indigo-600';
-            icon = '👑';
-            textClass = 'text-indigo-500';
-        } else if (r.includes('교육팀장') || r.includes('총무') || m.name.includes('조시온') || m.name.includes('박동준')) {
-            borderClass = 'border-teal-300 border-[1.5px]';
-            bgClass = 'bg-teal-50 text-teal-600';
-            icon = '✨';
-            textClass = 'text-teal-600';
-        } else if (r.includes('후보자')) {
-            borderClass = 'border-orange-400 border-2';
-            bgClass = 'bg-orange-100 text-orange-600';
-            icon = '🌱';
-            textClass = 'text-orange-600';
-        } else {
-            borderClass = 'border-gray-200 border';
-            bgClass = 'bg-gray-100 text-gray-500';
-            icon = '👤';
-            textClass = 'text-gray-500';
-        }
-
-        // ★ [신규] userDB에서 현재 사람의 입사일(위촉년월) 정보 찾아오기
-        const userInfo = userDB.find(u => u.name === m.name);
-        let joinDateHtml = '';
-        if (userInfo && userInfo.joinDate) {
-            const jd = new Date(userInfo.joinDate);
-            if (!isNaN(jd.getTime())) {
-                const yyyy = jd.getFullYear();
-                const mm = String(jd.getMonth() + 1).padStart(2, '0');
-                // 예: 2024.01
-                joinDateHtml = `<div class="text-xs sm:text-xs text-gray-500 mt-1 tracking-tighter bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">${yyyy}.${mm}</div>`;
-            }
-        }
-
-        return `
-            <div class="bg-white border ${borderClass} rounded-xl shadow-sm p-2 w-[110px] sm:w-[125px] flex flex-col items-center justify-center transition-transform hover:-translate-y-1 hover:shadow-md z-10 relative shrink-0 mx-1">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full ${bgClass} flex items-center justify-center text-sm sm:text-base mb-1 shadow-inner">
-                    ${icon}
-                </div>
-                <div class="text-xs font-bold ${textClass} mb-0.5">${m.role}</div>
-                <div class="text-xs sm:text-sm font-extrabold text-gray-800 tracking-tight truncate w-full text-center">${m.name}</div>
-                ${joinDateHtml}
-            </div>
-        `;
-    };
-
-    // 4. 하위 부서 컬럼(기둥) 생성 함수
-    const createCol = (title, groupData) => {
-        let directHtml = '';
-        if (groupData.direct.length > 0) {
-            directHtml = groupData.direct.map(m => createCard(m, false)).join('<div class="w-0.5 h-4 bg-gray-300 z-0"></div>');
-        }
-        
-        let subsHtml = '';
-        const subKeys = Object.keys(groupData.subs);
-        
-        if (subKeys.length > 0) {
-            const subBlocks = subKeys.map(subName => {
-                const subMembers = groupData.subs[subName];
-                const count = subMembers.length;
-                
-                // 지점장/팀장을 분리하여 위쪽에 배치
-                const leaders = subMembers.filter(m => m.role.includes('지점장') || m.role.includes('팀장') || m.role.includes('본부장'));
-                const fcs = subMembers.filter(m => !(m.role.includes('지점장') || m.role.includes('팀장') || m.role.includes('본부장')));
-
-                let leaderHtml = '';
-                if (leaders.length > 0) {
-                    leaderHtml = `<div class="flex flex-col items-center gap-0 z-10 relative">` + 
-                                 leaders.map(m => createCard(m, false)).join('<div class="w-0.5 h-3 bg-gray-200 z-0"></div>') + 
-                                 `</div>`;
-                    if (fcs.length > 0) {
-                        leaderHtml += `<div class="w-0.5 h-4 bg-gray-300 z-0"></div>`; // 지점장과 FC 연결선
-                    }
-                }
-
-                let fcHtml = '';
-                let blockWidthClass = 'w-[140px] sm:w-[160px]'; // 기본 너비
-
-                if (fcs.length > 0) {
-                    if (count >= 10) {
-                        // 전체 인원이 10명이 넘으면 FC들은 2줄(grid)로 배치하여 여백 확보 (카드 안 겹침)
-                        blockWidthClass = 'w-[250px] sm:w-[280px]';
-                        const gridCards = fcs.map(m => createCard(m, false)).join('');
-                        fcHtml = `<div class="grid grid-cols-2 gap-2 z-10 relative w-full justify-items-center">${gridCards}</div>`;
-                    } else {
-                        // 10명 미만이면 세로 1줄로 배치
-                        fcHtml = `<div class="flex flex-col items-center gap-0 z-10 relative w-full">` + 
-                                 fcs.map(m => createCard(m, false)).join('<div class="w-0.5 h-3 bg-gray-200 z-0"></div>') + 
-                                 `</div>`;
-                    }
-                }
-
-                return `
-                    <div class="flex flex-col items-center ${blockWidthClass} bg-slate-50 rounded-xl p-2 pt-4 border border-slate-200 shadow-sm relative z-10 mt-4 mx-auto">
-                        <div class="absolute -top-3 flex items-center bg-teal-500 text-white text-xs sm:text-xs font-bold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
-                            ${subName} <span class="ml-1.5 bg-teal-700 text-xs px-1.5 py-0.5 rounded-full">${count}명</span>
-                        </div>
-                        ${leaderHtml}
-                        ${fcHtml}
-                    </div>
-                `;
-            });
-            subsHtml = subBlocks.join('<div class="w-0.5 h-4 bg-gray-300 z-0"></div>');
-        }
-
-        let colTotalCount = groupData.direct.length;
-        subKeys.forEach(k => colTotalCount += groupData.subs[k].length);
-
-        const isEmpty = groupData.direct.length === 0 && subKeys.length === 0;
-        const emptyHtml = isEmpty ? '<div class="text-xs text-gray-500 py-4 bg-gray-50 rounded-lg w-32 text-center border border-dashed border-gray-200 z-10 relative mx-auto">공석</div>' : '';
-        const joinLine = (groupData.direct.length > 0 && subKeys.length > 0) ? '<div class="w-0.5 h-5 bg-gray-300 z-0"></div>' : '';
-
-        return `
-            <div class="flex flex-col items-center relative px-2 sm:px-4 shrink-0">
-                <div class="w-0.5 h-6 bg-gray-300"></div>
-                <div class="bg-gray-800 text-white text-xs sm:text-xs font-bold px-4 py-1.5 rounded-full mb-3 shadow-sm z-10 whitespace-nowrap flex items-center gap-2">
-                    ${title} 
-                    <span class="bg-gray-600 text-gray-100 px-1.5 py-0.5 rounded-full text-xs">${colTotalCount}명</span>
-                </div>
-                <div class="flex flex-col items-center w-full relative">
-                    ${directHtml}
-                    ${joinLine}
-                    ${subsHtml}
-                    ${emptyHtml}
-                </div>
-            </div>
-        `;
-    };
-
-    const topGroup = hierarchy['헤리티지금융지사'].direct;
-    const topHtml = topGroup.map(m => createCard(m, true)).join('');
-
-    const bottomHtml = `
-        <div class="flex justify-center items-start w-full relative mt-0 gap-2 sm:gap-6">
-            <div class="absolute top-0 left-[10%] right-[10%] h-0.5 bg-gray-300"></div>
-            ${createCol('마스터본부', hierarchy['마스터본부'])}
-            ${createCol('영업지원팀', hierarchy['영업지원팀'])}
-            ${createCol('마케팅임원', hierarchy['마케팅임원'])}
-        </div>
-    `;
-
-    container.innerHTML = `
-        <div class="flex flex-col items-center pb-8 min-w-max px-4 pt-4">
-            <div class="flex justify-center z-10 relative">
-                ${topHtml || '<div class="text-sm text-gray-500">지사장 정보 없음</div>'}
-            </div>
-            <div class="w-0.5 h-8 bg-gray-300"></div>
-            ${bottomHtml}
-        </div>
-    `;
+    var asOf = document.getElementById('ogAsOf'); if (asOf) asOf.textContent = today.getFullYear() + '년 ' + (today.getMonth() + 1) + '월 기준';
+    if (!list.length) { box.innerHTML = '<div class="og-empty">등록된 조직 정보가 없어요</div>'; ['ogStats', 'ogMonthly', 'ogTop'].forEach(function (i) { document.getElementById(i).innerHTML = ''; }); return; }
+    var ym = function (u) { var d = new Date(u.joinDate); return isNaN(d.getTime()) ? '' : String(d.getFullYear()).slice(2) + '.' + String(d.getMonth() + 1).padStart(2, '0'); };
+    var jt = function (u) { var d = new Date(u.joinDate); return isNaN(d.getTime()) ? 9e15 : d.getTime(); };
+    var role = function (u) { return String(u.role || '').trim() || 'FC'; };
+    var meta = function (u, long) { var a = ym(u), r = String(u.recruiter || '').trim(); return [a ? a + (long ? ' 입사' : '') : '', r ? (long ? '도입 ' : '') + r : ''].filter(Boolean).join(' · '); };
+    var isHead = function (u) { return /지사장/.test(role(u)); };
+    var isLead = function (u) { return /지점장|팀장/.test(role(u)); };
+    var isHq = function (u) { return /본부장/.test(role(u)); };
+    var direct = list.filter(function (u) { return String(u.branch).trim() === '직할'; });
+    var head = list.filter(isHead)[0] || null;
+    var hqs = list.filter(isHq);
+    var staff = direct.filter(function (u) { return !isHead(u) && !isHq(u); });
+    // 지점 묶기 (인원 많은 순)
+    var bmap = {}, order = [];
+    list.forEach(function (u) { var b = String(u.branch).trim(); if (b === '직할') return; if (!bmap[b]) { bmap[b] = []; order.push(b); } bmap[b].push(u); });
+    order.sort(function (x, y) { return bmap[y].length - bmap[x].length; });
+    // 통계
+    var st = [['총 재적', list.length, 1]].concat(order.map(function (b) { return [b, bmap[b].length]; }));
+    if (direct.length) st.push(['직할', direct.length]);
+    document.getElementById('ogStats').innerHTML = st.map(function (x) { return '<div class="og-stat' + (x[2] ? ' is-main' : '') + '"><span>' + esc(x[0]) + '</span><b>' + x[1] + '<small>명</small></b></div>'; }).join('');
+    // 상단: 본부장 — 지사장 — 총무
+    var topCard = function (u, cls) { return '<div class="og-tcard ' + (cls || '') + '"><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div>' + (meta(u, true) ? '<div class="m">' + esc(meta(u, true)) + '</div>' : '') + '</div>'; };
+    var topHtml = '<div class="og-toprow">'
+        + '<div class="og-tside">' + hqs.map(function (u) { return topCard(u); }).join('') + '</div>'
+        + (head ? '<div class="og-thead">' + topCard(head, 'is-head') + '</div>' : '')
+        + '<div class="og-tside">' + staff.map(function (u) { return topCard(u); }).join('') + '</div></div>';
+    // 지점 카드
+    var brHtml = order.map(function (b) {
+        var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return (/지점장/.test(role(y)) ? 1 : 0) - (/지점장/.test(role(x)) ? 1 : 0) || jt(x) - jt(y); });
+        var fcs = m.filter(function (u) { return !isLead(u) && !isHq(u) && !isHead(u); }).sort(function (x, y) { return jt(x) - jt(y); });
+        var hasHq = m.some(isHq);
+        return '<section class="og-branch" style="flex:' + Math.max(m.length, 8) + ' 1 0"><h3>' + esc(/지점$/.test(b) ? b : b + '지점') + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + '</h3>'
+            + (leads.length ? '<div class="og-leads">' + leads.map(function (u) { return '<div class="og-lead"><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u, true)) + '</div></div>'; }).join('') + '</div>' : '')
+            + '<div class="og-fcs">' + fcs.map(function (u) { return '<div class="og-fc"><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u)) + '</div></div>'; }).join('') + '</div></section>';
+    }).join('');
+    box.innerHTML = topHtml + '<div class="og-stem" aria-hidden="true"></div><div class="og-branches">' + brHtml + '</div>';
+    // 월별 입사 인원
+    var mm = {};
+    list.forEach(function (u) { var d = new Date(u.joinDate); if (isNaN(d.getTime()) || d > today) return; var k = d.getFullYear() * 100 + d.getMonth() + 1; mm[k] = (mm[k] || 0) + 1; });
+    var mk = Object.keys(mm).map(Number).sort(function (a, b) { return a - b; }), mx = Math.max.apply(null, mk.map(function (k) { return mm[k]; }).concat([1]));
+    document.getElementById('ogMonthly').innerHTML = mk.length ? mk.map(function (k) { return '<div class="og-mcol"><b>' + mm[k] + '</b><i style="height:' + Math.max(6, Math.round(mm[k] / mx * 100)) + '%"></i><span>' + String(Math.floor(k / 100)).slice(2) + '.' + String(k % 100).padStart(2, '0') + '</span></div>'; }).join('') : '<p class="og-none">입사일 정보가 없어요</p>';
+    // 도입 기여 TOP 5
+    var rc = {};
+    list.forEach(function (u) { var r = String(u.recruiter || '').trim(); if (r) rc[r] = (rc[r] || 0) + 1; });
+    var top = Object.keys(rc).sort(function (a, b) { return rc[b] - rc[a] || a.localeCompare(b, 'ko'); }).slice(0, 5), tx = top.length ? rc[top[0]] : 1;
+    document.getElementById('ogTop').innerHTML = top.length ? top.map(function (n) { return '<div class="og-rrow"><span>' + esc(n) + '</span><div><i style="width:' + Math.round(rc[n] / tx * 100) + '%"></i></div><b>' + rc[n] + '</b></div>'; }).join('') : '<p class="og-none">도입자 정보가 없어요</p>';
 }
 
 </script>

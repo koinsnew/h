@@ -1079,6 +1079,12 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   #ogPrintRoot [data-dirty]{box-shadow:none}
   #ogPrintRoot [data-dirty]::after,#ogPrintRoot .og-save{display:none}
   @media (max-width:720px){ .og-save{justify-content:space-between;width:100%} .og-save span{max-width:none} }
+  .og-editable [data-og]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .og-ghost{position:fixed;z-index:10050;pointer-events:none;margin:0;opacity:.96;transform:rotate(-2deg) scale(1.04);box-shadow:0 12px 28px rgba(0,27,55,.22)!important;background:#fff!important;border-radius:12px}
+  .og-dragging{opacity:.35}
+  .og-dragmode [data-br]{transition:box-shadow .15s,background .15s}
+  .og-dragmode [data-br].og-drop{box-shadow:0 0 0 2px #3182F6 inset;background:#F3F8FF}
+  .og-dragmode{cursor:grabbing}
   .og-add{margin-left:auto;align-self:center;flex:none;width:30px;height:30px;border-radius:10px;background:#F2F4F6;color:#4E5968;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
   .og-add:hover{background:#E8F3FF;color:#1B64DA}
   .og-add:active{background:#D6E8FF}
@@ -1898,7 +1904,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                       <section class="og-card"><h3>도입 기여 TOP 5</h3><p class="og-sub">도입자별 도입 인원 · 단위 명</p><div id="ogTop" class="og-rank"></div></section>
                   </div>
               </div>
-              <p class="og-legend">카드 표기: 입사 연.월 · 도입자<span id="ogEditHint" class="hidden no-print"> · 카드를 누르면 직급·소속·도입자를 바꿀 수 있어요</span></p>
+              <p class="og-legend">카드 표기: 입사 연.월 · 도입자<span id="ogEditHint" class="hidden no-print"> · 카드를 누르면 수정, 누른 채 끌면 다른 소속으로 옮길 수 있어요</span></p>
           </div>
       </div>
 
@@ -15076,16 +15082,22 @@ function ogEditSave() {
         }).catch(ogFail);
         return;
     }
-    var u = userDB.find(function (x) { return x.name === OGE.name; }); if (!u) return;
+    ogStage(OGE.name, role, branch, rec);
+    ogEditClose();
+}
+// 수정 내용을 화면에만 반영해 두고(수정됨 표시), 저장 버튼으로 시트에 저장
+function ogStage(name, role, branch, rec) {
+    var u = userDB.find(function (x) { return x.name === name; }); if (!u) return false;
     var cur = { role: String(u.role || '').trim(), branch: String(u.branch || '').trim(), recruiter: String(u.recruiter || '').trim() };
-    if (cur.role === role && cur.branch === branch && cur.recruiter === rec) { ogEditClose(); return; }
-    var p = OGE.pending[OGE.name] || { orig: cur };
+    if (cur.role === role && cur.branch === branch && cur.recruiter === rec) return false;
+    var p = OGE.pending[name] || { orig: cur };
     u.role = role; u.branch = branch; u.recruiter = rec;
-    if (p.orig.role === role && p.orig.branch === branch && p.orig.recruiter === rec) delete OGE.pending[OGE.name];
-    else OGE.pending[OGE.name] = p;
+    if (p.orig.role === role && p.orig.branch === branch && p.orig.recruiter === rec) delete OGE.pending[name];
+    else OGE.pending[name] = p;
     OGE.last = '';
-    ogEditClose(); renderOrgChart();
+    renderOrgChart();
     if (Object.keys(OGE.pending).length) shToast('저장 버튼을 눌러야 시트에 저장돼요', 'light');
+    return true;
 }
 function ogEditDelete() {
     var mode = OGE.mode;
@@ -15191,6 +15203,7 @@ window.addEventListener('beforeunload', function (e) { if (Object.keys(OGE.pendi
     var box = document.getElementById('ogChart'); if (!box) return;
     var go = function (e) {
         if (!e.target.closest) return false;
+        if (OGD.justDragged) { OGD.justDragged = false; return true; }
         var a = e.target.closest('[data-add]'); if (a) { var v = a.getAttribute('data-add'); if (v === '__cand') ogOpen('cand-add'); else ogOpen('add', v); return true; }
         var c = e.target.closest('[data-cand]'); if (c) { ogOpen('cand-edit', c.getAttribute('data-cand')); return true; }
         var m = e.target.closest('[data-og]'); if (m) { ogOpen('edit', m.getAttribute('data-og')); return true; }
@@ -15199,6 +15212,93 @@ window.addEventListener('beforeunload', function (e) { if (Object.keys(OGE.pendi
     box.addEventListener('click', go);
     box.addEventListener('keydown', function (e) { if (e.key !== 'Enter' && e.key !== ' ') return; if (e.target.tagName === 'BUTTON') return; if (go(e)) e.preventDefault(); });
 })();
+
+// ── 카드를 누른 채 끌어서 다른 소속 카드로 옮기기 (지사장·총무만) ──
+var OGD = { name: '', from: '', el: null, ghost: null, on: false, timer: 0, sx: 0, sy: 0, target: null, justDragged: false };
+(function () {
+    var box = document.getElementById('ogChart'); if (!box) return;
+    var pt = function (e) { var t = e.touches && e.touches[0] || e.changedTouches && e.changedTouches[0] || e; return { x: t.clientX, y: t.clientY }; };
+    var clearTarget = function () { if (OGD.target) OGD.target.classList.remove('og-drop'); OGD.target = null; };
+    var begin = function () {
+        if (OGD.on || !OGD.el) return;
+        OGD.on = true;
+        var r = OGD.el.getBoundingClientRect(), g = OGD.el.cloneNode(true);
+        g.removeAttribute('data-og'); g.className += ' og-ghost';
+        g.style.width = r.width + 'px'; g.style.left = (OGD.sx - r.width / 2) + 'px'; g.style.top = (OGD.sy - r.height / 2) + 'px';
+        document.body.appendChild(g); OGD.ghost = g; OGD.gw = r.width; OGD.gh = r.height;
+        OGD.el.classList.add('og-dragging'); box.classList.add('og-dragmode');
+        try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { }
+    };
+    var move = function (e) {
+        if (!OGD.el) return;
+        var p = pt(e);
+        if (!OGD.on) {
+            if (Math.abs(p.x - OGD.sx) + Math.abs(p.y - OGD.sy) > 8) { if (e.type === 'mousemove') begin(); else { cancel(); return; } }
+            if (!OGD.on) return;
+        }
+        if (e.cancelable) e.preventDefault();
+        OGD.ghost.style.left = (p.x - OGD.gw / 2) + 'px'; OGD.ghost.style.top = (p.y - OGD.gh / 2) + 'px';
+        OGD.ghost.style.display = 'none';
+        var under = document.elementFromPoint(p.x, p.y);
+        OGD.ghost.style.display = '';
+        var t = under && under.closest ? under.closest('#ogChart [data-br]') : null;
+        if (t && t.getAttribute('data-br') === OGD.from) t = null;
+        if (t !== OGD.target) { clearTarget(); if (t) { t.classList.add('og-drop'); OGD.target = t; } }
+        var m = 70; if (p.y < m) window.scrollBy(0, -14); else if (p.y > window.innerHeight - m) window.scrollBy(0, 14);
+    };
+    var cleanup = function () {
+        clearTimeout(OGD.timer);
+        if (OGD.ghost) OGD.ghost.remove();
+        if (OGD.el) OGD.el.classList.remove('og-dragging');
+        box.classList.remove('og-dragmode'); clearTarget();
+        OGD.el = null; OGD.ghost = null; OGD.on = false;
+        document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', end);
+        document.removeEventListener('touchmove', move); document.removeEventListener('touchend', end); document.removeEventListener('touchcancel', cancel);
+    };
+    var cancel = function () { cleanup(); };
+    var end = function () {
+        var was = OGD.on, t = OGD.target, name = OGD.name;
+        var to = t ? t.getAttribute('data-br') : '';
+        cleanup();
+        if (!was) return;
+        OGD.justDragged = true; setTimeout(function () { OGD.justDragged = false; }, 350);
+        if (!to) return;
+        var u = (userDB || []).find(function (x) { return x.name === name; }); if (!u) return;
+        if (ogStage(name, String(u.role || '').trim() || 'FC', to, String(u.recruiter || '').trim())) shToast(name + ' 님을 ' + ogBranchLabel(to) + '(으)로 옮겼어요 · 저장 버튼을 눌러 주세요', 'light');
+    };
+    var start = function (e) {
+        if (!ogCanEdit() || OGD.el) return;
+        if (e.type === 'mousedown' && e.button !== 0) return;
+        var c = e.target.closest ? e.target.closest('#ogChart [data-og]') : null;
+        if (!c || c.classList.contains('is-head')) return;
+        var p = pt(e), u = (userDB || []).find(function (x) { return x.name === c.getAttribute('data-og'); }); if (!u) return;
+        OGD.el = c; OGD.name = u.name; OGD.from = String(u.branch || '').trim(); OGD.sx = p.x; OGD.sy = p.y; OGD.on = false;
+        if (e.type === 'mousedown') { document.addEventListener('mousemove', move); document.addEventListener('mouseup', end); }
+        else {
+            document.addEventListener('touchmove', move, { passive: false }); document.addEventListener('touchend', end); document.addEventListener('touchcancel', cancel);
+            OGD.timer = setTimeout(begin, 380);   // 길게 누르면 끌기 시작
+        }
+    };
+    box.addEventListener('mousedown', start);
+    box.addEventListener('touchstart', start, { passive: true });
+    box.addEventListener('contextmenu', function (e) { if (OGD.el || (e.target.closest && e.target.closest('[data-og]') && ogCanEdit() && 'ontouchstart' in window)) e.preventDefault(); });
+})();
+
+// 직할 카드 너비를 아래 후보자 카드와 맞춘다 (후보자 카드가 오른쪽 끝 칸에 있을 때)
+function ogAlign(scope) {
+    var top = scope.querySelector('.og-toprow'), cand = scope.querySelector('.og-cand'), wrap = scope.querySelector('.og-branches');
+    if (!top) return;
+    var side = top.querySelector('.og-tside');
+    top.style.gridTemplateColumns = ''; top.style.columnGap = ''; if (side) side.style.padding = '';
+    if (!cand || !wrap || !side || !top.classList.contains('no-left')) return;
+    var narrow = scope.id !== 'ogPrintRoot' && window.matchMedia && window.matchMedia('(max-width:720px)').matches;
+    if (narrow) return;
+    var cr = cand.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+    if (!cr.width || Math.abs(cr.right - wr.right) > 2 || cr.width > wr.width * 0.6) return;
+    top.style.gridTemplateColumns = 'minmax(0,1fr) ' + (cr.width / wr.width * 100).toFixed(3) + '%';
+    top.style.columnGap = '14px'; side.style.padding = '0';
+}
+(function () { var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { var b = document.getElementById('ogChart'); if (b && b.offsetParent) ogAlign(b); }, 150); }); })();
 
 // 조직도 인쇄: A4 가로 한 장에 맞춰 줄여서 출력
 function ogPrint() {
@@ -15212,6 +15312,7 @@ function ogPrint() {
     document.body.appendChild(root);
     document.body.classList.add('og-printing');
     // A4 가로(여백 8mm 제외) 안쪽 크기: 약 1062 x 733px
+    try { ogAlign(root); } catch (e) { }
     var h = root.getBoundingClientRect().height || 1;
     root.style.zoom = String(Math.min(1062 / 1288, 730 / h, 1));
     var done = false, clean = function () { if (done) return; done = true; document.body.classList.remove('og-printing'); root.remove(); st.remove(); window.removeEventListener('afterprint', clean); };
@@ -15266,22 +15367,23 @@ function renderOrgChart() {
     var topHtml = '<div class="og-toprow' + (hqLeft.length ? '' : ' no-left') + '">'
         + (hqLeft.length ? '<div class="og-tside"><div class="og-tbox"><h4>본부<b>' + hqLeft.length + '명</b></h4><div class="og-tbox-items">' + hqLeft.map(function (u) { return topCard(u, 'is-hq'); }).join('') + '</div></div></div>' : '')
         + (head ? '<div class="og-thead">' + topCard(head, 'is-head') + '</div>' : '')
-        + '<div class="og-tside">' + (direct.length ? '<div class="og-tbox"><h4>직할<b>' + direct.length + '명</b>' + (head && String(head.branch).trim() === '직할' ? '<span>지사장 포함</span>' : '') + plus('직할', '직할에 사람 추가') + '</h4><div class="og-tbox-items">' + (staff.length ? staff.map(function (u) { return topCard(u, isHq(u) ? 'is-hq' : ''); }).join('') : '<p class="og-tnone">소속 인원 없음</p>') + '</div></div>' : '') + '</div></div>';
+        + '<div class="og-tside">' + (direct.length ? '<div class="og-tbox" data-br="직할"><h4>직할<b>' + direct.length + '명</b>' + (head && String(head.branch).trim() === '직할' ? '<span>지사장 포함</span>' : '') + plus('직할', '직할에 사람 추가') + '</h4><div class="og-tbox-items">' + (staff.length ? staff.map(function (u) { return topCard(u, isHq(u) ? 'is-hq' : ''); }).join('') : '<p class="og-tnone">소속 인원 없음</p>') + '</div></div>' : '') + '</div></div>';
     // 지점 카드
     var brHtml = order.map(function (b) {
         var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return rank(x) - rank(y) || jt(x) - jt(y); });
         var fcs = m.filter(function (u) { return !isLead(u) && !isHq(u) && !isHead(u); }).sort(function (x, y) { return jt(x) - jt(y); });
         var hasHq = m.some(isHq);
-        return '<section class="og-branch" style="flex:' + Math.max(m.length, 5) + ' 1 250px;--f:' + Math.max(m.length, 5) + '"><h3>' + esc(ogBranchLabel(b)) + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + plus(b, ogBranchLabel(b) + '에 사람 추가') + '</h3>'
+        return '<section class="og-branch" data-br="' + esc(b) + '" style="flex:' + Math.max(m.length, 5) + ' 1 250px;--f:' + Math.max(m.length, 5) + '"><h3>' + esc(ogBranchLabel(b)) + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + plus(b, ogBranchLabel(b) + '에 사람 추가') + '</h3>'
             + (leads.length ? '<div class="og-leads">' + leads.map(function (u) { return '<div class="og-lead"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u, true)) + '</div></div>'; }).join('') + '</div>' : '')
             + '<div class="og-fcs">' + fcs.map(function (u) { return '<div class="og-fc"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u)) + '</div></div>'; }).join('') + '</div></section>';
     }).join('');
     var candHtml = (cands.length || canEdit) ? '<section class="og-branch og-cand' + (cands.length ? '' : ' is-empty') + '" style="flex:5 1 250px;--f:5"><h3>후보자<b>' + cands.length + '명</b><span>재적 미포함</span>' + plus('__cand', '후보자 추가') + '</h3>'
         + (cands.length ? '<div class="og-fcs">' + cands.map(function (c) {
             var pl = /^\d{4}-\d{2}/.test(c.joinPlan || '') ? c.joinPlan.slice(2, 4) + '.' + c.joinPlan.slice(5, 7) + ' 예정' : '';
-            return '<div class="og-fc is-cand"' + (canEdit ? ' data-cand="' + esc(c.id) + '" role="button" tabindex="0" aria-label="후보자 ' + esc(c.name) + ' 정보 수정"' : '') + '><div class="n">' + esc(c.name) + '<em>후보자</em></div><div class="m">' + esc([pl, c.recruiter].filter(Boolean).join(' · ') || '입사예정 미정') + '</div><div class="m">' + esc(ogBranchLabel(c.branch)) + '</div></div>';
+            return '<div class="og-fc is-cand"' + (canEdit ? ' data-cand="' + esc(c.id) + '" role="button" tabindex="0" aria-label="후보자 ' + esc(c.name) + ' 정보 수정"' : '') + '><div class="n">' + esc(c.name) + '<em>후보자</em></div><div class="m">' + esc(pl || '입사예정 미정') + '</div>' + (c.recruiter ? '<div class="m">' + esc(c.recruiter) + ' 도입</div>' : '') + '<div class="m">' + esc(ogBranchLabel(c.branch)) + '</div></div>';
         }).join('') + '</div>' : '<p class="og-tnone">등록된 후보자가 없어요. + 를 눌러 추가해 주세요.</p>') + '</section>' : '';
     box.innerHTML = topHtml + '<div class="og-stem" aria-hidden="true"></div><div class="og-branches">' + brHtml + candHtml + '</div>';
+    ogAlign(box);
     // 월별 입사 인원
     var mm = {};
     list.forEach(function (u) { var d = new Date(u.joinDate); if (isNaN(d.getTime()) || d > today) return; var k = d.getFullYear() * 100 + d.getMonth() + 1; mm[k] = (mm[k] || 0) + 1; });

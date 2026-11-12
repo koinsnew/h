@@ -1039,7 +1039,37 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     .og-fc .n em{display:none}
     .og-side{grid-template-columns:minmax(0,1fr)}
   }
-  @media print{ #page-orgchart{padding:0!important} .og-stat,.og-card,.og-branch,.og-tcard{border:1px solid #E5E8EB} .og-tcard.is-head,.og-lead,.og-fc,.og-mcol i,.og-rrow i{-webkit-print-color-adjust:exact;print-color-adjust:exact} }
+  /* 조직도 인쇄: A4 가로 한 장 */
+  body.og-printing > *:not(#ogPrintRoot){display:none!important}
+  #ogPrintRoot{width:1280px;background:#fff;padding:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #ogPrintRoot *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #ogPrintRoot .og-wrap{max-width:none}
+  #ogPrintRoot .og-print{display:none}
+  #ogPrintRoot .og-top{flex-direction:row;align-items:flex-end;margin-bottom:16px}
+  #ogPrintRoot .og-title h2{font-size:30px}
+  #ogPrintRoot .og-stats{display:flex}
+  #ogPrintRoot .og-stat{min-width:84px;padding:10px 14px 9px;border:1px solid #E5E8EB}
+  #ogPrintRoot .og-grid{grid-template-columns:minmax(0,1fr) 310px;gap:14px}
+  #ogPrintRoot .og-side{grid-template-columns:minmax(0,1fr);gap:14px}
+  #ogPrintRoot .og-card,#ogPrintRoot .og-branch,#ogPrintRoot .og-tcard{border:1px solid #E5E8EB}
+  #ogPrintRoot .og-tcard.is-head{border-color:#3182F6;padding:18px 12px}
+  #ogPrintRoot .og-tcard.is-head .n{font-size:26px}
+  #ogPrintRoot .og-toprow{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr);gap:0}
+  #ogPrintRoot .og-toprow::before{display:block}
+  #ogPrintRoot .og-thead{grid-column:auto;order:0}
+  #ogPrintRoot .og-tside{padding:0 8%}
+  #ogPrintRoot .og-stem{height:18px}
+  #ogPrintRoot .og-branches{flex-direction:row;gap:12px}
+  #ogPrintRoot .og-branch{width:auto;flex:var(--f,10) 1 0!important;padding:14px 14px 14px}
+  #ogPrintRoot .og-branch h3{padding-bottom:10px}
+  #ogPrintRoot .og-leads{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+  #ogPrintRoot .og-lead{padding:10px 10px 9px}
+  #ogPrintRoot .og-fcs{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px}
+  #ogPrintRoot .og-fc{padding:8px 4px 7px}
+  #ogPrintRoot .og-fc .n{font-size:16px}
+  #ogPrintRoot .og-fc .n em{display:inline}
+  #ogPrintRoot .og-monthly{height:150px}
+  #ogPrintRoot .og-legend{margin-top:8px}
   /* [A안] 청약 수정 · 계약 옵션 */
   .ce-chips{display:flex;flex-wrap:wrap;gap:8px}
   .ce-chip{height:40px;padding:0 14px;border-radius:999px;border:1px solid #E5E8EB;background:#fff;font-size:14px;font-weight:600;color:#4E5968;display:inline-flex;align-items:center;gap:6px;transition:background .15s,border-color .15s,color .15s}
@@ -1796,7 +1826,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                   </div>
                   <div class="og-top-r">
                       <div id="ogStats" class="og-stats"></div>
-                      <button onclick="window.print()" class="no-print og-print" aria-label="조직도 인쇄"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>인쇄</button>
+                      <button onclick="ogPrint()" class="no-print og-print" aria-label="조직도 인쇄"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>인쇄</button>
                   </div>
               </div>
               <div class="og-grid">
@@ -14850,6 +14880,25 @@ let orgChartData = null;
 
 function loadOrgChart() { renderOrgChart(); }
 
+// 조직도 인쇄: A4 가로 한 장에 맞춰 줄여서 출력
+function ogPrint() {
+    var src = document.querySelector('#page-orgchart .og-wrap'); if (!src) return;
+    var old = document.getElementById('ogPrintRoot'); if (old) old.remove();
+    var root = document.createElement('div'); root.id = 'ogPrintRoot';
+    root.appendChild(src.cloneNode(true));
+    [].forEach.call(root.querySelectorAll('[id]'), function (el) { el.removeAttribute('id'); });
+    var st = document.createElement('style'); st.id = 'ogPrintPage'; st.textContent = '@page{size:A4 landscape;margin:8mm}';
+    document.head.appendChild(st);
+    document.body.appendChild(root);
+    document.body.classList.add('og-printing');
+    // A4 가로(여백 8mm 제외) 안쪽 크기: 약 1062 x 733px
+    var h = root.getBoundingClientRect().height || 1;
+    root.style.zoom = String(Math.min(1062 / 1288, 730 / h, 1));
+    var done = false, clean = function () { if (done) return; done = true; document.body.classList.remove('og-printing'); root.remove(); st.remove(); window.removeEventListener('afterprint', clean); };
+    window.addEventListener('afterprint', clean);
+    setTimeout(function () { var t0 = Date.now(); window.print(); setTimeout(clean, Date.now() - t0 > 400 ? 300 : 60000); }, 80);
+}
+
 // 조직도: 사용자 정보(지점·직급·입사일·도입자) 기준으로 그린다
 function renderOrgChart() {
     var box = document.getElementById('ogChart'); if (!box) return;
@@ -14892,7 +14941,7 @@ function renderOrgChart() {
         var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return (/지점장/.test(role(y)) ? 1 : 0) - (/지점장/.test(role(x)) ? 1 : 0) || jt(x) - jt(y); });
         var fcs = m.filter(function (u) { return !isLead(u) && !isHq(u) && !isHead(u); }).sort(function (x, y) { return jt(x) - jt(y); });
         var hasHq = m.some(isHq);
-        return '<section class="og-branch" style="flex:' + Math.max(m.length, 8) + ' 1 0"><h3>' + esc(/지점$/.test(b) ? b : b + '지점') + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + '</h3>'
+        return '<section class="og-branch" style="flex:' + Math.max(m.length, 8) + ' 1 0;--f:' + Math.max(m.length, 8) + '"><h3>' + esc(/지점$/.test(b) ? b : b + '지점') + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + '</h3>'
             + (leads.length ? '<div class="og-leads">' + leads.map(function (u) { return '<div class="og-lead"><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u, true)) + '</div></div>'; }).join('') + '</div>' : '')
             + '<div class="og-fcs">' + fcs.map(function (u) { return '<div class="og-fc"><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u)) + '</div></div>'; }).join('') + '</div></section>';
     }).join('');

@@ -14915,7 +14915,8 @@ function loadOrgChart() { renderOrgChart(); }
 // ── 조직도 수정 (지사장·총무만) ──
 var OGE = { name: '', role: '', branch: '' };
 function ogCanEdit() { try { return /지사장|총무/.test(getRole(loggedInUser) || ''); } catch (e) { return false; } }
-function ogChips(boxId, list, cur, key, newId, newLabel) {
+function ogBranchLabel(b) { b = String(b || '').trim(); if (!b || b === '직할') return b; if (/본부$/.test(b)) return b.replace(/\s*본부$/, '') + ' 본부'; return b.replace(/\s*지점$/, '') + ' 지점'; }
+function ogChips(boxId, list, cur, key, newId, newLabel, labelOf) {
     var box = document.getElementById(boxId), inp = document.getElementById(newId);
     box.innerHTML = '';
     var chk = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
@@ -14925,9 +14926,9 @@ function ogChips(boxId, list, cur, key, newId, newLabel) {
         inp.classList.toggle('hidden', v !== '__new');
         if (v === '__new') inp.focus();
     };
-    list.concat(['__new']).forEach(function (v) {
+    list.concat(newLabel ? ['__new'] : []).forEach(function (v) {
         var b = document.createElement('button'); b.type = 'button'; b.className = 'ce-chip'; b.dataset.v = v;
-        b.innerHTML = chk + (v === '__new' ? newLabel : bdEsc(v)); b.onclick = function () { sel(v); };
+        b.innerHTML = chk + (v === '__new' ? newLabel : bdEsc(labelOf ? labelOf(v) : v)); b.onclick = function () { sel(v); };
         box.appendChild(b);
     });
     inp.value = '';
@@ -14938,13 +14939,13 @@ function ogEditOpen(name) {
     var u = (userDB || []).find(function (x) { return x.name === name; }); if (!u) return;
     OGE.name = name;
     document.getElementById('ogEdName').textContent = name;
-    document.getElementById('ogEdNow').textContent = [u.role || 'FC', u.branch || ''].filter(Boolean).join(' · ');
+    document.getElementById('ogEdNow').textContent = [u.role || 'FC', ogBranchLabel(u.branch)].filter(Boolean).join(' · ');
     var uniq = function (a) { return a.filter(function (v, i) { return v && a.indexOf(v) === i; }); };
     var act = (userDB || []).filter(function (x) { return String(x.branch || '').trim(); });
-    var roles = uniq(['지사장', '본부장', '지점장', '팀장', '총무', 'FC'].concat(act.map(function (x) { return String(x.role || '').trim(); })));
-    var branches = uniq(['직할'].concat(act.map(function (x) { return String(x.branch || '').trim(); })));
-    ogChips('ogEdRoles', roles, String(u.role || '').trim() || 'FC', 'role', 'ogEdRoleNew', '+ 직접 입력');
-    ogChips('ogEdBranches', branches, String(u.branch || '').trim() || '직할', 'branch', 'ogEdBranchNew', '+ 새 지점·본부');
+    var roles = uniq(['지사장', '본부장', '사업단장', '수석지점장', '지점장', '부지점장', '팀장', '총무', 'FC'].concat([String(u.role || '').trim()]));
+    var branches = uniq(['직할', '마스터본부', '아너스', '리더스'].concat(act.map(function (x) { return String(x.branch || '').trim(); })));
+    ogChips('ogEdRoles', roles, String(u.role || '').trim() || 'FC', 'role', 'ogEdRoleNew', '');
+    ogChips('ogEdBranches', branches, String(u.branch || '').trim() || '직할', 'branch', 'ogEdBranchNew', '+ 새 지점·본부', ogBranchLabel);
     var rs = document.getElementById('ogEdRecruiter'), cur = String(u.recruiter || '').trim();
     var names = act.map(function (x) { return x.name; }).filter(function (n) { return n !== name; }).sort(function (a, b) { return a.localeCompare(b, 'ko'); });
     if (cur && names.indexOf(cur) < 0) names.unshift(cur);
@@ -14955,7 +14956,7 @@ function ogEditOpen(name) {
 function ogEditClose() { document.getElementById('ogEditModal').classList.add('hidden'); }
 function ogEditSave() {
     var role = OGE.role === '__new' ? document.getElementById('ogEdRoleNew').value.trim() : OGE.role;
-    var branch = OGE.branch === '__new' ? document.getElementById('ogEdBranchNew').value.trim().replace(/지점$/, '') : OGE.branch;
+    var branch = OGE.branch === '__new' ? document.getElementById('ogEdBranchNew').value.trim().replace(/\s*지점$/, '').replace(/\s+본부$/, '본부') : OGE.branch;
     var rec = document.getElementById('ogEdRecruiter').value;
     if (!role) { shToast('직급을 골라 주세요', 'error'); return; }
     if (!branch) { shToast('소속을 골라 주세요', 'error'); return; }
@@ -15022,7 +15023,8 @@ function renderOrgChart() {
     box.classList.toggle('og-editable', canEdit);
     var hint = document.getElementById('ogEditHint'); if (hint) hint.classList.toggle('hidden', !canEdit);
     var isHead = function (u) { return /지사장/.test(role(u)); };
-    var isLead = function (u) { return /지점장|팀장/.test(role(u)); };
+    var isLead = function (u) { return /지점장|팀장|사업단장/.test(role(u)); };
+    var rank = function (u) { var r = role(u); return /사업단장/.test(r) ? 0 : /수석지점장/.test(r) ? 1 : /부지점장/.test(r) ? 3 : /지점장/.test(r) ? 2 : 4; };
     var isHq = function (u) { return /본부장/.test(role(u)); };
     var direct = list.filter(function (u) { return String(u.branch).trim() === '직할'; });
     var head = list.filter(isHead)[0] || null;
@@ -15033,7 +15035,7 @@ function renderOrgChart() {
     list.forEach(function (u) { var b = String(u.branch).trim(); if (b === '직할') return; if (!bmap[b]) { bmap[b] = []; order.push(b); } bmap[b].push(u); });
     order.sort(function (x, y) { return bmap[y].length - bmap[x].length; });
     // 통계
-    var st = [['총 재적', list.length, 1]].concat(order.map(function (b) { return [b, bmap[b].length]; }));
+    var st = [['총 재적', list.length, 1]].concat(order.map(function (b) { return [ogBranchLabel(b), bmap[b].length]; }));
     if (direct.length) st.push(['직할', direct.length]);
     document.getElementById('ogStats').innerHTML = st.map(function (x) { return '<div class="og-stat' + (x[2] ? ' is-main' : '') + '"><span>' + esc(x[0]) + '</span><b>' + x[1] + '<small>명</small></b></div>'; }).join('');
     // 상단: 본부장 — 지사장 — 총무
@@ -15044,10 +15046,10 @@ function renderOrgChart() {
         + '<div class="og-tside">' + staff.map(function (u) { return topCard(u); }).join('') + '</div></div>';
     // 지점 카드
     var brHtml = order.map(function (b) {
-        var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return (/지점장/.test(role(y)) ? 1 : 0) - (/지점장/.test(role(x)) ? 1 : 0) || jt(x) - jt(y); });
+        var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return rank(x) - rank(y) || jt(x) - jt(y); });
         var fcs = m.filter(function (u) { return !isLead(u) && !isHq(u) && !isHead(u); }).sort(function (x, y) { return jt(x) - jt(y); });
         var hasHq = m.some(isHq);
-        return '<section class="og-branch" style="flex:' + Math.max(m.length, 5) + ' 1 250px;--f:' + Math.max(m.length, 5) + '"><h3>' + esc(/지점$/.test(b) ? b : b + '지점') + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + '</h3>'
+        return '<section class="og-branch" style="flex:' + Math.max(m.length, 5) + ' 1 250px;--f:' + Math.max(m.length, 5) + '"><h3>' + esc(ogBranchLabel(b)) + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + '</h3>'
             + (leads.length ? '<div class="og-leads">' + leads.map(function (u) { return '<div class="og-lead"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u, true)) + '</div></div>'; }).join('') + '</div>' : '')
             + '<div class="og-fcs">' + fcs.map(function (u) { return '<div class="og-fc"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u)) + '</div></div>'; }).join('') + '</div></section>';
     }).join('');

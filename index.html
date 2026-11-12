@@ -980,14 +980,26 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .og-none{font-size:13px;color:#8B95A1;padding:16px 0}
   .og-toprow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr);align-items:center;position:relative}
   .og-toprow::before{content:'';position:absolute;left:12%;right:12%;top:50%;height:2px;background:#D9DEE3}
-  .og-tside{display:grid;gap:8px;position:relative;padding:0 8%}
+  .og-tside{display:grid;gap:8px;position:relative;padding:0 6%}
+  .og-tbox{background:#fff;border-radius:18px;padding:13px 12px 12px}
+  .og-tbox h4{display:flex;align-items:baseline;gap:6px;padding:0 4px 9px;font-size:15px;font-weight:800;letter-spacing:-.02em;color:#191F28;white-space:nowrap}
+  .og-tbox h4 b{font-size:13px;font-weight:800;color:#3182F6}
+  .og-tbox h4 span{font-size:11.5px;font-weight:500;color:#8B95A1}
+  .og-tbox-items{display:grid;gap:6px}
+  .og-tbox .og-tcard{background:#F2F4F6;border-radius:12px;padding:10px 8px 9px}
+  .og-tbox.is-hq .og-tcard{background:#E8F3FF}
+  .og-tbox .og-tcard .n{font-size:17px}
+  .og-tbox .og-tcard .n em{font-size:13px}
+  .og-tnone{font-size:12px;color:#8B95A1;text-align:center;padding:8px 0}
   .og-tside:empty{visibility:hidden}
-  .og-thead{position:relative}
+  .og-thead{position:relative;align-self:stretch;display:flex;flex-direction:column}
+  .og-thead::before{content:'';flex:1}
+  .og-thead::after{content:'';flex:1;width:2px;margin:0 auto;background:#D9DEE3}
   .og-tcard{background:#fff;border-radius:16px;padding:13px 12px 12px;text-align:center}
   .og-tcard .n,.og-lead .n{font-size:19px;font-weight:800;letter-spacing:-.03em;color:#191F28;white-space:nowrap}
   .og-tcard .n em,.og-lead .n em{font-style:normal;font-size:14px;font-weight:700;color:#3182F6;margin-left:6px}
   .og-tcard .m,.og-lead .m{margin-top:3px;font-size:12px;color:#8B95A1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .og-tcard.is-head{background:#3182F6;padding:20px 12px}
+  .og-tcard.is-head{background:#3182F6;padding:26px 12px}
   .og-tcard.is-head .n{color:#fff;font-size:26px}
   .og-tcard.is-head .n em{color:#DCEBFF;font-size:16px;font-weight:600}
   .og-tcard.is-head .m{display:none}
@@ -1029,6 +1041,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
     .og-thead{grid-column:1 / -1;order:-1}
     .og-tside{padding:0}
     .og-tcard .n{font-size:17px}
+    .og-tbox{padding:11px 8px 8px}
+    .og-tbox .og-tcard .n{font-size:16px}
+    .og-tside{align-self:start}
     .og-tcard.is-head{padding:16px 12px}
     .og-tcard.is-head .n{font-size:22px}
     .og-stem{height:14px}
@@ -1064,7 +1079,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   #ogPrintRoot .og-toprow{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr);gap:0}
   #ogPrintRoot .og-toprow::before{display:block}
   #ogPrintRoot .og-thead{grid-column:auto;order:0}
-  #ogPrintRoot .og-tside{padding:0 8%}
+  #ogPrintRoot .og-tside{padding:0 6%;align-self:center}
+  #ogPrintRoot .og-tbox{border:1px solid #E5E8EB;padding:11px 12px 11px}
+  #ogPrintRoot .og-tbox .og-tcard{border:0}
   #ogPrintRoot .og-stem{height:18px}
   #ogPrintRoot .og-branches{flex-direction:row;flex-wrap:nowrap;gap:12px}
   #ogPrintRoot .og-branch{width:auto;flex:var(--f,10) 1 0!important;padding:14px 14px 14px}
@@ -15041,9 +15058,9 @@ function renderOrgChart() {
     // 상단: 본부장 — 지사장 — 총무
     var topCard = function (u, cls) { return '<div class="og-tcard ' + (cls || '') + '"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div>' + (meta(u, true) ? '<div class="m">' + esc(meta(u, true)) + '</div>' : '') + '</div>'; };
     var topHtml = '<div class="og-toprow">'
-        + '<div class="og-tside">' + hqs.map(function (u) { return topCard(u); }).join('') + '</div>'
+        + '<div class="og-tside">' + (hqs.length ? '<div class="og-tbox is-hq"><h4>본부<b>' + hqs.length + '명</b></h4><div class="og-tbox-items">' + hqs.map(function (u) { return topCard(u); }).join('') + '</div></div>' : '') + '</div>'
         + (head ? '<div class="og-thead">' + topCard(head, 'is-head') + '</div>' : '')
-        + '<div class="og-tside">' + staff.map(function (u) { return topCard(u); }).join('') + '</div></div>';
+        + '<div class="og-tside">' + (direct.length ? '<div class="og-tbox"><h4>직할<b>' + direct.length + '명</b>' + (function () { var inc = []; if (head && String(head.branch).trim() === '직할') inc.push('지사장'); if (hqs.some(function (u) { return String(u.branch).trim() === '직할'; })) inc.push('본부장'); return inc.length ? '<span>' + inc.join('·') + ' 포함</span>' : ''; })() + '</h4><div class="og-tbox-items">' + (staff.length ? staff.map(function (u) { return topCard(u); }).join('') : '<p class="og-tnone">소속 인원 없음</p>') + '</div></div>' : '') + '</div></div>';
     // 지점 카드
     var brHtml = order.map(function (b) {
         var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return rank(x) - rank(y) || jt(x) - jt(y); });

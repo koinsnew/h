@@ -1096,6 +1096,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .og-editable [data-cand]:hover{border-color:#3182F6}
   .og-editable [data-cand]:focus-visible{outline:2px solid #3182F6;outline-offset:2px}
   .og-cand .og-tnone{padding:14px 0 6px}
+  .og-join{width:100%;min-height:48px;border-radius:12px;background:#E8F3FF;color:#1B64DA;font-size:15px;font-weight:700;margin-bottom:10px;transition:background .15s}
+  .og-join:active{background:#D6E8FF}
+  .og-join:focus-visible{outline:2px solid #3182F6;outline-offset:2px}
   .og-del{background:#FFF0F0;color:#E5484D}
   .og-del:active{background:#FFE3E3}
   #ogPrintRoot .og-add,#ogPrintRoot .og-cand.is-empty{display:none}
@@ -1904,7 +1907,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                       <section class="og-card"><h3>도입 기여 TOP 5</h3><p class="og-sub">도입자별 도입 인원 · 단위 명</p><div id="ogTop" class="og-rank"></div></section>
                   </div>
               </div>
-              <p class="og-legend">카드 표기: 입사 연.월 · 도입자<span id="ogEditHint" class="hidden no-print"> · 카드를 누르면 수정, 누른 채 끌면 다른 소속으로 옮길 수 있어요 (후보자를 끌어 놓으면 입사 처리)</span></p>
+              <p class="og-legend">카드 표기: 입사 연.월 · 도입자<span id="ogEditHint" class="hidden no-print"> · 카드를 누르면 소속 변경·입사 처리, 누른 채 끌어서 옮길 수도 있어요</span></p>
           </div>
       </div>
 
@@ -2583,6 +2586,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <input type="text" id="ogEdBranchNew" class="hidden mt-2" maxlength="20" placeholder="새 지점·본부 이름 (예: 프라임)" autocomplete="off"></div>
             <div id="ogEdDateRow"><label for="ogEdDate" id="lbOgDate">입사일</label><input type="date" id="ogEdDate"></div>
             <div><label for="ogEdRecruiter">도입자</label><select id="ogEdRecruiter"></select></div>
+            <button type="button" id="ogEdJoin" onclick="ogEditJoin()" class="og-join hidden">고른 소속으로 입사 처리</button>
             <p id="ogEdNote" class="text-xs text-[#8B95A1] mb-3"></p>
         </div>
         <div class="flex gap-2 px-5 pt-3 border-t border-[#F2F4F6]" style="padding-bottom:calc(14px + env(safe-area-inset-bottom))">
@@ -15020,11 +15024,12 @@ function ogOpen(mode, arg) {
     $('ogEdCandRole').classList.toggle('hidden', !isCand);
     $('ogEdDateRow').classList.toggle('hidden', mode === 'edit');
     $('ogEdDel').classList.toggle('hidden', !(mode === 'edit' || mode === 'cand-edit'));
+    $('ogEdJoin').classList.toggle('hidden', mode !== 'cand-edit');
     $('ogEdSave').textContent = { edit: '적용', add: '추가하기', 'cand-add': '추가하기', 'cand-edit': '저장하기' }[mode];
     $('ogEdSave').disabled = false; $('ogEdDel').disabled = false;
     $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요.'
         : mode === 'add' ? '추가하면 사용자 정보 시트에 바로 저장돼요. 로그인 비밀번호 같은 나머지 정보는 시트에서 따로 넣어 주세요.'
-        : '후보자는 총 재적과 수수료 계산에 들어가지 않고, 조직도에만 보여요.';
+        : '후보자는 총 재적과 수수료 계산에 들어가지 않고, 조직도에만 보여요.' + (mode === 'cand-edit' ? ' 정식 입사하면 소속을 고른 뒤 <b>입사 처리</b>를 눌러 주세요.' : '');
     if (u) { $('ogEdName').textContent = u.name; $('ogEdNow').textContent = [u.role || 'FC', ogBranchLabel(u.branch)].filter(Boolean).join(' · '); }
     $('ogEdNameIn').value = c ? c.name : '';
     var role = u ? (String(u.role || '').trim() || 'FC') : 'FC';
@@ -15098,6 +15103,14 @@ function ogStage(name, role, branch, rec) {
     renderOrgChart();
     if (Object.keys(OGE.pending).length) shToast('저장 버튼을 눌러야 시트에 저장돼요', 'light');
     return true;
+}
+function ogEditJoin() {
+    if (OGE.mode !== 'cand-edit') return;
+    var branch = OGE.branch === '__new' ? document.getElementById('ogEdBranchNew').value.trim().replace(/\s*지점$/, '').replace(/\s+본부$/, '본부') : OGE.branch;
+    if (!branch) { shToast('소속을 골라 주세요', 'error'); return; }
+    var id = OGE.candId;
+    ogEditClose();
+    ogCandJoin(id, branch);
 }
 function ogEditDelete() {
     var mode = OGE.mode;

@@ -1099,6 +1099,13 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .og-join{width:100%;min-height:48px;border-radius:12px;background:#E8F3FF;color:#1B64DA;font-size:15px;font-weight:700;margin-bottom:10px;transition:background .15s}
   .og-join:active{background:#D6E8FF}
   .og-join:focus-visible{outline:2px solid #3182F6;outline-offset:2px}
+  .og-add.og-gdel{margin-left:auto;margin-right:6px;color:#8B95A1}
+  .og-add.og-gdel + .og-add{margin-left:0}
+  .og-add.og-gdel:hover{background:#FFF0F0;color:#E5484D}
+  .og-newgrp{margin-top:14px;width:100%;min-height:52px;border-radius:16px;border:1.5px dashed #C9D2DC;background:transparent;color:#4E5968;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .15s,color .15s,background .15s}
+  .og-newgrp:hover{border-color:#3182F6;color:#1B64DA;background:#F3F8FF}
+  .og-newgrp:focus-visible{outline:2px solid #3182F6;outline-offset:2px}
+  #ogPrintRoot .og-newgrp{display:none}
   .og-del{background:#FFF0F0;color:#E5484D}
   .og-del:active{background:#FFE3E3}
   #ogPrintRoot .og-add,#ogPrintRoot .og-cand.is-empty{display:none}
@@ -6942,6 +6949,7 @@ if (item.isSharedView) {
     
     let userStats = {};
     let fcGrossP = {};   // [목표달성률] FC별 환산P (쉐어 미적용 Gross) 
+    let fcBriefP = {};   // [목표달성률] FC별 브리핑 계약 환산P (마스터본부 실적)
 userDB.forEach(u => {
     if (!isValidUser(u)) return; // ★ 직책/지점 없는 사용자 제외
     userStats[u.name] = { p: 0, count: 0, money: 0 };
@@ -7013,6 +7021,7 @@ userDB.forEach(u => {
                     totalBranchP += _g;
                     // [목표달성률] FC별도 동일 기준(Gross)으로 집계 → 쉐어 미적용, 원청자에게 전액
                     fcGrossP[userName] = (fcGrossP[userName] || 0) + _g;
+                    if (isBriefItem(item)) fcBriefP[userName] = (fcBriefP[userName] || 0) + _g;
                 }
             }
         });
@@ -7106,7 +7115,8 @@ userDB.forEach(u => {
             totalBranchP: totalBranchP,
             branchGoal: BRANCH_GOAL,
             ranking: ranking.slice(),
-            fcActuals: (function(){ var o={}; for (var _k in fcGrossP){ if(_k!=='옥영훈' && _k!=='박동준') o[_k]=fcGrossP[_k]; } return o; })()
+            fcActuals: (function(){ var o={}; for (var _k in fcGrossP){ if(_k!=='옥영훈' && _k!=='박동준') o[_k]=fcGrossP[_k]; } return o; })(),
+            fcBrief: fcBriefP
         };
     } catch (e) {}
 }
@@ -7695,6 +7705,29 @@ window.renderGoalAchievementPage = function() {
         window.FC_DISPLAY_GROUPS.forEach(function(g){ byGroup[g] = []; });
         names.forEach(function(n){ byGroup[window.getFcGroupOf(n)].push(n); });
 
+        // [브리핑=마스터본부] 2026-11부터: 브리핑 건은 마스터본부 실적, 나머지는 소속 지점 실적
+        var _briefOn = String(month) >= BRIEF_MASTER_FROM;
+        var brief = _briefOn ? (d.fcBrief || {}) : {};
+        var MASTER = '마스터본부';
+        var bOf = function(n){ return Number(brief[n]) || 0; };
+        var homeOf = function(n){   // 사용자 정보의 소속 → 지점 그룹명
+            var b = ''; try { var u = findUser(n); b = u ? String(u.branch || '') : ''; } catch (e) {}
+            return /아너스/.test(b) ? '아너스지점' : (/리더스/.test(b) ? '리더스지점' : '');
+        };
+        // FC 한 줄에 보여줄 실적: 마스터본부 배정 FC는 브리핑 건, 지점 FC는 브리핑 뺀 나머지
+        var aOf = function(n){
+            var a = Number(actuals[n]) || 0; if (!_briefOn) return a;
+            return window.getFcGroupOf(n) === MASTER ? bOf(n) : Math.max(a - bOf(n), 0);
+        };
+        // 그룹 실적 합계
+        var grpActual = function(g){
+            var sum = 0;
+            if (!_briefOn) { (byGroup[g] || []).forEach(function(n){ sum += Number(actuals[n]) || 0; }); return sum; }
+            if (g === MASTER) { Object.keys(brief).forEach(function(n){ if (n !== '옥영훈') sum += bOf(n); }); return sum; }
+            (byGroup[g] || []).forEach(function(n){ sum += aOf(n); });
+            (byGroup[MASTER] || []).forEach(function(n){ if (homeOf(n) === g) sum += Math.max((Number(actuals[n]) || 0) - bOf(n), 0); });
+            return sum;
+        };
         // [상단 지사 달성률] 미배정 FC는 지사 달성률 집계에서 제외한다(배정 그룹만 합산).
         var totalTarget = 0, totalActual = 0;
         names.forEach(function(n){
@@ -7708,8 +7741,8 @@ window.renderGoalAchievementPage = function() {
 
         // 그룹별 요약 카드 (맨 상단): 배정 그룹만 표시. 미배정은 상단 요약에서 제외한다.
         var groupCards = window.FC_GROUPS.map(function(g){
-            var gt = 0, ga = 0;
-            byGroup[g].forEach(function(n){ gt += Number(goals[n])||0; ga += Number(actuals[n])||0; });
+            var gt = 0, ga = grpActual(g);
+            byGroup[g].forEach(function(n){ gt += Number(goals[n])||0; });
             var gp = gt > 0 ? ga/gt*100 : 0;
             var gc = (gp<=0?'#6b7280':(gp>=100?'#15803d':(gp>=70?'#4f46e5':'#b45309')));
             // [미배정] 목표 배정 대상이 아니므로 달성률(%)·진행바는 표시하지 않고 인원/실적만 보여준다.
@@ -7739,10 +7772,17 @@ window.renderGoalAchievementPage = function() {
 
         // FC 한 줄
         var fcRow = function(n) {
-            var t = Number(goals[n])||0, a = Number(actuals[n])||0;
+            var t = Number(goals[n])||0, a = aOf(n);
             var pct = t>0 ? a/t*100 : 0;
             var col = (pct<=0?'#6b7280':(pct>=100?'#15803d':(pct>=70?'#4f46e5':'#b45309')));
             var g = window.getFcGroupOf(n);
+            // 브리핑/일반 계약이 다른 그룹 실적으로 넘어간 경우 한 줄로 알려준다
+            var _moved = '';
+            if (_briefOn) {
+                var _raw = Number(actuals[n])||0, _bf = bOf(n);
+                if (g === MASTER && _raw - _bf > 0) _moved = '일반 계약 ' + (_raw - _bf).toLocaleString() + (homeOf(n) ? ' → ' + homeOf(n) + ' 실적' : ' (소속 지점 없음)');
+                else if (g !== MASTER && _bf > 0) _moved = '브리핑 ' + _bf.toLocaleString() + ' → 마스터본부 실적';
+            }
             var opts = window.FC_GROUPS.map(function(gg){
                 return '<option value="'+gg+'"'+(gg===g?' selected':'')+'>'+gg+'</option>';
             }).join('');
@@ -7761,7 +7801,8 @@ window.renderGoalAchievementPage = function() {
               + ctrl + '</div>'
               + '<div class="flex items-center gap-2"><div class="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden"><div class="goal-bar h-2 rounded-full" style="width:'+Math.min(pct,100)+'%;background:'+col+';transition:width .5s ease"></div></div>'
               + '<span class="text-xs text-gray-500 shrink-0 text-right" style="min-width:90px">실적 '+a.toLocaleString()+'</span>'
-              + '<span class="goal-pct text-xs font-bold shrink-0 text-right" style="min-width:40px;color:'+col+'">'+pct.toFixed(0)+'%</span></div></div>';
+              + '<span class="goal-pct text-xs font-bold shrink-0 text-right" style="min-width:40px;color:'+col+'">'+pct.toFixed(0)+'%</span></div>'
+              + (_moved ? '<div class="text-xs text-gray-500 mt-1">' + _moved + '</div>' : '') + '</div>';
         };
 
         // [권한] 편집 권한이 없는 FC·팀장은 그룹 구분 없이 단순 목록으로 표시
@@ -7774,8 +7815,8 @@ window.renderGoalAchievementPage = function() {
         // 그룹별 섹션 (편집 권한자만)
         sections = window.FC_DISPLAY_GROUPS.map(function(g){
             var arr = byGroup[g];
-            var gt = 0, ga = 0;
-            arr.forEach(function(n){ gt += Number(goals[n])||0; ga += Number(actuals[n])||0; });
+            var gt = 0, ga = (g === window.FC_UNASSIGNED) ? 0 : grpActual(g);
+            arr.forEach(function(n){ gt += Number(goals[n])||0; if (g === window.FC_UNASSIGNED) ga += Number(actuals[n])||0; });
             var gp = gt > 0 ? ga/gt*100 : 0;
             var gc = (gp<=0?'#6b7280':(gp>=100?'#15803d':(gp>=70?'#4f46e5':'#b45309')));
             // [디자인] 그룹마다 색 테두리 박스 + 색 헤더 바로 그룹 구분을 명확히
@@ -7807,6 +7848,7 @@ window.renderGoalAchievementPage = function() {
           + (_canEdit ? ('<button id="saveGoalBtn" onclick="saveFcGoalsUI()" class="h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 rounded-lg shadow transition">' + (_canGroup ? '목표·그룹 저장' : '목표 저장') + '</button>') : '')
           + '</div>'
           + (names.length ? sections : '<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4"><div class="text-center text-gray-500 py-8">'+_emptyMsg+'</div></div>')
+          + (_briefOn ? '<div class="text-xs text-gray-500 text-center mt-1">※ 2026년 11월부터 브리핑 체크 계약만 마스터본부 실적으로 잡고, 그 외 계약은 소속 지점 실적으로 잡습니다.</div>' : '')
           + (_canGroup ? '<div class="text-xs text-gray-500 text-center mt-1">※ FC 옆 그룹을 바꾸고 저장하면 그대로 유지됩니다. 배정 안 된 FC는 미배정 그룹으로 표시됩니다.</div>'
                        : (_canEdit ? '<div class="text-xs text-gray-500 text-center mt-1">※ 그룹 지정은 지사장·총무만 변경할 수 있습니다.</div>' : ''));
     };
@@ -8209,6 +8251,21 @@ let currentTrendType = 'personal';
 //  - 마스터본부: 하위소속 '세미나팀' + 박동준(본부장)
 //  - 아너스지점: 하위소속 '아너스지점' + 김은경(마케팅임원)
 //  - 직할: 그 외 전원
+// [브리핑=마스터본부] 2026-11부터: 브리핑 체크 건만 마스터본부 실적, 그 외 계약은 쓴 사람의 소속 지점 실적
+var BRIEF_MASTER_FROM = '2026-11';
+function isBriefItem(item) { return !!(item && item.attributes && item.attributes.briefing && item.attributes.briefing.on); }
+function trendBranchGroupOf(name) {
+    var b = ''; try { var u = findUser(name); b = u ? String(u.branch || '') : ''; } catch (e) { }
+    return /아너스/.test(b) ? 'honors' : (/리더스/.test(b) ? 'leaders' : 'unassigned');
+}
+// 계약 1건이 어느 그룹 실적인지 (seminar=마스터본부 | honors | leaders | unassigned)
+function trendScopeOfItem(writer, item, month, groupMap) {
+    var g = (groupMap && groupMap[writer]) || 'unassigned';
+    if (String(month || '') < BRIEF_MASTER_FROM) return g;
+    if (isBriefItem(item)) return 'seminar';
+    if (g === 'seminar') return trendBranchGroupOf(writer);
+    return g;
+}
 function getTrendGroupMap() {
     var map = {};   // 이름 → 'seminar' | 'honors' | 'leaders' | 'unassigned'
     try {
@@ -8269,13 +8326,11 @@ function buildTrendReport() {
     uniqueDataMap.forEach(function(d) {
         if (_isPersonal) {
             if (d.name !== currentUser) return;   // 개인 보고서: 본인 데이터만
-        } else if (groupMap) {
-            var g = groupMap[d.name] || 'unassigned';
-            if (g !== scope) return;
         }
         var mi = parseInt(d.month.split('-')[1], 10) - 1;
         JSON.parse(d.json).forEach(function(item) {
             if (item.type || !item.productKey || item.isWithdrawn) return;
+            if (!_isPersonal && groupMap && trendScopeOfItem(d.name, item, d.month, groupMap) !== scope) return;
             var r = item.rates || {};
             if (_isPersonal) {
                 // [개인] MY 추이 그래프와 동일 기준: 저장값(pPoint) 합, 건수는 원청자 건만
@@ -8636,13 +8691,9 @@ function updateTrendChart() {
         const writerName = d.name;
 
         // 그룹 스코프: 해당 그룹 소속이 아닌 사람의 데이터는 건너뜀 (미배정자는 직할)
-        if (_isGroupScope) {
-            var _g = _groupMap[writerName] || 'unassigned';
-            if (_g !== _scope) return;
-        }
-
         list.forEach(item => {
             if (item.type || !item.productKey || item.isWithdrawn) return;
+            if (_isGroupScope && trendScopeOfItem(writerName, item, d.month, _groupMap) !== _scope) return;
 
             const savedPPoint = item.pPoint || 0;
             const savedNext   = item.nextMoney || 0;
@@ -14982,12 +15033,15 @@ function loadOrgChart() {
     if (OGE.candsLoaded || typeof google === 'undefined' || typeof google.script === 'undefined') return;
     google.script.run.withSuccessHandler(function (list) { OGE.candsLoaded = true; OGE.cands = Array.isArray(list) ? list : []; renderOrgChart(); })
         .withFailureHandler(function () { }).orgGetCandidates();
+    google.script.run.withSuccessHandler(function (list) { OGE.groups = Array.isArray(list) ? list : []; renderOrgChart(); })
+        .withFailureHandler(function () { }).orgGetGroups();
 }
 
 // ── 조직도 수정 (지사장·총무만) ──
-var OGE = { name: '', role: '', branch: '', pending: {}, last: '', busy: false, mode: 'edit', cands: [], candsLoaded: false, candId: '' };
+var OGE = { name: '', role: '', branch: '', pending: {}, last: '', busy: false, mode: 'edit', cands: [], candsLoaded: false, candId: '', groups: [] };
 function ogCanEdit() { try { return /지사장|총무/.test(getRole(loggedInUser) || ''); } catch (e) { return false; } }
-function ogBranchLabel(b) { b = String(b || '').trim(); if (!b || b === '직할') return b; if (/본부$/.test(b)) return b.replace(/\s*본부$/, '') + ' 본부'; return b.replace(/\s*지점$/, '') + ' 지점'; }
+function ogBranchLabel(b) { b = String(b || '').trim(); if (!b || b === '직할') return b; if (/본부$/.test(b)) return b.replace(/\s*본부$/, '') + ' 본부'; if (/(팀|그룹|센터|사업단|단)$/.test(b)) return b; return b.replace(/\s*지점$/, '') + ' 지점'; }
+function ogNormBranch(v) { v = String(v || '').trim().replace(/\s+/g, ' '); if (/본부$/.test(v)) return v.replace(/\s+본부$/, '본부'); return v.replace(/\s*지점$/, ''); }
 function ogChips(boxId, list, cur, key, newId, newLabel, labelOf) {
     var box = document.getElementById(boxId), inp = document.getElementById(newId);
     box.innerHTML = '';
@@ -15035,7 +15089,7 @@ function ogOpen(mode, arg) {
     var role = u ? (String(u.role || '').trim() || 'FC') : 'FC';
     var branch = u ? String(u.branch || '').trim() : c ? c.branch : (arg && mode !== 'cand-add' ? arg : '');
     var roles = uniq(['지사장', '본부장', '사업단장', '수석지점장', '지점장', '부지점장', '팀장', '총무', 'FC'].concat([role]));
-    var branches = uniq(['직할', '마스터본부', '아너스', '리더스'].concat(act.map(function (x) { return String(x.branch || '').trim(); })).concat((OGE.cands || []).map(function (x) { return x.branch; })).concat([branch]));
+    var branches = uniq(['직할', '마스터본부', '아너스', '리더스'].concat(OGE.groups || []).concat(act.map(function (x) { return String(x.branch || '').trim(); })).concat((OGE.cands || []).map(function (x) { return x.branch; })).concat([branch]));
     ogChips('ogEdRoles', roles, role, 'role', 'ogEdRoleNew', '');
     ogChips('ogEdBranches', branches, branch || (isCand ? '아너스' : '직할'), 'branch', 'ogEdBranchNew', '+ 새 지점·본부', ogBranchLabel);
     var d = $('ogEdDate'), t = new Date(), ymd = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
@@ -15058,7 +15112,7 @@ function ogFail(e) { ogBusy(false); shToast('저장하지 못했어요 · ' + St
 function ogEditSave() {
     var mode = OGE.mode || 'edit';
     var role = OGE.role === '__new' ? document.getElementById('ogEdRoleNew').value.trim() : OGE.role;
-    var branch = OGE.branch === '__new' ? document.getElementById('ogEdBranchNew').value.trim().replace(/\s*지점$/, '').replace(/\s+본부$/, '본부') : OGE.branch;
+    var branch = OGE.branch === '__new' ? ogNormBranch(document.getElementById('ogEdBranchNew').value) : OGE.branch;
     var rec = document.getElementById('ogEdRecruiter').value;
     var nameIn = document.getElementById('ogEdNameIn').value.trim(), date = document.getElementById('ogEdDate').value;
     if (mode.indexOf('cand') < 0 && !role) { shToast('직급을 골라 주세요', 'error'); return; }
@@ -15104,9 +15158,49 @@ function ogStage(name, role, branch, rec) {
     if (Object.keys(OGE.pending).length) shToast('저장 버튼을 눌러야 시트에 저장돼요', 'light');
     return true;
 }
+// 빈 지점·그룹 만들기 / 지우기
+function ogGroupAdd() {
+    if (!ogCanEdit()) return;
+    Swal.fire({
+        title: '지점·그룹 추가', input: 'text', inputPlaceholder: '예) 프라임 지점, 마스터 본부, 세미나팀',
+        html: '<span style="font-size:14px;color:#4E5968">이름을 넣으면 조직도에 빈 카드가 생겨요.<br>거기에 사람을 추가하거나 끌어다 놓으면 돼요.</span>',
+        inputAttributes: { maxlength: 20, autocomplete: 'off' }, showCancelButton: true, confirmButtonText: '추가', cancelButtonText: '취소', confirmButtonColor: '#3182F6',
+        preConfirm: function (v) {
+            var n = ogNormBranch(v);
+            if (!n) { Swal.showValidationMessage('이름을 입력해 주세요'); return false; }
+            var exists = n === '직할' || (OGE.groups || []).indexOf(n) >= 0 || ogActive().some(function (u) { return String(u.branch || '').trim() === n; });
+            if (exists) { Swal.showValidationMessage(ogBranchLabel(n) + '은(는) 이미 있어요'); return false; }
+            return n;
+        }
+    }).then(function (r) {
+        if (!r.isConfirmed || !r.value) return;
+        var n = r.value;
+        ogSaveUi('추가하는 중…', 'is-busy');
+        ogCall('orgAddGroup', [loggedInUser, n]).then(function (x) {
+            if (!x || !x.ok) throw new Error((x && x.error) || '실패');
+            OGE.groups = (OGE.groups || []).concat([n]);
+            OGE.last = ogHm() + ' 저장 완료 · ' + ogBranchLabel(n) + ' 추가';
+            renderOrgChart(); shToast(ogBranchLabel(n) + '을(를) 추가했어요');
+        }).catch(function (e) { renderOrgChart(); ogSaveUi('추가 실패 · ' + String((e && e.message) || e).slice(0, 70), 'is-err'); shToast('추가하지 못했어요', 'error'); });
+    });
+}
+function ogGroupDelete(n) {
+    if (!ogCanEdit() || !n) return;
+    if (ogActive().some(function (u) { return String(u.branch || '').trim() === n; })) { shToast('소속 인원이 있으면 삭제할 수 없어요', 'error'); return; }
+    Swal.fire({ title: ogBranchLabel(n) + '을(를) 삭제할까요?', text: '빈 카드만 지워져요.', icon: 'warning', showCancelButton: true, confirmButtonText: '삭제', cancelButtonText: '취소', confirmButtonColor: '#E5484D' }).then(function (r) {
+        if (!r.isConfirmed) return;
+        ogSaveUi('삭제하는 중…', 'is-busy');
+        ogCall('orgDeleteGroup', [loggedInUser, n]).then(function (x) {
+            if (!x || !x.ok) throw new Error((x && x.error) || '실패');
+            OGE.groups = (OGE.groups || []).filter(function (g) { return g !== n; });
+            OGE.last = ogHm() + ' 저장 완료 · ' + ogBranchLabel(n) + ' 삭제';
+            renderOrgChart(); shToast(ogBranchLabel(n) + '을(를) 삭제했어요');
+        }).catch(function (e) { renderOrgChart(); ogSaveUi('삭제 실패 · ' + String((e && e.message) || e).slice(0, 70), 'is-err'); shToast('삭제하지 못했어요', 'error'); });
+    });
+}
 function ogEditJoin() {
     if (OGE.mode !== 'cand-edit') return;
-    var branch = OGE.branch === '__new' ? document.getElementById('ogEdBranchNew').value.trim().replace(/\s*지점$/, '').replace(/\s+본부$/, '본부') : OGE.branch;
+    var branch = OGE.branch === '__new' ? ogNormBranch(document.getElementById('ogEdBranchNew').value) : OGE.branch;
     if (!branch) { shToast('소속을 골라 주세요', 'error'); return; }
     var id = OGE.candId;
     ogEditClose();
@@ -15217,6 +15311,8 @@ window.addEventListener('beforeunload', function (e) { if (Object.keys(OGE.pendi
     var go = function (e) {
         if (!e.target.closest) return false;
         if (OGD.justDragged) { OGD.justDragged = false; return true; }
+        if (e.target.closest('[data-newgrp]')) { ogGroupAdd(); return true; }
+        var gd = e.target.closest('[data-gdel]'); if (gd) { ogGroupDelete(gd.getAttribute('data-gdel')); return true; }
         var a = e.target.closest('[data-add]'); if (a) { var v = a.getAttribute('data-add'); if (v === '__cand') ogOpen('cand-add'); else ogOpen('add', v); return true; }
         var c = e.target.closest('[data-cand]'); if (c) { ogOpen('cand-edit', c.getAttribute('data-cand')); return true; }
         var m = e.target.closest('[data-og]'); if (m) { ogOpen('edit', m.getAttribute('data-og')); return true; }
@@ -15406,6 +15502,7 @@ function renderOrgChart() {
     var bmap = {}, order = [];
     list.forEach(function (u) { var b = String(u.branch).trim(); if (b === '직할') return; if (!bmap[b]) { bmap[b] = []; order.push(b); } bmap[b].push(u); });
     order.sort(function (x, y) { return bmap[y].length - bmap[x].length; });
+    (OGE.groups || []).forEach(function (b) { if (b && b !== '직할' && !bmap[b]) { bmap[b] = []; order.push(b); } });
     // 통계
     var st = [['총 재적', list.length, 1]].concat(order.map(function (b) { return [ogBranchLabel(b), bmap[b].length]; }));
     if (direct.length) st.push(['직할', direct.length]);
@@ -15422,8 +15519,9 @@ function renderOrgChart() {
         var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return rank(x) - rank(y) || jt(x) - jt(y); });
         var fcs = m.filter(function (u) { return !isLead(u) && !isHq(u) && !isHead(u); }).sort(function (x, y) { return jt(x) - jt(y); });
         var hasHq = m.some(isHq);
-        return '<section class="og-branch" data-br="' + esc(b) + '" style="flex:' + Math.max(m.length, 5) + ' 1 250px;--f:' + Math.max(m.length, 5) + '"><h3>' + esc(ogBranchLabel(b)) + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + plus(b, ogBranchLabel(b) + '에 사람 추가') + '</h3>'
+        return '<section class="og-branch" data-br="' + esc(b) + '" style="flex:' + Math.max(m.length, 5) + ' 1 250px;--f:' + Math.max(m.length, 5) + '"><h3>' + esc(ogBranchLabel(b)) + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + (canEdit && !m.length ? '<button type="button" class="og-add og-gdel no-print" data-gdel="' + esc(b) + '" aria-label="' + esc(ogBranchLabel(b)) + ' 삭제"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' : '') + plus(b, ogBranchLabel(b) + '에 사람 추가') + '</h3>'
             + (leads.length ? '<div class="og-leads">' + leads.map(function (u) { return '<div class="og-lead"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u, true)) + '</div></div>'; }).join('') + '</div>' : '')
+            + (m.length ? '' : '<p class="og-tnone">아직 소속 인원이 없어요' + (canEdit ? '. + 를 누르거나 카드를 끌어다 놓으세요.' : '') + '</p>')
             + '<div class="og-fcs">' + fcs.map(function (u) { return '<div class="og-fc"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u)) + '</div></div>'; }).join('') + '</div></section>';
     }).join('');
     var candHtml = (cands.length || canEdit) ? '<section class="og-branch og-cand' + (cands.length ? '' : ' is-empty') + '" style="flex:5 1 250px;--f:5"><h3>후보자<b>' + cands.length + '명</b><span>재적 미포함</span>' + plus('__cand', '후보자 추가') + '</h3>'
@@ -15431,7 +15529,8 @@ function renderOrgChart() {
             var pl = /^\d{4}-\d{2}/.test(c.joinPlan || '') ? c.joinPlan.slice(2, 4) + '.' + c.joinPlan.slice(5, 7) + ' 예정' : '';
             return '<div class="og-fc is-cand"' + (canEdit ? ' data-cand="' + esc(c.id) + '" role="button" tabindex="0" aria-label="후보자 ' + esc(c.name) + ' 정보 수정"' : '') + '><div class="n">' + esc(c.name) + '<em>후보자</em></div><div class="m">' + esc(pl || '입사예정 미정') + '</div>' + (c.recruiter ? '<div class="m">' + esc(c.recruiter) + ' 도입</div>' : '') + '<div class="m">' + esc(ogBranchLabel(c.branch)) + '</div></div>';
         }).join('') + '</div>' : '<p class="og-tnone">등록된 후보자가 없어요. + 를 눌러 추가해 주세요.</p>') + '</section>' : '';
-    box.innerHTML = topHtml + '<div class="og-stem" aria-hidden="true"></div><div class="og-branches">' + brHtml + candHtml + '</div>';
+    var newHtml = canEdit ? '<button type="button" class="og-newgrp no-print" data-newgrp="1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>지점·그룹 추가</button>' : '';
+    box.innerHTML = topHtml + '<div class="og-stem" aria-hidden="true"></div><div class="og-branches">' + brHtml + candHtml + '</div>' + newHtml;
     ogAlign(box);
     // 월별 입사 인원
     var mm = {};

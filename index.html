@@ -1099,6 +1099,29 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .og-join{width:100%;min-height:48px;border-radius:12px;background:#E8F3FF;color:#1B64DA;font-size:15px;font-weight:700;margin-bottom:10px;transition:background .15s}
   .og-join:active{background:#D6E8FF}
   .og-join:focus-visible{outline:2px solid #3182F6;outline-offset:2px}
+  .og-sp{flex:1}
+  .og-branch h3 .og-add,.og-unit h3 .og-add{margin-left:0}
+  .og-cand h3 .og-add,.og-tbox h4 .og-add{margin-left:auto}
+  .og-branch h3 .og-add + .og-add,.og-unit h3 .og-add + .og-add{margin-left:6px}
+  .og-add.og-gear{color:#8B95A1}
+  .og-unit{flex:1 1 100%;min-width:0;background:#E6E9ED;border-radius:24px;padding:16px 14px 14px}
+  .og-unit > h3{display:flex;align-items:center;gap:8px;padding:0 6px 12px;font-size:20px;font-weight:800;letter-spacing:-.03em;color:#191F28;white-space:nowrap}
+  .og-unit > h3 b{font-size:15px;font-weight:800;color:#3182F6}
+  .og-unit-leads{grid-template-columns:repeat(auto-fit,minmax(180px,280px));margin-bottom:12px}
+  .og-unit-leads .og-lead{background:#fff}
+  .og-unit .og-unit{background:#DCE0E5}
+  .og-sub{gap:12px}
+  .og-branch.og-own{border:1.5px dashed #C9D2DC;background:#fff}
+  .og-branch.og-own h3{font-size:16px}
+  .og-branch h3{align-items:center}
+  .og-ts-seg-dis{opacity:.6}
+  #ogUType button:disabled{opacity:.55}
+  #ogUDel:disabled{opacity:.4}
+  .og-drop.og-unit{box-shadow:0 0 0 2px #3182F6 inset}
+  #ogPrintRoot .og-unit{border:1px solid #D9DEE3;padding:12px 12px 12px}
+  #ogPrintRoot .og-unit > h3{padding-bottom:8px;font-size:18px}
+  #ogPrintRoot .og-own:not(:has(.og-fc)){display:none}
+  @media (max-width:720px){ .og-unit{padding:14px 10px 10px;border-radius:20px} .og-unit-leads{grid-template-columns:minmax(0,1fr)} }
   .og-add.og-gdel{margin-left:auto;margin-right:6px;color:#8B95A1}
   .og-add.og-gdel + .og-add{margin-left:0}
   .og-add.og-gdel:hover{background:#FFF0F0;color:#E5484D}
@@ -2603,6 +2626,31 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
             <button onclick="ogEditClose()" class="bd-btn bd-btn-gray">취소</button>
             <button id="ogEdSave" onclick="ogEditSave()" class="bd-btn bd-btn-blue flex-1">적용</button>
         </div>
+    </div>
+</div>
+
+      <div id="ogUnitModal" class="ts-modal fixed inset-0 z-[10001] flex hidden" role="dialog" aria-modal="true" aria-labelledby="ogUnitTitle">
+    <div class="ts-sheet max-w-md">
+        <div class="ts-sheet-head">
+            <h3 id="ogUnitTitle">본부·사업단·지점 추가</h3>
+            <button type="button" onclick="ogUnitClose()" class="ts-x" aria-label="닫기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        </div>
+        <div class="ts-sheet-body custom-scrollbar rc-form">
+            <div><label id="lbOgUType">종류</label>
+                <div class="ts-seg" id="ogUType" role="group" aria-labelledby="lbOgUType"><button type="button" data-v="본부" aria-pressed="false">본부</button><button type="button" data-v="사업단" aria-pressed="false">사업단</button><button type="button" data-v="지점" aria-pressed="true">지점</button></div></div>
+            <div id="ogUNameRow"><label for="ogUName">이름</label><input type="text" id="ogUName" maxlength="16" autocomplete="off" placeholder="예) 마스터, 프라임"></div>
+            <div><label for="ogUParent">상위 소속</label><select id="ogUParent" onchange="OGU.parent=this.value"></select>
+                <p class="text-xs text-[#8B95A1] mt-1.5">본부 안에 사업단·지점을, 사업단 안에 지점을 넣을 수 있어요.</p></div>
+            <div><label for="ogUHead">책임자</label><select id="ogUHead"></select>
+                <p class="text-xs text-[#8B95A1] mt-1.5">고른 사람이 이 조직 맨 위에 표시돼요. 수수료 계산용 소속은 바뀌지 않아요.</p></div>
+            <p id="ogUNote" class="text-xs text-[#8B95A1] mb-3"></p>
+        </div>
+        <div class="flex gap-2 px-5 pt-3 border-t border-[#F2F4F6]" style="padding-bottom:calc(14px + env(safe-area-inset-bottom))">
+            <button id="ogUDel" onclick="ogUnitDelete()" class="bd-btn og-del hidden">삭제</button>
+            <button onclick="ogUnitClose()" class="bd-btn bd-btn-gray">취소</button>
+            <button onclick="ogUnitSave()" class="bd-btn bd-btn-blue flex-1">저장하기</button>
+        </div>
+    </div>
 </div>
 
       <div id="recruitModal" class="ts-modal fixed inset-0 z-[10000] flex hidden" role="dialog" aria-modal="true" aria-labelledby="recruitModalTitle">
@@ -15067,13 +15115,45 @@ function loadOrgChart() {
         .withFailureHandler(function () { }).orgGetCandidates();
     google.script.run.withSuccessHandler(function (list) { OGE.groups = Array.isArray(list) ? list : []; renderOrgChart(); })
         .withFailureHandler(function () { }).orgGetGroups();
+    google.script.run.withSuccessHandler(function (json) {
+        try { var c = JSON.parse(json || '{}'); if (c && Array.isArray(c.units)) { c.titles = c.titles || {}; OGE.cfg = c; } } catch (e) { }
+        OGE.cfgLoaded = true; renderOrgChart();
+    }).withFailureHandler(function () { }).orgGetConfig();
 }
 
 // ── 조직도 수정 (지사장·총무만) ──
-var OGE = { name: '', role: '', branch: '', pending: {}, last: '', busy: false, mode: 'edit', cands: [], candsLoaded: false, candId: '', groups: [] };
+var OGE = { name: '', role: '', branch: '', pending: {}, last: '', busy: false, mode: 'edit', cands: [], candsLoaded: false, candId: '', groups: [], cfg: { units: [], titles: {} }, cfgLoaded: false };
 function ogCanEdit() { try { return /지사장|총무/.test(getRole(loggedInUser) || ''); } catch (e) { return false; } }
-function ogBranchLabel(b) { b = String(b || '').trim(); if (!b || b === '직할') return b; if (/본부$/.test(b)) return b.replace(/\s*본부$/, '') + ' 본부'; if (/(팀|그룹|센터|사업단|단)$/.test(b)) return b; return b.replace(/\s*지점$/, '') + ' 지점'; }
-function ogNormBranch(v) { v = String(v || '').trim().replace(/\s+/g, ' '); if (/본부$/.test(v)) return v.replace(/\s+본부$/, '본부'); return v.replace(/\s*지점$/, ''); }
+// ── 조직 구조: 본부 > 사업단 > 지점, 표시용 직함 ──
+var OG_TYPES = ['본부', '사업단', '지점'];
+var OG_NEW_TITLES = ['사업단장', '수석지점장', '부지점장'];   // 조직도 표시용 직함(수수료 계산 직급은 그대로)
+function ogUnit(key) { return ((OGE.cfg && OGE.cfg.units) || []).find(function (u) { return u.key === key; }) || null; }
+function ogUnitType(key) { var u = ogUnit(key); if (u) return u.type; key = String(key || ''); return /본부$/.test(key) ? '본부' : (/사업단$/.test(key) ? '사업단' : (/(팀|그룹|센터)$/.test(key) ? '' : '지점')); }
+function ogBranchLabel(b) {
+    b = String(b || '').trim(); if (!b || b === '직할') return b;
+    var t = ogUnitType(b); if (!t) return b;
+    return b.replace(new RegExp('\\s*' + t + '$'), '') + ' ' + t;
+}
+function ogNormBranch(v) { v = String(v || '').trim().replace(/\s+/g, ' '); if (/본부$/.test(v)) return v.replace(/\s+본부$/, '본부'); if (/사업단$/.test(v)) return v.replace(/\s+사업단$/, '사업단'); return v.replace(/\s*지점$/, ''); }
+function ogTitle(u) { return ((OGE.cfg && OGE.cfg.titles) || {})[u.name] || String(u.role || '').trim() || 'FC'; }
+// 등록된 조직 + 사용자 정보에만 있는 소속(자동으로 지점 취급)
+function ogAllUnits(list) {
+    var units = ((OGE.cfg && OGE.cfg.units) || []).map(function (u) { return { key: u.key, type: u.type, parent: u.parent || '', head: u.head || '' }; });
+    var has = function (k) { return units.some(function (u) { return u.key === k; }); };
+    var add = function (k) { k = String(k || '').trim(); if (k && k !== '직할' && !has(k)) units.push({ key: k, type: ogUnitType(k), parent: '', head: '', implicit: true }); };
+    (list || []).forEach(function (u) { add(u.branch); });
+    if (!(OGE.cfg && OGE.cfg.migrated)) (OGE.groups || []).forEach(add);
+    units.forEach(function (u) { if (u.parent && (!has(u.parent) || u.parent === u.key)) u.parent = ''; });
+    return units;
+}
+function ogSaveCfg(okMsg) {
+    OGE.cfg.migrated = true;
+    ogSaveUi('저장하는 중…', 'is-busy');
+    return ogCall('orgSaveConfig', [loggedInUser, JSON.stringify(OGE.cfg)]).then(function (x) {
+        if (x && x.ok === false) throw new Error(x.error || '실패');
+        OGE.last = ogHm() + ' 저장 완료 · ' + okMsg; renderOrgChart(); shToast(okMsg);
+    }).catch(function (e) { renderOrgChart(); ogSaveUi('저장 실패 · ' + String((e && e.message) || e).slice(0, 70), 'is-err'); shToast('저장하지 못했어요', 'error'); });
+}
 function ogChips(boxId, list, cur, key, newId, newLabel, labelOf) {
     var box = document.getElementById(boxId), inp = document.getElementById(newId);
     box.innerHTML = '';
@@ -15113,15 +15193,15 @@ function ogOpen(mode, arg) {
     $('ogEdJoin').classList.toggle('hidden', mode !== 'cand-edit');
     $('ogEdSave').textContent = { edit: '적용', add: '추가하기', 'cand-add': '추가하기', 'cand-edit': '저장하기' }[mode];
     $('ogEdSave').disabled = false; $('ogEdDel').disabled = false;
-    $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요.'
+    $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요. 단, <b>사업단장·수석지점장·부지점장</b>은 조직도 표시용 직함이라 바로 저장되고 수수료 계산 직급은 바뀌지 않아요.'
         : mode === 'add' ? '추가하면 사용자 정보 시트에 바로 저장돼요. 로그인 비밀번호 같은 나머지 정보는 시트에서 따로 넣어 주세요.'
         : '후보자는 총 재적과 수수료 계산에 들어가지 않고, 조직도에만 보여요.' + (mode === 'cand-edit' ? ' 정식 입사하면 소속을 고른 뒤 <b>입사 처리</b>를 눌러 주세요.' : '');
-    if (u) { $('ogEdName').textContent = u.name; $('ogEdNow').textContent = [u.role || 'FC', ogBranchLabel(u.branch)].filter(Boolean).join(' · '); }
+    if (u) { $('ogEdName').textContent = u.name; $('ogEdNow').textContent = [ogTitle(u), ogBranchLabel(u.branch)].filter(Boolean).join(' · '); }
     $('ogEdNameIn').value = c ? c.name : '';
-    var role = u ? (String(u.role || '').trim() || 'FC') : 'FC';
+    var role = u ? ogTitle(u) : 'FC';
     var branch = u ? String(u.branch || '').trim() : c ? c.branch : (arg && mode !== 'cand-add' ? arg : '');
-    var roles = uniq(['지사장', '본부장', '사업단장', '수석지점장', '지점장', '부지점장', '팀장', '총무', 'FC'].concat([role]));
-    var branches = uniq(['직할', '마스터본부', '아너스', '리더스'].concat(OGE.groups || []).concat(act.map(function (x) { return String(x.branch || '').trim(); })).concat((OGE.cands || []).map(function (x) { return x.branch; })).concat([branch]));
+    var roles = mode === 'add' ? ['지사장', '본부장', '지점장', '팀장', '총무', 'FC'] : uniq(['지사장', '본부장', '사업단장', '수석지점장', '지점장', '부지점장', '팀장', '총무', 'FC'].concat([role]));
+    var branches = uniq(['직할'].concat(ogAllUnits(act).map(function (x) { return x.key; })).concat(act.map(function (x) { return String(x.branch || '').trim(); })).concat((OGE.cands || []).map(function (x) { return x.branch; })).concat([branch]));
     ogChips('ogEdRoles', roles, role, 'role', 'ogEdRoleNew', '');
     ogChips('ogEdBranches', branches, branch || (isCand ? '아너스' : '직할'), 'branch', 'ogEdBranchNew', '+ 새 지점·본부', ogBranchLabel);
     var d = $('ogEdDate'), t = new Date(), ymd = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
@@ -15173,8 +15253,16 @@ function ogEditSave() {
         }).catch(ogFail);
         return;
     }
-    ogStage(OGE.name, role, branch, rec);
+    // 표시용 직함(사업단장·수석지점장·부지점장)은 설정에만 저장하고, 수수료 계산 직급(시트)은 그대로 둔다
+    var _u = userDB.find(function (x) { return x.name === OGE.name; }); if (!_u) return;
+    var _isTitle = OG_NEW_TITLES.indexOf(role) >= 0, _sheetRole = _isTitle ? (String(_u.role || '').trim() || 'FC') : role;
+    var _prevTitle = (OGE.cfg.titles || {})[OGE.name] || '', _newTitle = _isTitle ? role : '';
+    OGE.cfg.titles = OGE.cfg.titles || {};
+    if (_newTitle) OGE.cfg.titles[OGE.name] = _newTitle; else delete OGE.cfg.titles[OGE.name];
+    var _staged = ogStage(OGE.name, _sheetRole, branch, rec);
     ogEditClose();
+    if (_prevTitle !== _newTitle) ogSaveCfg(OGE.name + ' 님 직함을 ' + (_newTitle || _sheetRole) + '(으)로 바꿨어요');
+    else if (!_staged) renderOrgChart();
 }
 // 수정 내용을 화면에만 반영해 두고(수정됨 표시), 저장 버튼으로 시트에 저장
 function ogStage(name, role, branch, rec) {
@@ -15190,44 +15278,69 @@ function ogStage(name, role, branch, rec) {
     if (Object.keys(OGE.pending).length) shToast('저장 버튼을 눌러야 시트에 저장돼요', 'light');
     return true;
 }
-// 빈 지점·그룹 만들기 / 지우기
-function ogGroupAdd() {
+// ── 본부·사업단·지점 추가 / 설정 ──
+var OGU = { key: '', type: '지점' };
+function ogUnitOpen(key) {
     if (!ogCanEdit()) return;
-    Swal.fire({
-        title: '지점·그룹 추가', input: 'text', inputPlaceholder: '예) 프라임 지점, 마스터 본부, 세미나팀',
-        html: '<span style="font-size:14px;color:#4E5968">이름을 넣으면 조직도에 빈 카드가 생겨요.<br>거기에 사람을 추가하거나 끌어다 놓으면 돼요.</span>',
-        inputAttributes: { maxlength: 20, autocomplete: 'off' }, showCancelButton: true, confirmButtonText: '추가', cancelButtonText: '취소', confirmButtonColor: '#3182F6',
-        preConfirm: function (v) {
-            var n = ogNormBranch(v);
-            if (!n) { Swal.showValidationMessage('이름을 입력해 주세요'); return false; }
-            var exists = n === '직할' || (OGE.groups || []).indexOf(n) >= 0 || ogActive().some(function (u) { return String(u.branch || '').trim() === n; });
-            if (exists) { Swal.showValidationMessage(ogBranchLabel(n) + '은(는) 이미 있어요'); return false; }
-            return n;
-        }
-    }).then(function (r) {
-        if (!r.isConfirmed || !r.value) return;
-        var n = r.value;
-        ogSaveUi('추가하는 중…', 'is-busy');
-        ogCall('orgAddGroup', [loggedInUser, n]).then(function (x) {
-            if (!x || !x.ok) throw new Error((x && x.error) || '실패');
-            OGE.groups = (OGE.groups || []).concat([n]);
-            OGE.last = ogHm() + ' 저장 완료 · ' + ogBranchLabel(n) + ' 추가';
-            renderOrgChart(); shToast(ogBranchLabel(n) + '을(를) 추가했어요');
-        }).catch(function (e) { renderOrgChart(); ogSaveUi('추가 실패 · ' + String((e && e.message) || e).slice(0, 70), 'is-err'); shToast('추가하지 못했어요', 'error'); });
-    });
+    var act = ogActive(), units = ogAllUnits(act), u = key ? units.find(function (x) { return x.key === key; }) : null;
+    if (key && !u) return;
+    OGU.key = key || ''; OGU.type = u ? (u.type || '지점') : '지점';
+    var $ = function (i) { return document.getElementById(i); };
+    $('ogUnitTitle').textContent = u ? ogBranchLabel(u.key) + ' 설정' : '본부·사업단·지점 추가';
+    $('ogUNameRow').classList.toggle('hidden', !!u);
+    $('ogUName').value = '';
+    var seg = $('ogUType');
+    [].forEach.call(seg.children, function (b) { b.disabled = !!u; b.onclick = function () { OGU.type = b.dataset.v; ogUnitSync(); }; });
+    $('ogUHead').innerHTML = '<option value="">없음</option>' + act.map(function (x) { return x.name; }).sort(function (a, b) { return a.localeCompare(b, 'ko'); }).map(function (n) { return '<option value="' + bdEsc(n) + '">' + bdEsc(n) + '</option>'; }).join('');
+    $('ogUHead').value = u ? (u.head || '') : '';
+    OGU.parent = u ? (u.parent || '') : '';
+    ogUnitSync();
+    var hasMem = u && act.some(function (x) { return String(x.branch || '').trim() === u.key; }), hasKid = u && units.some(function (x) { return x.parent === u.key; });
+    $('ogUDel').classList.toggle('hidden', !u);
+    $('ogUDel').disabled = !!(hasMem || hasKid);
+    $('ogUNote').textContent = u ? (hasMem || hasKid ? '소속 인원이나 하위 조직이 있으면 삭제할 수 없어요. 먼저 옮겨 주세요.' : '') : '만들면 빈 카드가 생겨요. 사람은 + 로 추가하거나 끌어다 놓으면 돼요.';
+    $('ogUnitModal').classList.remove('hidden');
+    if (!u) setTimeout(function () { try { $('ogUName').focus(); } catch (e) { } }, 60);
 }
-function ogGroupDelete(n) {
-    if (!ogCanEdit() || !n) return;
-    if (ogActive().some(function (u) { return String(u.branch || '').trim() === n; })) { shToast('소속 인원이 있으면 삭제할 수 없어요', 'error'); return; }
-    Swal.fire({ title: ogBranchLabel(n) + '을(를) 삭제할까요?', text: '빈 카드만 지워져요.', icon: 'warning', showCancelButton: true, confirmButtonText: '삭제', cancelButtonText: '취소', confirmButtonColor: '#E5484D' }).then(function (r) {
+function ogUnitSync() {
+    var seg = document.getElementById('ogUType');
+    [].forEach.call(seg.children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === OGU.type)); });
+    // 상위 소속: 본부는 최상위, 사업단은 본부 아래, 지점은 본부·사업단 아래
+    var units = ogAllUnits(ogActive()), sel = document.getElementById('ogUParent');
+    var desc = {}; (function walk(k, d) { if (d > 6) return; units.forEach(function (x) { if (x.parent === k && !desc[x.key]) { desc[x.key] = 1; walk(x.key, d + 1); } }); })(OGU.key, 0);
+    var ok = units.filter(function (x) { if (x.key === OGU.key || desc[x.key]) return false; if (OGU.type === '본부') return false; if (OGU.type === '사업단') return x.type === '본부'; return x.type === '본부' || x.type === '사업단'; });
+    sel.innerHTML = '<option value="">없음 (지사 바로 아래)</option>' + ok.map(function (x) { return '<option value="' + bdEsc(x.key) + '">' + bdEsc(ogBranchLabel(x.key)) + '</option>'; }).join('');
+    sel.value = ok.some(function (x) { return x.key === OGU.parent; }) ? OGU.parent : '';
+    sel.disabled = OGU.type === '본부';
+}
+function ogUnitClose() { document.getElementById('ogUnitModal').classList.add('hidden'); }
+function ogUnitSave() {
+    var $ = function (i) { return document.getElementById(i); }, act = ogActive(), units = ogAllUnits(act);
+    var parent = $('ogUParent').value, head = $('ogUHead').value, key = OGU.key;
+    if (!key) {
+        var base = String($('ogUName').value || '').trim().replace(/\s+/g, ' ').replace(/\s*(본부|사업단|지점)$/, '').trim();
+        if (!base) { shToast('이름을 입력해 주세요', 'error'); return; }
+        key = OGU.type === '지점' ? base : base.replace(/\s+/g, '') + OGU.type;
+        if (key === '직할' || units.some(function (x) { return x.key === key; })) { shToast(ogBranchLabel(key) + '은(는) 이미 있어요', 'error'); return; }
+    }
+    var arr = (OGE.cfg.units = OGE.cfg.units || []);
+    // 사용자 정보에만 있던 소속(자동 지점)도 구조에 올리면 등록해 둔다
+    units.forEach(function (x) { if (x.implicit && !arr.some(function (y) { return y.key === x.key; }) && (x.key === key || x.key === parent)) arr.push({ key: x.key, type: x.type || '지점', parent: '', head: '' }); });
+    var rec = arr.find(function (x) { return x.key === key; });
+    if (!rec) { rec = { key: key, type: OGU.type, parent: '', head: '' }; arr.push(rec); }
+    rec.parent = parent; rec.head = head;
+    if (head) arr.forEach(function (x) { if (x !== rec && x.head === head) x.head = ''; });   // 책임자는 한 조직에만
+    ogUnitClose();
+    ogSaveCfg(ogBranchLabel(key) + (OGU.key ? ' 설정을 저장했어요' : '을(를) 추가했어요'));
+}
+function ogUnitDelete() {
+    var key = OGU.key; if (!key || !ogCanEdit()) return;
+    Swal.fire({ title: ogBranchLabel(key) + '을(를) 삭제할까요?', text: '빈 카드만 지워져요.', icon: 'warning', showCancelButton: true, confirmButtonText: '삭제', cancelButtonText: '취소', confirmButtonColor: '#E5484D' }).then(function (r) {
         if (!r.isConfirmed) return;
-        ogSaveUi('삭제하는 중…', 'is-busy');
-        ogCall('orgDeleteGroup', [loggedInUser, n]).then(function (x) {
-            if (!x || !x.ok) throw new Error((x && x.error) || '실패');
-            OGE.groups = (OGE.groups || []).filter(function (g) { return g !== n; });
-            OGE.last = ogHm() + ' 저장 완료 · ' + ogBranchLabel(n) + ' 삭제';
-            renderOrgChart(); shToast(ogBranchLabel(n) + '을(를) 삭제했어요');
-        }).catch(function (e) { renderOrgChart(); ogSaveUi('삭제 실패 · ' + String((e && e.message) || e).slice(0, 70), 'is-err'); shToast('삭제하지 못했어요', 'error'); });
+        OGE.cfg.units = (OGE.cfg.units || []).filter(function (x) { return x.key !== key; });
+        OGE.groups = (OGE.groups || []).filter(function (g) { return g !== key; });
+        ogUnitClose();
+        ogSaveCfg(ogBranchLabel(key) + '을(를) 삭제했어요');
     });
 }
 function ogEditJoin() {
@@ -15343,8 +15456,8 @@ window.addEventListener('beforeunload', function (e) { if (Object.keys(OGE.pendi
     var go = function (e) {
         if (!e.target.closest) return false;
         if (OGD.justDragged) { OGD.justDragged = false; return true; }
-        if (e.target.closest('[data-newgrp]')) { ogGroupAdd(); return true; }
-        var gd = e.target.closest('[data-gdel]'); if (gd) { ogGroupDelete(gd.getAttribute('data-gdel')); return true; }
+        if (e.target.closest('[data-newgrp]')) { ogUnitOpen(''); return true; }
+        var gu = e.target.closest('[data-unit]'); if (gu) { ogUnitOpen(gu.getAttribute('data-unit')); return true; }
         var a = e.target.closest('[data-add]'); if (a) { var v = a.getAttribute('data-add'); if (v === '__cand') ogOpen('cand-add'); else ogOpen('add', v); return true; }
         var c = e.target.closest('[data-cand]'); if (c) { ogOpen('cand-edit', c.getAttribute('data-cand')); return true; }
         var m = e.target.closest('[data-og]'); if (m) { ogOpen('edit', m.getAttribute('data-og')); return true; }
@@ -15511,7 +15624,7 @@ function renderOrgChart() {
     if (!list.length) { box.innerHTML = '<div class="og-empty">등록된 조직 정보가 없어요</div>'; ['ogStats', 'ogMonthly', 'ogTop'].forEach(function (i) { document.getElementById(i).innerHTML = ''; }); return; }
     var ym = function (u) { var d = new Date(u.joinDate); return isNaN(d.getTime()) ? '' : String(d.getFullYear()).slice(2) + '.' + String(d.getMonth() + 1).padStart(2, '0'); };
     var jt = function (u) { var d = new Date(u.joinDate); return isNaN(d.getTime()) ? 9e15 : d.getTime(); };
-    var role = function (u) { return String(u.role || '').trim() || 'FC'; };
+    var role = function (u) { return ogTitle(u); };
     var meta = function (u, long) { var a = ym(u), r = String(u.recruiter || '').trim(); return [a ? a + (long ? ' 입사' : '') : '', r ? (long ? '도입 ' : '') + r : ''].filter(Boolean).join(' · '); };
     var canEdit = ogCanEdit();
     var plus = function (v, label) { return canEdit ? '<button type="button" class="og-add no-print" data-add="' + esc(v) + '" aria-label="' + esc(label) + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>' : ''; };
@@ -15524,19 +15637,22 @@ function renderOrgChart() {
     var isLead = function (u) { return /지점장|팀장|사업단장/.test(role(u)); };
     var rank = function (u) { var r = role(u); return /사업단장/.test(r) ? 0 : /수석지점장/.test(r) ? 1 : /부지점장/.test(r) ? 3 : /지점장/.test(r) ? 2 : 4; };
     var isHq = function (u) { return /본부장/.test(role(u)); };
-    var direct = list.filter(function (u) { return String(u.branch).trim() === '직할'; });
+    // 조직 트리: 본부 > 사업단 > 지점. 책임자로 지정된 사람은 사용자 정보의 소속과 상관없이 그 조직 맨 위에 둔다.
+    var units = ogAllUnits(list), headOf = {};
+    units.forEach(function (u) { if (u.head && list.some(function (x) { return x.name === u.head; }) && !headOf[u.head]) headOf[u.head] = u.key; });
+    var memOf = function (key) { return list.filter(function (u) { return headOf[u.name] ? headOf[u.name] === key : String(u.branch).trim() === key; }); };
+    var kids = function (key) { return units.filter(function (u) { return u.parent === key; }); };
+    var total = function (key, d) { d = d || 0; if (d > 5) return 0; return memOf(key).length + kids(key).reduce(function (a, c) { return a + total(c.key, d + 1); }, 0); };
+    var isBox = function (u) { return u.type === '본부' || u.type === '사업단' || kids(u.key).length > 0; };
+    var direct = memOf('직할');
     var head = list.filter(isHead)[0] || null;
-    var hqs = list.filter(isHq);
+    var hqs = list.filter(function (u) { return isHq(u) && !headOf[u.name]; });
     var hqLeft = hqs.filter(function (u) { return String(u.branch).trim() !== '직할'; });
     var srank = function (u) { var r = role(u); return isHq(u) ? 0 : /사업단장/.test(r) ? 1 : /지점장/.test(r) ? 2 : /팀장/.test(r) ? 3 : /총무/.test(r) ? 4 : 5; };
     var staff = direct.filter(function (u) { return !isHead(u); }).sort(function (x, y) { return srank(x) - srank(y) || jt(x) - jt(y); });
-    // 지점 묶기 (인원 많은 순)
-    var bmap = {}, order = [];
-    list.forEach(function (u) { var b = String(u.branch).trim(); if (b === '직할') return; if (!bmap[b]) { bmap[b] = []; order.push(b); } bmap[b].push(u); });
-    order.sort(function (x, y) { return bmap[y].length - bmap[x].length; });
-    (OGE.groups || []).forEach(function (b) { if (b && b !== '직할' && !bmap[b]) { bmap[b] = []; order.push(b); } });
+    var roots = units.filter(function (u) { return !u.parent; }).sort(function (x, y) { return (isBox(y) ? 1 : 0) - (isBox(x) ? 1 : 0) || total(y.key) - total(x.key); });
     // 통계
-    var st = [['총 재적', list.length, 1]].concat(order.map(function (b) { return [ogBranchLabel(b), bmap[b].length]; }));
+    var st = [['총 재적', list.length, 1]].concat(roots.map(function (u) { return [ogBranchLabel(u.key), total(u.key)]; }));
     if (direct.length) st.push(['직할', direct.length]);
     if (cands.length) st.push(['후보자', cands.length]);
     document.getElementById('ogStats').innerHTML = st.map(function (x) { return '<div class="og-stat' + (x[2] ? ' is-main' : '') + '"><span>' + esc(x[0]) + '</span><b>' + x[1] + '<small>명</small></b></div>'; }).join('');
@@ -15546,22 +15662,41 @@ function renderOrgChart() {
         + (hqLeft.length ? '<div class="og-tside"><div class="og-tbox"><h4>본부<b>' + hqLeft.length + '명</b></h4><div class="og-tbox-items">' + hqLeft.map(function (u) { return topCard(u, 'is-hq'); }).join('') + '</div></div></div>' : '')
         + (head ? '<div class="og-thead">' + topCard(head, 'is-head') + '</div>' : '')
         + '<div class="og-tside">' + (direct.length ? '<div class="og-tbox" data-br="직할"><h4>직할<b>' + direct.length + '명</b>' + (head && String(head.branch).trim() === '직할' ? '<span>지사장 포함</span>' : '') + plus('직할', '직할에 사람 추가') + '</h4><div class="og-tbox-items">' + (staff.length ? staff.map(function (u) { return topCard(u, isHq(u) ? 'is-hq' : ''); }).join('') : '<p class="og-tnone">소속 인원 없음</p>') + '</div></div>' : '') + '</div></div>';
-    // 지점 카드
-    var brHtml = order.map(function (b) {
-        var m = bmap[b], leads = m.filter(isLead).sort(function (x, y) { return rank(x) - rank(y) || jt(x) - jt(y); });
-        var fcs = m.filter(function (u) { return !isLead(u) && !isHq(u) && !isHead(u); }).sort(function (x, y) { return jt(x) - jt(y); });
-        var hasHq = m.some(isHq);
-        return '<section class="og-branch" data-br="' + esc(b) + '" style="flex:' + Math.max(m.length, 5) + ' 1 250px;--f:' + Math.max(m.length, 5) + '"><h3>' + esc(ogBranchLabel(b)) + '<b>' + m.length + '명</b>' + (hasHq ? '<span>본부장 포함</span>' : '') + (canEdit && !m.length ? '<button type="button" class="og-add og-gdel no-print" data-gdel="' + esc(b) + '" aria-label="' + esc(ogBranchLabel(b)) + ' 삭제"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>' : '') + plus(b, ogBranchLabel(b) + '에 사람 추가') + '</h3>'
-            + (leads.length ? '<div class="og-leads">' + leads.map(function (u) { return '<div class="og-lead"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u, true)) + '</div></div>'; }).join('') + '</div>' : '')
-            + (m.length ? '' : '<p class="og-tnone">아직 소속 인원이 없어요' + (canEdit ? '. + 를 누르거나 카드를 끌어다 놓으세요.' : '') + '</p>')
-            + '<div class="og-fcs">' + fcs.map(function (u) { return '<div class="og-fc"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u)) + '</div></div>'; }).join('') + '</div></section>';
-    }).join('');
+    // 조직 카드
+    var gear = function (key) { return canEdit ? '<button type="button" class="og-add og-gear no-print" data-unit="' + esc(key) + '" aria-label="' + esc(ogBranchLabel(key)) + ' 설정"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>' : ''; };
+    var leadCard = function (u) { return '<div class="og-lead"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u, true)) + '</div></div>'; };
+    var fcCard = function (u) { return '<div class="og-fc"' + ed(u) + '><div class="n">' + esc(u.name) + '<em>' + esc(role(u)) + '</em></div><div class="m">' + esc(meta(u)) + '</div></div>'; };
+    var isTop = function (u, unit) { return unit.head === u.name || isLead(u) || isHq(u); };
+    var leadSort = function (unit) { return function (x, y) { return (y.name === unit.head ? 1 : 0) - (x.name === unit.head ? 1 : 0) || rank(x) - rank(y) || jt(x) - jt(y); }; };
+    var emptyMsg = '<p class="og-tnone">아직 소속 인원이 없어요' + (canEdit ? '. + 를 누르거나 카드를 끌어다 놓으세요.' : '') + '</p>';
+    // 지점처럼 하위 조직이 없는 카드
+    var leafHtml = function (unit) {
+        var m = memOf(unit.key), leads = m.filter(function (u) { return isTop(u, unit); }).sort(leadSort(unit));
+        var fcs = m.filter(function (u) { return !isTop(u, unit) && !isHead(u); }).sort(function (x, y) { return jt(x) - jt(y); });
+        return '<section class="og-branch" data-br="' + esc(unit.key) + '" style="flex:' + Math.max(m.length, 5) + ' 1 250px;--f:' + Math.max(m.length, 5) + '"><h3>' + esc(ogBranchLabel(unit.key)) + '<b>' + m.length + '명</b>' + '<i class="og-sp"></i>' + gear(unit.key) + plus(unit.key, ogBranchLabel(unit.key) + '에 사람 추가') + '</h3>'
+            + (leads.length ? '<div class="og-leads">' + leads.map(leadCard).join('') + '</div>' : '')
+            + (m.length ? '' : emptyMsg)
+            + '<div class="og-fcs">' + fcs.map(fcCard).join('') + '</div></section>';
+    };
+    // 본부·사업단: 책임자 줄 + [직할 카드] + 하위 조직 카드
+    var boxHtml = function (unit, depth) {
+        var m = memOf(unit.key), ch = kids(unit.key).sort(function (x, y) { return (isBox(y) ? 1 : 0) - (isBox(x) ? 1 : 0) || total(y.key) - total(x.key); });
+        var tops = m.filter(function (u) { return isTop(u, unit); }).sort(leadSort(unit));
+        var own = m.filter(function (u) { return !isTop(u, unit) && !isHead(u); }).sort(function (x, y) { return jt(x) - jt(y); });
+        var ownCard = (own.length || canEdit) ? '<section class="og-branch og-own" data-br="' + esc(unit.key) + '" style="flex:' + Math.max(own.length, 4) + ' 1 220px;--f:' + Math.max(own.length, 4) + '"><h3>직할<b>' + own.length + '명</b><i class="og-sp"></i>' + plus(unit.key, ogBranchLabel(unit.key) + ' 직할에 사람 추가') + '</h3>'
+            + (own.length ? '<div class="og-fcs">' + own.map(fcCard).join('') + '</div>' : emptyMsg) + '</section>' : '';
+        return '<section class="og-unit" data-br="' + esc(unit.key) + '"><h3>' + esc(ogBranchLabel(unit.key)) + '<b>' + total(unit.key) + '명</b><i class="og-sp"></i>' + gear(unit.key) + '</h3>'
+            + (tops.length ? '<div class="og-leads og-unit-leads">' + tops.map(leadCard).join('') + '</div>' : '')
+            + '<div class="og-branches og-sub">' + ownCard + ch.map(function (c) { return nodeHtml(c, depth + 1); }).join('') + '</div></section>';
+    };
+    var nodeHtml = function (unit, depth) { return (isBox(unit) && depth < 4) ? boxHtml(unit, depth) : leafHtml(unit); };
+    var brHtml = roots.map(function (u) { return nodeHtml(u, 0); }).join('');
     var candHtml = (cands.length || canEdit) ? '<section class="og-branch og-cand' + (cands.length ? '' : ' is-empty') + '" style="flex:5 1 250px;--f:5"><h3>후보자<b>' + cands.length + '명</b><span>재적 미포함</span>' + plus('__cand', '후보자 추가') + '</h3>'
         + (cands.length ? '<div class="og-fcs">' + cands.map(function (c) {
             var pl = /^\d{4}-\d{2}/.test(c.joinPlan || '') ? c.joinPlan.slice(2, 4) + '.' + c.joinPlan.slice(5, 7) + ' 예정' : '';
             return '<div class="og-fc is-cand"' + (canEdit ? ' data-cand="' + esc(c.id) + '" role="button" tabindex="0" aria-label="후보자 ' + esc(c.name) + ' 정보 수정"' : '') + '><div class="n">' + esc(c.name) + '<em>후보자</em></div><div class="m">' + esc(pl || '입사예정 미정') + '</div>' + (c.recruiter ? '<div class="m">' + esc(c.recruiter) + ' 도입</div>' : '') + '<div class="m">' + esc(ogBranchLabel(c.branch)) + '</div></div>';
         }).join('') + '</div>' : '<p class="og-tnone">등록된 후보자가 없어요. + 를 눌러 추가해 주세요.</p>') + '</section>' : '';
-    var newHtml = canEdit ? '<button type="button" class="og-newgrp no-print" data-newgrp="1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>지점·그룹 추가</button>' : '';
+    var newHtml = canEdit ? '<button type="button" class="og-newgrp no-print" data-newgrp="1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>본부·사업단·지점 추가</button>' : '';
     box.innerHTML = topHtml + '<div class="og-stem" aria-hidden="true"></div><div class="og-branches">' + brHtml + candHtml + '</div>' + newHtml;
     ogAlign(box);
     // 월별 입사 인원

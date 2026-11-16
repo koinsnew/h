@@ -1423,14 +1423,15 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 </div>
                 <table class="ts-table">
                     <thead>
-                        <tr><th>계약월</th><th>13회 시책</th><th>2차년</th><th>3차년</th></tr>
+                        <tr><th>월</th><th>13회 시책</th><th>2차년</th><th>3차년</th></tr>
                     </thead>
                     <tbody id="maintTableBody"></tbody>
                     <tfoot>
                         <tr><td>합계</td><td id="maintSumBonus13">0</td><td id="maintSumY2">0</td><td id="maintSumY3">0</td></tr>
                     </tfoot>
                 </table>
-                <p class="ts-note">전년도 계약은 13회 시책·2차년, 전전년도 계약은 3차년으로 잡혀요. 쉐어 계약은 내 몫만 계산해요.</p>
+                <p class="ts-note">전년도 계약은 13회 시책·2차년, 전전년도 계약은 3차년으로 계약한 달에 잡혀요. 쉐어 계약은 내 몫만 계산해요.</p>
+                <p class="ts-note" id="maintMetNote">메트라이프는 2차년 수수료를 청약월부터 14차월째에, 3차년 수수료를 26차월째에 시작해 각각 12달로 나눠 받는 달에 표시해요.</p>
             </div>
         </div>
     </div>
@@ -1503,7 +1504,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                     <!-- 월 선택: 화면엔 "2026.11"로 표시, 실제 선택은 투명하게 겹친 기본 월 선택기 -->
                     <label class="relative h-10 inline-flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg px-2.5 text-sm font-bold text-gray-800 tabular-nums cursor-pointer focus-within:ring-2 focus-within:ring-indigo-500">
                         <span id="monthPickerLabel" aria-hidden="true"></span><span aria-hidden="true" class="text-gray-500 text-xs">▾</span>
-                        <input type="month" id="monthPicker" aria-label="조회 월" onchange="changeMonth()" 
+                        <input type="month" id="monthPicker" aria-label="조회 월" onchange="changeMonth()" onclick="try{this.showPicker()}catch(e){}" 
                             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                     </label>
                     <div id="userSelectWrapper" class="hidden relative min-w-0 max-w-[112px] sm:max-w-none border border-gray-200 rounded-lg bg-gray-50 focus-within:ring-2 focus-within:ring-indigo-500" title="볼 사람 바꾸기">
@@ -8117,6 +8118,7 @@ function updateBranchCompanyTotal() {
         monthlyData.push({ month: i, bonus13: 0, y2: 0, y3: 0 });
     }
 
+    let _hasMetSplit = false;
     // 전체 데이터에서 내 과거 계약 가져오기
     let myHistoryMap = new Map();
     allUsersData.forEach(d => {
@@ -8152,6 +8154,7 @@ function updateBranchCompanyTotal() {
 
             let calcPrem = item.premium;
             if(item.attributes && item.attributes.isKrwFixed) calcPrem = Math.round(calcPrem * 1.1);
+            const _isMet = /메트라이프/.test(String(item.company || ''));
 
             // 13회 & Y2
             if ((contractYear + 1) === selectedYear) {
@@ -8161,14 +8164,32 @@ function updateBranchCompanyTotal() {
                 
                 monthlyData[contractMonth - 1].bonus13 += b13;
 
-                const y2Money = Math.round(calcPrem * (rateInfo.y2 || 0) * myShareRate);
-                monthlyData[contractMonth - 1].y2 += y2Money;
+                if (!_isMet) {
+                    const y2Money = Math.round(calcPrem * (rateInfo.y2 || 0) * myShareRate);
+                    monthlyData[contractMonth - 1].y2 += y2Money;
+                }
             }
 
             // Y3
-            if ((contractYear + 2) === selectedYear) {
+            if (!_isMet && (contractYear + 2) === selectedYear) {
                 const y3Money = Math.round(calcPrem * (rateInfo.y3 || 0) * myShareRate);
                 monthlyData[contractMonth - 1].y3 += y3Money;
+            }
+
+            // [메트라이프] 2차년은 14차월부터, 3차년은 26차월부터 12달에 나눠 지급 (계약월 = 1차월)
+            if (_isMet) {
+                const _split = function (total, startOffset, key) {
+                    if (!(total > 0)) return;
+                    const each = Math.floor(total / 12);
+                    for (let k = 0; k < 12; k++) {
+                        const idx = (contractYear * 12 + (contractMonth - 1)) + startOffset + k;
+                        if (Math.floor(idx / 12) !== selectedYear) continue;
+                        monthlyData[idx % 12][key] += (k === 11 ? total - each * 11 : each);
+                        _hasMetSplit = true;
+                    }
+                };
+                _split(Math.round(calcPrem * (rateInfo.y2 || 0) * myShareRate), 13, 'y2');
+                _split(Math.round(calcPrem * (rateInfo.y3 || 0) * myShareRate), 25, 'y3');
             }
         });
     });
@@ -8196,6 +8217,7 @@ function updateBranchCompanyTotal() {
     var _tile = function(id, v){ var e=document.getElementById(id); if(!e) return; e.dataset.full = v.toLocaleString() + '원'; e.dataset.short = tsMan(v); e.textContent = e.dataset.short; e.parentNode.setAttribute('aria-pressed','false'); };
     _tile('maintSumBonus13Top', sum13); _tile('maintSumY2Top', sumY2); _tile('maintSumY3Top', sumY3);
     _t('maintTotal', (sum13 + sumY2 + sumY3).toLocaleString()); _t('maintYearLabel', selectedYear);
+    var _mn = document.getElementById('maintMetNote'); if (_mn) _mn.classList.toggle('is-on', _hasMetSplit);
 }
 // 금액 줄여 쓰기: 7,027,400 → 702.7만 (누르면 원 단위)
 function tsMan(v) {
@@ -12240,8 +12262,7 @@ function syncPerformanceData() {
         }, 2000); // 2초 뒤 버튼 텍스트 원상복구
         
         // 우측 상단 팝업 알림
-        const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-        Toast.fire({ icon: 'success', title: '최신 데이터 업데이트 완료!' });
+        Swal.fire({ icon: 'success', title: '갱신 완료!', text: '업적 현황을 최신으로 불러왔어요', confirmButtonColor: '#4f46e5', timer: 1500 });
         
     }).withFailureHandler(function(err) {
         Swal.fire('동기화 실패', '서버 통신 중 오류가 발생했습니다.<br>' + err.message, 'error');
@@ -12281,8 +12302,7 @@ function syncMainData() {
             updateDashboard();
             
             // 4. 완료 팝업 알림
-            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
-            Toast.fire({ icon: 'success', title: '리스트가 최신화되었습니다.' });
+            Swal.fire({ icon: 'success', title: '갱신 완료!', text: `${currentMonth} 리스트를 최신으로 불러왔어요`, confirmButtonColor: '#4f46e5', timer: 1500 });
         } catch(e) {
             console.error(e);
             showAlert('error', '데이터 처리 오류', e.message);
@@ -12557,8 +12577,7 @@ function syncActiveStatusData() {
 
         if (btn) { btn.disabled = false; btn.innerHTML = '<svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신'; }
 
-        const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
-        Toast.fire({ icon: 'success', title: '가동 현황이 갱신되었습니다.' });
+        Swal.fire({ icon: 'success', title: '갱신 완료!', text: '가동 현황을 최신으로 불러왔어요', confirmButtonColor: '#4f46e5', timer: 1500 });
 
     }).withFailureHandler(function(err) {
         if (btn) { btn.disabled = false; btn.innerHTML = '<svg class="ts-ico ts-ico-sm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg> 갱신'; }
@@ -13450,8 +13469,7 @@ function syncBranchIncomeData() {
         resetSyncBranchIncomeBtn(btn, btnIcon, btnText);
         
         // 우측 상단 팝업 알림
-        const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-        Toast.fire({ icon: 'success', title: '지사 소득 데이터가 갱신되었습니다.' });
+        Swal.fire({ icon: 'success', title: '갱신 완료!', text: '지사 소득을 최신으로 불러왔어요', confirmButtonColor: '#4f46e5', timer: 1500 });
         
     }).withFailureHandler(function(err) {
         Swal.fire('동기화 실패', '서버 통신 중 오류가 발생했습니다.<br>' + err.message, 'error');

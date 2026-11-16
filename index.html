@@ -1432,6 +1432,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 </table>
                 <p class="ts-note">전년도 계약은 13회 시책·2차년, 전전년도 계약은 3차년으로 계약한 달에 잡혀요. 쉐어 계약은 내 몫만 계산해요.</p>
                 <p class="ts-note" id="maintMetNote">메트라이프는 2차년 수수료를 청약월부터 14차월째에, 3차년 수수료를 26차월째에 시작해 각각 12달로 나눠 받는 달에 표시해요.</p>
+                <p class="ts-note">손보장기는 2차년 수수료를 13·14·15차월에 3분의 1씩, 13회 시책을 15차월에 받는 달에 표시해요.</p>
             </div>
         </div>
     </div>
@@ -8156,13 +8157,26 @@ function updateBranchCompanyTotal() {
             if(item.attributes && item.attributes.isKrwFixed) calcPrem = Math.round(calcPrem * 1.1);
             const _isMet = /메트라이프/.test(String(item.company || ''));
 
+            const _isSonboLong = String(item.productKey || '').indexOf('sonbo_long') === 0;
+            const _b13 = (item.bonus13Money !== undefined) ? item.bonus13Money : Math.round(calcPrem * (rateInfo.bonus13 || 0) * myShareRate);
+            const _base = contractYear * 12 + (contractMonth - 1);   // 계약월 = 1차월
+            // n차월에 해당하는 달에 금액을 넣는다 (선택한 연도일 때만)
+            const _put = function (nth, key, amt) {
+                if (!(amt > 0)) return;
+                const idx = _base + (nth - 1);
+                if (Math.floor(idx / 12) === selectedYear) monthlyData[idx % 12][key] += amt;
+            };
+
+            if (_isSonboLong) {
+                // [손보장기] 유지수수료는 13·14·15차월에 3분의 1씩, 13회 시책은 15차월에 지급
+                const _y2 = Math.round(calcPrem * (rateInfo.y2 || 0) * myShareRate), _each = Math.floor(_y2 / 3);
+                _put(13, 'y2', _each); _put(14, 'y2', _each); _put(15, 'y2', _y2 - _each * 2);
+                _put(15, 'bonus13', _b13);
+            }
+
             // 13회 & Y2
-            if ((contractYear + 1) === selectedYear) {
-                let b13 = 0;
-                if (item.bonus13Money !== undefined) b13 = item.bonus13Money;
-                else b13 = Math.round(calcPrem * (rateInfo.bonus13 || 0) * myShareRate);
-                
-                monthlyData[contractMonth - 1].bonus13 += b13;
+            if (!_isSonboLong && (contractYear + 1) === selectedYear) {
+                monthlyData[contractMonth - 1].bonus13 += _b13;
 
                 if (!_isMet) {
                     const y2Money = Math.round(calcPrem * (rateInfo.y2 || 0) * myShareRate);

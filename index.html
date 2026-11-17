@@ -15126,7 +15126,9 @@ var OGE = { name: '', role: '', branch: '', pending: {}, last: '', busy: false, 
 function ogCanEdit() { try { return /지사장|총무/.test(getRole(loggedInUser) || ''); } catch (e) { return false; } }
 // ── 조직 구조: 본부 > 사업단 > 지점, 표시용 직함 ──
 var OG_TYPES = ['본부', '사업단', '지점'];
-var OG_NEW_TITLES = ['사업단장', '수석지점장', '부지점장'];   // 조직도 표시용 직함(수수료 계산 직급은 그대로)
+var OG_NEW_TITLES = ['사업단장', '수석지점장', '부지점장'];   // 조직도 표시용 직함
+// 직함 → 권한·수수료 계산에 쓰는 시트 직급 (사업단장=본부장, 수석지점장=지점장과 동일). 부지점장은 기존 직급 유지.
+var OG_TITLE_BASE = { '사업단장': '본부장', '수석지점장': '지점장' };
 function ogUnit(key) { return ((OGE.cfg && OGE.cfg.units) || []).find(function (u) { return u.key === key; }) || null; }
 function ogUnitType(key) { var u = ogUnit(key); if (u) return u.type; key = String(key || ''); return /본부$/.test(key) ? '본부' : (/사업단$/.test(key) ? '사업단' : (/(팀|그룹|센터)$/.test(key) ? '' : '지점')); }
 function ogBranchLabel(b) {
@@ -15193,14 +15195,14 @@ function ogOpen(mode, arg) {
     $('ogEdJoin').classList.toggle('hidden', mode !== 'cand-edit');
     $('ogEdSave').textContent = { edit: '적용', add: '추가하기', 'cand-add': '추가하기', 'cand-edit': '저장하기' }[mode];
     $('ogEdSave').disabled = false; $('ogEdDel').disabled = false;
-    $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요. 단, <b>사업단장·수석지점장·부지점장</b>은 조직도 표시용 직함이라 바로 저장되고 수수료 계산 직급은 바뀌지 않아요.'
+    $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요. <b>사업단장</b>은 본부장과, <b>수석지점장</b>은 지점장과 같은 권한·수수료 기준으로 저장돼요. 부지점장은 조직도 표시용 직함이라 기존 직급 그대로예요.'
         : mode === 'add' ? '추가하면 사용자 정보 시트에 바로 저장돼요. 로그인 비밀번호 같은 나머지 정보는 시트에서 따로 넣어 주세요.'
         : '후보자는 총 재적과 수수료 계산에 들어가지 않고, 조직도에만 보여요.' + (mode === 'cand-edit' ? ' 정식 입사하면 소속을 고른 뒤 <b>입사 처리</b>를 눌러 주세요.' : '');
     if (u) { $('ogEdName').textContent = u.name; $('ogEdNow').textContent = [ogTitle(u), ogBranchLabel(u.branch)].filter(Boolean).join(' · '); }
     $('ogEdNameIn').value = c ? c.name : '';
     var role = u ? ogTitle(u) : 'FC';
     var branch = u ? String(u.branch || '').trim() : c ? c.branch : (arg && mode !== 'cand-add' ? arg : '');
-    var roles = mode === 'add' ? ['지사장', '본부장', '지점장', '팀장', '총무', 'FC'] : uniq(['지사장', '본부장', '사업단장', '수석지점장', '지점장', '부지점장', '팀장', '총무', 'FC'].concat([role]));
+    var roles = mode === 'add' ? ['지사장', '본부장', '사업단장', '수석지점장', '지점장', '팀장', '총무', 'FC'] : uniq(['지사장', '본부장', '사업단장', '수석지점장', '지점장', '부지점장', '팀장', '총무', 'FC'].concat([role]));
     var branches = uniq(['직할'].concat(ogAllUnits(act).map(function (x) { return x.key; })).concat(act.map(function (x) { return String(x.branch || '').trim(); })).concat((OGE.cands || []).map(function (x) { return x.branch; })).concat([branch]));
     ogChips('ogEdRoles', roles, role, 'role', 'ogEdRoleNew', '');
     ogChips('ogEdBranches', branches, branch || (isCand ? '아너스' : '직할'), 'branch', 'ogEdBranchNew', '+ 새 지점·본부', ogBranchLabel);
@@ -15234,9 +15236,11 @@ function ogEditSave() {
         if ((userDB || []).some(function (x) { return x.name === nameIn; })) { shToast(nameIn + ' 님은 이미 등록돼 있어요', 'error'); return; }
         if (!date) { shToast('입사일을 골라 주세요', 'error'); return; }
         ogBusy(true);
-        ogCall('orgAddMember', [loggedInUser, { name: nameIn, role: role, branch: branch, joinDate: date, recruiter: rec }]).then(function (r) {
+        var addRole = OG_TITLE_BASE[role] || role, addTitle = OG_TITLE_BASE[role] ? role : '';
+        ogCall('orgAddMember', [loggedInUser, { name: nameIn, role: addRole, branch: branch, joinDate: date, recruiter: rec }]).then(function (r) {
             if (!r || !r.ok) throw new Error((r && r.error) || '실패');
-            userDB.push({ name: nameIn, role: role, branch: branch, joinDate: date, resignDate: '', recruiter: rec, residentId: '', grade: '', phone: '', birthday: '', email: '' });
+            if (addTitle) { OGE.cfg.titles = OGE.cfg.titles || {}; OGE.cfg.titles[nameIn] = addTitle; OGE.cfg.migrated = true; ogCall('orgSaveConfig', [loggedInUser, JSON.stringify(OGE.cfg)]).catch(function () { }); }
+            userDB.push({ name: nameIn, role: addRole, branch: branch, joinDate: date, resignDate: '', recruiter: rec, residentId: '', grade: '', phone: '', birthday: '', email: '' });
             ogDone(nameIn + ' 님을 추가했어요');
         }).catch(ogFail);
         return;
@@ -15255,7 +15259,7 @@ function ogEditSave() {
     }
     // 표시용 직함(사업단장·수석지점장·부지점장)은 설정에만 저장하고, 수수료 계산 직급(시트)은 그대로 둔다
     var _u = userDB.find(function (x) { return x.name === OGE.name; }); if (!_u) return;
-    var _isTitle = OG_NEW_TITLES.indexOf(role) >= 0, _sheetRole = _isTitle ? (String(_u.role || '').trim() || 'FC') : role;
+    var _isTitle = OG_NEW_TITLES.indexOf(role) >= 0, _sheetRole = OG_TITLE_BASE[role] || (_isTitle ? (String(_u.role || '').trim() || 'FC') : role);
     var _prevTitle = (OGE.cfg.titles || {})[OGE.name] || '', _newTitle = _isTitle ? role : '';
     OGE.cfg.titles = OGE.cfg.titles || {};
     if (_newTitle) OGE.cfg.titles[OGE.name] = _newTitle; else delete OGE.cfg.titles[OGE.name];

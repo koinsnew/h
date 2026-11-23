@@ -1170,19 +1170,22 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   #ogPrintRoot .og-fc .n em{display:inline}
   #ogPrintRoot .og-monthly{height:150px}
   #ogPrintRoot .og-legend{margin-top:8px}
+  #grandTotalCommission.is-masked{color:#B0B8C1;font-size:clamp(22px,4vw,30px);letter-spacing:-.02em}
+  #grandTotalCommission.is-masked::before{content:'';display:inline-block;width:.8em;height:.8em;margin-right:.35em;vertical-align:-.05em;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E") center/contain no-repeat}
+  #grandTotalCommission:focus-visible{outline:2px solid #3182F6;outline-offset:4px;border-radius:8px}
   /* [목표달성률] 그룹 진행도 카드 · 상위 조직 묶음 */
-  .gg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .gg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
   .gg-card{background:#F9FAFB;border-radius:12px;padding:10px 12px}
   .gg-card.is-total{grid-column:1 / -1;background:#EEF4FF;padding:12px 14px}
   .gg-card.is-total .gg-card-top span{font-size:14px;color:#191F28}
   .gg-card.is-total .gg-card-top b{font-size:16px}
   .gg-card.is-sub2{background:#fff;border:1px dashed #E5E8EB}
-  .gg-card-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
-  .gg-card-top span{font-size:12px;font-weight:700;color:#4E5968;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .gg-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:6px}
+  .gg-card-top span{font-size:12px;font-weight:700;color:#4E5968;min-width:0;word-break:keep-all;line-height:1.35}
   .gg-card-top b{font-size:13px;font-weight:900;flex:none}
   .gg-bar{height:6px;border-radius:3px;background:#E5E8EB;overflow:hidden;margin-bottom:6px}
   .gg-bar i{display:block;height:100%;border-radius:3px;transition:width .5s ease}
-  .gg-card-num{font-size:11.5px;color:#6B7684;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gg-card-num{font-size:11.5px;color:#6B7684;word-break:keep-all}
   .gg-root{background:#EEF1F5;border-radius:20px;padding:12px 10px 2px;margin-bottom:16px}
   .gg-root-head{display:flex;align-items:baseline;gap:8px;padding:2px 6px 12px;flex-wrap:wrap}
   .gg-root-head b{font-size:16px;font-weight:900;color:#191F28}
@@ -1580,7 +1583,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
             <div class="min-w-0">
                 <p class="text-[15px] text-gray-600 break-keep" id="welcomeMsg">환영합니다.</p>
                 <p class="mt-3 text-sm text-gray-600"><span id="displayMonth"></span>월 예상 수수료 <span class="text-gray-500">· 익월 + OR</span></p>
-                <p class="ts-amount cursor-pointer tabular-nums" id="grandTotalCommission" onclick="openGmOperationModal()">0원</p>
+                <p class="ts-amount cursor-pointer tabular-nums" id="grandTotalCommission" role="button" tabindex="0" onclick="heroAmtClick()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();heroAmtClick();}">0원</p>
                 <button type="button" id="gmOperationHint" class="hidden mt-1 h-8 text-sm font-semibold ts-link" onclick="openGmOperationModal()">지사운영 내역 보기 ›</button>
                 <button type="button" id="myCommHint" class="hidden mt-1 h-8 text-sm font-semibold ts-link" onclick="openMyCommModal()">내 수수료 내역 보기 ›</button>
                 <div id="clubMsg" class="hidden mt-2 text-sm font-bold ts-chip animate-bounce-slow">천만클럽 달성 축하드립니다</div>
@@ -5465,7 +5468,7 @@ function updateSummary(premium, p, next, bonus, total) {
     let displayCommission = next + bonus + _orForSum;
     window.__myComm = { next: next, bonus: bonus, or: _orForSum, total: displayCommission };
     try { var _mh = document.getElementById('myCommHint'); if (_mh) _mh.classList.toggle('hidden', !isCommViewer()); } catch (e) { }
-    document.getElementById('grandTotalCommission').innerText = displayCommission.toLocaleString() + '원';
+    if (typeof heroAmtRender === 'function') heroAmtRender(displayCommission); else document.getElementById('grandTotalCommission').innerText = displayCommission.toLocaleString() + '원';
     
     const clubMsg = document.getElementById('clubMsg');
     // 천만클럽 달성 여부도 화면에 표시되는 금액 기준으로 체크
@@ -7739,6 +7742,8 @@ window.getFcSubOf = function(name) {
     for (var i = 0; i < subs.length; i++) if ((cfg['sub:' + subs[i].id] || []).indexOf(name) >= 0) return subs[i];
     return null;
 };
+// 화면 표시 이름: 마스터사업단 직속(브리핑 계약) = 특수영업팀
+window.fcLabel = function(g) { return g === '마스터사업단' ? '특수영업팀' : g; };
 // 목표달성률 그룹의 상위 그룹: 조직도 구조를 따르고, 없으면 기본(아너스·리더스 → 마스터사업단)
 window.fcParentOf = function(g) {
     var toKey = function(gg){ return gg.replace(/지점$/, ''); };
@@ -7901,12 +7906,14 @@ window.renderGoalAchievementPage = function() {
         var groupCards = roots.map(function(r){
             var kids = kidsOf(r), out = '';
             if (kids.length) {
+                var _pre = /사업단$/.test(r) ? '사업단 ' : (r.replace(/(본부|지점)$/, '') + ' ');
+                var _short = function(g){ return window.fcLabel(g).replace(/지점$/, ''); };
                 out += gCard(r + ' 전체', gStat(r, true), 'is-total');
-                out += gCard(r + ' 직할', gStat(r, false), 'is-sub');
-                window.fcSubs(r).forEach(function(x){ out += gCard(r + ' › ' + bdEsc(x.name), subStat(x), 'is-sub2'); });
+                out += gCard(_pre + _short(r), gStat(r, false), 'is-sub');
+                window.fcSubs(r).forEach(function(x){ out += gCard(_pre + _short(r) + ' › ' + bdEsc(x.name), subStat(x), 'is-sub2'); });
                 kids.forEach(function(k){
-                    out += gCard(k, gStat(k, true), 'is-sub');
-                    window.fcSubs(k).forEach(function(x){ out += gCard(k + ' › ' + bdEsc(x.name), subStat(x), 'is-sub2'); });
+                    out += gCard(_pre + _short(k), gStat(k, true), 'is-sub');
+                    window.fcSubs(k).forEach(function(x){ out += gCard(_pre + _short(k) + ' › ' + bdEsc(x.name), subStat(x), 'is-sub2'); });
                 });
             } else {
                 out += gCard(r, gStat(r, false), '');
@@ -7940,21 +7947,21 @@ window.renderGoalAchievementPage = function() {
             if (_briefOn) {
                 var _raw = Number(actuals[n])||0, _bf = bOf(n);
                 if (g === MASTER && _raw - _bf > 0) _moved = '일반 계약 ' + (_raw - _bf).toLocaleString() + (homeOf(n) ? ' → ' + homeOf(n) + ' 실적' : ' (소속 지점 없음)');
-                else if (g !== MASTER && _bf > 0) _moved = '브리핑 ' + _bf.toLocaleString() + ' → 마스터사업단 실적';
+                else if (g !== MASTER && _bf > 0) _moved = '브리핑 ' + _bf.toLocaleString() + ' → 특수영업팀 실적';
             }
             var _sub = window.getFcSubOf(n), _cur = _sub ? 'sub:' + _sub.id : g;
             var _dests = (_isAll ? window.FC_GROUPS : _scope);
             var opts = (g === window.FC_UNASSIGNED ? '<option value="'+window.FC_UNASSIGNED+'" selected>미배정</option>' : '')
               + _dests.map(function(gg){
-                return '<option value="'+gg+'"'+(gg===_cur?' selected':'')+'>'+gg+'</option>'
-                  + window.fcSubs(gg).map(function(x){ return '<option value="sub:'+x.id+'"'+(('sub:'+x.id)===_cur?' selected':'')+'>'+gg+' › '+bdEsc(x.name)+'</option>'; }).join('');
+                return '<option value="'+gg+'"'+(gg===_cur?' selected':'')+'>'+window.fcLabel(gg)+'</option>'
+                  + window.fcSubs(gg).map(function(x){ return '<option value="sub:'+x.id+'"'+(('sub:'+x.id)===_cur?' selected':'')+'>'+window.fcLabel(gg)+' › '+bdEsc(x.name)+'</option>'; }).join('');
               }).join('');
             var _rowEd = _canGroup && rowEditable(n);
             // [권한] 편집 가능하면 입력/선택, 아니면 읽기 전용 텍스트
             // 그룹 선택은 지사장·총무만, 목표 입력은 편집 권한자 전체
             var groupCtrl = _rowEd
               ? ('<select aria-label="소속 그룹" class="fc-group-select text-sm h-10 border border-gray-200 rounded-lg px-2 text-gray-700 focus:border-indigo-400 focus:outline-none shrink-0" data-name="'+encodeURIComponent(n)+'">'+opts+'</select>')
-              : ('<span class="text-xs text-gray-500 shrink-0 whitespace-nowrap">'+g+(_sub ? ' › '+bdEsc(_sub.name) : '')+'</span>');
+              : ('<span class="text-xs text-gray-500 shrink-0 whitespace-nowrap">'+window.fcLabel(g)+(_sub ? ' › '+bdEsc(_sub.name) : '')+'</span>');
             var goalCtrl = (_canEdit && (_isAll || !_canGroup ? true : rowEditable(n)))
               ? ('<div class="flex items-center gap-1 shrink-0"><input type="text" inputmode="numeric" aria-label="목표 환산P" class="fc-goal-input w-24 h-10 text-right border border-gray-200 rounded-lg px-2 text-sm focus:border-indigo-400 focus:outline-none" data-name="'+encodeURIComponent(n)+'" data-actual="'+a+'" value="'+(t?t.toLocaleString():'')+'" placeholder="목표 P" oninput="onGoalInput(this)"><span class="text-xs text-gray-500">P</span></div>')
               : ('<span class="text-sm font-bold text-gray-700 shrink-0 whitespace-nowrap">목표 '+(t?t.toLocaleString():'-')+'P</span>');
@@ -8023,7 +8030,7 @@ window.renderGoalAchievementPage = function() {
             if (!kids.length) return secOf(r);
             var st = gStat(r, true), gc = gCol(st.p);
             return '<div class="gg-root"><div class="gg-root-head"><b>'+r+' 전체</b><span>'+st.n+'명 · 실적 '+st.a.toLocaleString()+' / 목표 '+st.t.toLocaleString()+'</span><em style="color:'+gc+'">'+st.p.toFixed(0)+'%</em></div>'
-              + secOf(r, r + ' 직할') + kids.map(function(k){ return secOf(k); }).join('') + '</div>';
+              + secOf(r, window.fcLabel(r)) + kids.map(function(k){ return secOf(k); }).join('') + '</div>';
         }).join('') + secOf(window.FC_UNASSIGNED);
         }
 
@@ -8034,7 +8041,7 @@ window.renderGoalAchievementPage = function() {
           + ((_canEdit || _canGroup) ? ('<button id="saveGoalBtn" onclick="saveFcGoalsUI()" class="h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 rounded-lg shadow transition">' + (_canGroup ? '목표·그룹 저장' : '목표 저장') + '</button>') : '')
           + '</div>'
           + (names.length ? sections : '<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4"><div class="text-center text-gray-500 py-8">'+_emptyMsg+'</div></div>')
-          + (_briefOn ? '<div class="text-xs text-gray-500 text-center mt-1">※ 2026년 11월부터 브리핑 체크 계약만 마스터사업단 실적으로 잡고, 그 외 계약은 소속 지점 실적으로 잡습니다.</div>' : '')
+          + (_briefOn ? '<div class="text-xs text-gray-500 text-center mt-1">※ 2026년 11월부터 브리핑 체크 계약은 특수영업팀(마스터사업단) 실적으로 잡고, 그 외 계약은 소속 지점 실적으로 잡습니다.</div>' : '')
           + (_canGroup ? '<div class="text-xs text-gray-500 text-center mt-1">※ FC 옆 그룹을 바꾸고 저장하면 그대로 유지됩니다. ' + (_isAll ? '' : '내가 맡은 ' + _scope.join('·') + '만 바꿀 수 있어요. ') + '배정 안 된 FC는 미배정 그룹으로 표시됩니다.</div>'
                        : (_canEdit ? '<div class="text-xs text-gray-500 text-center mt-1">※ 그룹 지정은 지사장·총무·사업단장(본부장)·지점장만 변경할 수 있습니다.</div>' : ''));
     };
@@ -8109,6 +8116,9 @@ window.saveFcGoalsUI = function() {
     }).withFailureHandler(function(err){ restore(); if (typeof showAlert==='function') showAlert('error','저장 실패',err); }).saveFcGoals(month, JSON.stringify(goals));
 };
 // 서버의 최신 그룹 설정을 받아 내 변경만 얹어서 저장 (다른 관리자가 바꾼 내용 보존)
+window.fcBusy = function(title) {
+    Swal.fire({ title: title, html: '<span style="font-size:14px;color:#6B7684">잠시만 기다려 주세요</span>', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: function(){ Swal.showLoading(); } });
+};
 window.fcGroupSaveMerged = function(mutate, cb) {
     var run = google.script.run;
     run.withSuccessHandler(function(json){
@@ -8122,33 +8132,36 @@ window.fcGroupSaveMerged = function(mutate, cb) {
 // 하위 그룹 만들기·이름 바꾸기·삭제 (바로 저장)
 window.fcSubAdd = function(parent) {
     if (window.fcMyScope().indexOf(parent) < 0) return;
-    Swal.fire({ title: parent + ' 안에 그룹 만들기', input: 'text', inputPlaceholder: '그룹 이름 (예: A팀, 세미나팀)', inputAttributes: { maxlength: 20, autocomplete: 'off' },
+    Swal.fire({ title: window.fcLabel(parent) + ' 안에 그룹 만들기', input: 'text', inputPlaceholder: '그룹 이름 (예: A팀, 세미나팀)', inputAttributes: { maxlength: 20, autocomplete: 'off' },
         showCancelButton: true, confirmButtonText: '만들기', cancelButtonText: '취소', confirmButtonColor: '#4f46e5',
         preConfirm: function(v){ v = String(v || '').trim(); if (!v) { Swal.showValidationMessage('그룹 이름을 입력해 주세요'); return false; }
             if (window.fcSubs(parent).some(function(x){ return x.name === v; })) { Swal.showValidationMessage('같은 이름의 그룹이 있어요'); return false; } return v; }
     }).then(function(r){
         if (!r.isConfirmed) return;
         var id = 'g' + Date.now();
+        window.fcBusy(r.value + ' 그룹 만드는 중…');
         window.fcGroupSaveMerged(function(cfg){ (cfg.__sub = cfg.__sub || []).push({ id: id, name: r.value, parent: parent }); },
-            function(ok){ if (typeof shToast==='function') shToast(ok ? r.value + ' 그룹을 만들었어요' : '그룹을 저장하지 못했어요', ok ? '' : 'error'); window.renderGoalAchievementPage(); });
+            function(ok){ Swal.close(); if (typeof shToast==='function') shToast(ok ? r.value + ' 그룹을 만들었어요' : '그룹을 저장하지 못했어요', ok ? '' : 'error'); window.renderGoalAchievementPage(); });
     });
 };
 window.fcSubEdit = function(id) {
     var x = window.fcSubs().filter(function(y){ return y.id === id; })[0]; if (!x || window.fcMyScope().indexOf(x.parent) < 0) return;
     Swal.fire({ title: '그룹 편집', input: 'text', inputValue: x.name, inputAttributes: { maxlength: 20, autocomplete: 'off' },
         showCancelButton: true, showDenyButton: true, confirmButtonText: '이름 저장', denyButtonText: '그룹 삭제', cancelButtonText: '취소', confirmButtonColor: '#4f46e5', denyButtonColor: '#E5484D',
-        html: '<span style="font-size:13px;color:#6B7684">삭제하면 이 그룹의 FC는 ' + x.parent + '(으)로 돌아가요.</span>',
+        html: '<span style="font-size:13px;color:#6B7684">삭제하면 이 그룹의 FC는 ' + window.fcLabel(x.parent) + '(으)로 돌아가요.</span>',
         preConfirm: function(v){ v = String(v || '').trim(); if (!v) { Swal.showValidationMessage('그룹 이름을 입력해 주세요'); return false; } return v; }
     }).then(function(r){
         if (r.isConfirmed) {
+            window.fcBusy('그룹 이름 바꾸는 중…');
             window.fcGroupSaveMerged(function(cfg){ (cfg.__sub || []).forEach(function(y){ if (y.id === id) y.name = r.value; }); },
-                function(ok){ if (typeof shToast==='function') shToast(ok ? '그룹 이름을 바꿨어요' : '저장하지 못했어요', ok ? '' : 'error'); window.renderGoalAchievementPage(); });
+                function(ok){ Swal.close(); if (typeof shToast==='function') shToast(ok ? '그룹 이름을 바꿨어요' : '저장하지 못했어요', ok ? '' : 'error'); window.renderGoalAchievementPage(); });
         } else if (r.isDenied) {
+            window.fcBusy('그룹 삭제하는 중…');
             window.fcGroupSaveMerged(function(cfg){
                 var mem = cfg['sub:' + id] || []; delete cfg['sub:' + id];
                 cfg.__sub = (cfg.__sub || []).filter(function(y){ return y.id !== id; });
                 cfg[x.parent] = (cfg[x.parent] || []).concat(mem.filter(function(n){ return (cfg[x.parent] || []).indexOf(n) < 0; }));
-            }, function(ok){ if (typeof shToast==='function') shToast(ok ? x.name + ' 그룹을 삭제했어요' : '삭제하지 못했어요', ok ? '' : 'error'); window.renderGoalAchievementPage(); });
+            }, function(ok){ Swal.close(); if (typeof shToast==='function') shToast(ok ? x.name + ' 그룹을 삭제했어요' : '삭제하지 못했어요', ok ? '' : 'error'); window.renderGoalAchievementPage(); });
         }
     });
 };
@@ -9987,6 +10000,24 @@ function shPrintSelected() {
 }
 
 // [지사운영] 예상수수료 클릭 시 지사 OA/OR 내역 모달 열기 (지사장 전용)
+// [홈] 관리자는 로그인하면 예상 수수료를 가려 두고, 누르면 보여준다 (사람·달이 바뀌면 다시 가림)
+var HERO = { key: '', shown: false };
+function isHeroMasked() { var r = ''; try { r = String(getRole(currentUser) || ''); } catch (e) { } return /지사장|본부장|사업단장|지점장|팀장|총무|CM/.test(r); }
+function heroAmtRender(v) {
+    var el = document.getElementById('grandTotalCommission'); if (!el) return;
+    var key = (typeof loggedInUser !== 'undefined' ? loggedInUser : '') + '|' + currentUser;
+    if (HERO.key !== key) { HERO.key = key; HERO.shown = false; }
+    el.dataset.amt = (Number(v) || 0).toLocaleString() + '원';
+    var masked = isHeroMasked() && !HERO.shown;
+    el.classList.toggle('is-masked', masked);
+    el.textContent = masked ? '눌러서 금액 보기' : el.dataset.amt;
+    el.setAttribute('aria-label', masked ? '예상 수수료 가려짐, 눌러서 보기' : '예상 수수료 ' + el.dataset.amt);
+}
+function heroAmtClick() {
+    var el = document.getElementById('grandTotalCommission');
+    if (el && el.classList.contains('is-masked')) { HERO.shown = true; heroAmtRender(String(el.dataset.amt || '0').replace(/[^0-9-]/g, '')); return; }
+    openGmOperationModal();
+}
 // 관리자(본부장·사업단장·지점장·팀장 등): 예상 수수료를 누르면 본인 수수료 내역
 function isCommViewer() { var r = ''; try { r = String(getRole(currentUser) || ''); } catch (e) { } return /본부장|사업단장|지점장|팀장|CM/.test(r) && !/지사장/.test(r); }
 function openMyCommModal() {

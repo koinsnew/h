@@ -1192,6 +1192,8 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .gg-root-head span{font-size:12px;color:#6B7684;flex:1;min-width:0}
   .gg-root-head em{font-style:normal;font-size:15px;font-weight:900}
   .gg-root-head .gg-add{margin-left:4px}
+  .gg-nest{margin:6px 0 2px;padding-left:10px;border-left:2px solid #E5E8EB}
+  .gg-nest > .rounded-2xl{margin-bottom:10px!important;box-shadow:none!important}
   .gg-root > .rounded-2xl{margin-bottom:10px!important}
   /* [목표달성률] 하위 그룹 */
   .gg-add{height:30px;padding:0 10px;border-radius:8px;background:#fff;border:1px solid #E5E8EB;font-size:12px;font-weight:700;color:#4E5968;white-space:nowrap}
@@ -7747,7 +7749,7 @@ window.getFcSubOf = function(name) {
 window.fcRecalcGroups = function() {
     var cfg = window.__fcGroupCfg || {}, tops = ['마스터사업단'];
     Object.keys(cfg).forEach(function(k){ if (k.indexOf('sub:') === 0 || k.indexOf('__') === 0 || k === window.FC_UNASSIGNED) return; if (tops.indexOf(k) < 0) tops.push(k); });
-    window.fcSubs().forEach(function(x){ if (x.parent && tops.indexOf(x.parent) < 0) tops.push(x.parent); });
+    window.fcSubs().forEach(function(x){ if (x.parent && String(x.parent).indexOf('sub:') !== 0 && tops.indexOf(x.parent) < 0) tops.push(x.parent); });
     window.FC_GROUPS = tops;
     window.FC_DISPLAY_GROUPS = tops.concat([window.FC_UNASSIGNED]);
 };
@@ -7758,7 +7760,12 @@ window.fcNodeOf = function(name) {
     for (var i = 0; i < window.FC_GROUPS.length; i++) if ((cfg[window.FC_GROUPS[i]] || []).indexOf(name) >= 0) return window.FC_GROUPS[i];
     return window.FC_UNASSIGNED;
 };
-window.fcNodeTop = function(node) { if (String(node).indexOf('sub:') === 0) { var x = window.fcSubs().filter(function(y){ return 'sub:' + y.id === node; })[0]; return x ? x.parent : window.FC_UNASSIGNED; } return node; };
+window.fcSubById = function(node) { return window.fcSubs().filter(function(y){ return 'sub:' + y.id === node; })[0] || null; };
+window.fcNodeTop = function(node) { var guard = 0; while (String(node).indexOf('sub:') === 0 && guard++ < 8) { var x = window.fcSubById(node); if (!x) return window.FC_UNASSIGNED; node = x.parent; } return node; };
+// 노드의 모든 상위(가까운 순)와 모든 하위
+window.fcAncestors = function(node) { var out = [], guard = 0; while (String(node).indexOf('sub:') === 0 && guard++ < 8) { var x = window.fcSubById(node); if (!x) break; node = x.parent; out.push(node); } return out; };
+window.fcDescendants = function(node) { var out = [], walk = function(p, d){ if (d > 8) return; window.fcSubs(p).forEach(function(x){ out.push('sub:' + x.id); walk('sub:' + x.id, d + 1); }); }; walk(node, 0); return out; };
+window.fcNodePath = function(node) { var parts = [window.fcNodeName(node)]; window.fcAncestors(node).forEach(function(a){ parts.unshift(window.fcNodeName(a)); }); return parts; };
 window.fcNodeName = function(node) { if (String(node).indexOf('sub:') === 0) { var x = window.fcSubs().filter(function(y){ return 'sub:' + y.id === node; })[0]; return x ? x.name : ''; } return node; };
 // 브리핑 계약이 모이는 곳: '특수영업팀' 그룹(없으면 마스터사업단 직속)
 window.fcSpecialNode = function() { var x = window.fcSubs().filter(function(y){ return /특수영업/.test(y.name); })[0]; return x ? 'sub:' + x.id : '마스터사업단'; };
@@ -7781,7 +7788,7 @@ window.fcHomeNode = function(name) {
 window.fcHomeGroup = function(name) { return window.fcNodeTop(window.fcHomeNode(name) || window.FC_UNASSIGNED); };
 // 그룹의 상위 그룹 (최상위끼리의 관계는 조직도 구조를 따른다)
 window.fcParentOf = function(g) {
-    if (String(g).indexOf('sub:') === 0) return window.fcNodeTop(g);
+    if (String(g).indexOf('sub:') === 0) { var _x = window.fcSubById(g); return _x ? _x.parent : ''; }
     var toKey = function(gg){ return gg.replace(/지점$/, ''); };
     try {
         var units = (typeof OGE !== 'undefined' && OGE.cfg && OGE.cfg.units) || [];
@@ -7808,8 +7815,8 @@ window.fcMyScope = function() {
     var out = [];
     var push = function(n){ if (out.indexOf(n) < 0) out.push(n); };
     keys.forEach(function(k){
-        window.FC_GROUPS.forEach(function(g){ if (base(g) === base(k)) { push(g); window.fcSubs(g).forEach(function(x){ push('sub:' + x.id); }); } });
-        window.fcSubs().forEach(function(x){ if (!/특수영업/.test(x.name) && base(x.name) === base(k)) push('sub:' + x.id); });
+        window.FC_GROUPS.forEach(function(g){ if (base(g) === base(k)) { push(g); window.fcDescendants(g).forEach(push); } });
+        window.fcSubs().forEach(function(x){ if (!/특수영업/.test(x.name) && base(x.name) === base(k)) { push('sub:' + x.id); window.fcDescendants('sub:' + x.id).forEach(push); } });
     });
     return out;
 };
@@ -7835,7 +7842,7 @@ window.renderGoalAchievementPage = function() {
         var _scope = window.fcMyScope();
         var _canGroup = _scope.length > 0;   // 그룹 지정: 지사장·총무 전체, 본부장·사업단장·지점장은 자기 조직만
         var _isAll = window.canEditFcGroups();
-        var inScope = function(node){ return _isAll || _scope.indexOf(node) >= 0 || (String(node).indexOf('sub:') === 0 && _scope.indexOf(window.fcNodeTop(node)) >= 0); };
+        var inScope = function(node){ return _isAll || _scope.indexOf(node) >= 0 || window.fcAncestors(node).some(function(a){ return _scope.indexOf(a) >= 0; }); };
         var names = [];
         try {
             userDB.forEach(function(u){
@@ -7883,11 +7890,11 @@ window.renderGoalAchievementPage = function() {
 
         // 노드별 통계 (최상위 = 직속 + 안의 그룹)
         var membersOf = function(node){ return names.filter(function(n){ return nodeOf[n] === node; }); };
-        var subsOf = function(top){ return window.fcSubs(top).map(function(x){ return 'sub:' + x.id; }); };
-        var stat = function(node, deep){
+        var subsOf = function(p){ return window.fcSubs(p).map(function(x){ return 'sub:' + x.id; }); };
+        var stat = function(node, deep, _d){
             var mem = membersOf(node), t = 0, a = credit[node] || 0, n = mem.length;
             mem.forEach(function(x){ t += Number(goals[x])||0; });
-            if (deep && String(node).indexOf('sub:') !== 0) subsOf(node).forEach(function(s2){ var st2 = stat(s2, false); t += st2.t; a += st2.a; n += st2.n; });
+            if (deep && (_d || 0) < 8) subsOf(node).forEach(function(s2){ var st2 = stat(s2, true, (_d || 0) + 1); t += st2.t; a += st2.a; n += st2.n; });
             return { t: t, a: a, n: n, p: t > 0 ? a/t*100 : 0 };
         };
         var tops = window.FC_GROUPS.slice();
@@ -7911,7 +7918,10 @@ window.renderGoalAchievementPage = function() {
             if (!subs.length) return gCard(bdEsc(r), stat(r, true), '');
             out += gCard(bdEsc(r) + ' 전체', stat(r, true), 'is-total');
             if (membersOf(r).length || credit[r]) out += gCard(prefixOf(r) + shortName(r), stat(r, false), 'is-sub');
-            subs.forEach(function(s2){ out += gCard(prefixOf(r) + shortName(s2), stat(s2, false), 'is-sub'); });
+            subs.forEach(function(s2){
+                out += gCard(prefixOf(r) + shortName(s2), stat(s2, true), 'is-sub');
+                window.fcDescendants(s2).forEach(function(s3){ out += gCard(prefixOf(r) + window.fcNodePath(s3).slice(1).map(function(v, i){ return i === 0 ? bdEsc(v).replace(/지점$/, '') : bdEsc(v); }).join(' › '), stat(s3, true), 'is-sub2'); });
+            });
             return out;
         }).join('');
         var _hasTeam = (!_canEdit && names.length > 1);
@@ -7932,8 +7942,8 @@ window.renderGoalAchievementPage = function() {
           + (totalTarget===0?('<div class="mt-2 text-sm text-gray-600">'+(_canEdit?'아래에서 FC별 목표 환산P를 입력하고 저장하세요.':'아직 목표가 입력되지 않았습니다.')+'</div>'):'') + '</div></div>';
 
         // 그룹 선택지: 최상위 그룹과 그 안의 그룹
-        var nodeLabel = function(node){ var top = window.fcNodeTop(node); return String(node).indexOf('sub:') === 0 ? bdEsc(top) + ' › ' + bdEsc(window.fcNodeName(node)) : bdEsc(window.fcLabel(node)); };
-        var destNodes = []; tops.forEach(function(g){ if (inScope(g)) destNodes.push(g); subsOf(g).forEach(function(s2){ if (inScope(s2)) destNodes.push(s2); }); });
+        var nodeLabel = function(node){ return String(node).indexOf('sub:') === 0 ? window.fcNodePath(node).map(bdEsc).join(' › ') : bdEsc(window.fcLabel(node)); };
+        var destNodes = []; tops.forEach(function(g){ if (inScope(g)) destNodes.push(g); window.fcDescendants(g).forEach(function(s2){ if (inScope(s2)) destNodes.push(s2); }); });
         var fcRow = function(n) {
             var t = Number(goals[n])||0, a = aOf(n), nd = nodeOf[n];
             var pct = t>0 ? a/t*100 : 0, col = gCol(pct);
@@ -7957,17 +7967,23 @@ window.renderGoalAchievementPage = function() {
               + (moved[n] ? '<div class="text-xs text-gray-500 mt-1">' + moved[n] + '</div>' : '') + '</div>';
         };
         // 그룹 카드 하나 (머리 + FC 목록)
-        var block = function(node, title, extraBtn){
-            var mem = membersOf(node), st = stat(node, false), gc = gCol(st.p);
+        var block = function(node, title, extraBtn, _d){
+            var mem = membersOf(node), kids = String(node).indexOf('sub:') === 0 ? subsOf(node) : [], st = stat(node, kids.length > 0), gc = gCol(st.p);
             return '<div class="rounded-2xl shadow-sm mb-4 overflow-hidden" style="border:1px solid #e5e7eb">'
               + '<div class="flex items-center justify-between px-4 py-2.5 gap-2" style="background:#f9fafb">'
-              + '<span class="text-sm font-black" style="color:#1f2937">'+title+' <span class="text-xs font-bold" style="opacity:.7">('+mem.length+'명)</span></span>'
+              + '<span class="text-sm font-black" style="color:#1f2937">'+title+' <span class="text-xs font-bold" style="opacity:.7">('+st.n+'명)</span></span>'
               + '<span class="flex items-center gap-2"><span class="text-xs font-black whitespace-nowrap" style="color:'+gc+'">'+st.p.toFixed(0)+'%</span>'+(extraBtn||'')+'</span></div>'
               + '<div class="px-4 py-1.5 text-xs text-gray-500 bg-white border-b border-gray-100 flex items-center justify-between">'
               + '<span class="whitespace-nowrap">실적 '+st.a.toLocaleString()+'</span><span class="whitespace-nowrap">목표 '+st.t.toLocaleString()+'</span></div>'
               + '<div class="bg-white px-4 pb-2">'
-              + (mem.length ? mem.map(fcRow).join('') : '<div class="text-center text-gray-400 py-4 text-xs">아직 FC가 없어요. FC 옆 선택에서 이 그룹으로 옮긴 뒤 저장해 주세요.</div>')
+              + (mem.length ? mem.map(fcRow).join('') : (kids.length ? '' : '<div class="text-center text-gray-400 py-4 text-xs">아직 FC가 없어요. FC 옆 선택에서 이 그룹으로 옮긴 뒤 저장해 주세요.</div>'))
+              + (kids.length && (_d || 0) < 6 ? '<div class="gg-nest">' + kids.map(function(k){ return subBlock(k, (_d || 0) + 1); }).join('') + '</div>' : '')
               + '</div></div>';
+        };
+        var subBlock = function(s2, _d){
+            var id = s2.slice(4), btns = '';
+            if (inScope(s2)) btns = '<button type="button" class="gg-add" onclick="fcSubAdd(\''+s2+'\')">+ 그룹</button><button type="button" class="gg-add" onclick="fcSubEdit(\''+id+'\')">편집</button>';
+            return block(s2, bdEsc(window.fcNodeName(s2)), btns, _d);
         };
         var sections;
         if (!_canEdit) {
@@ -7981,7 +7997,7 @@ window.renderGoalAchievementPage = function() {
                 var st = stat(r, true), gc = gCol(st.p);
                 return '<div class="gg-root"><div class="gg-root-head"><b>'+bdEsc(r)+' 전체</b><span>'+st.n+'명 · 실적 '+st.a.toLocaleString()+' / 목표 '+st.t.toLocaleString()+'</span><em style="color:'+gc+'">'+st.p.toFixed(0)+'%</em>'+addBtn+'</div>'
                   + ((membersOf(r).length || credit[r]) ? block(r, bdEsc(window.fcLabel(r)), '') : '')
-                  + subs.map(function(s2){ var id = s2.slice(4); return block(s2, bdEsc(window.fcNodeName(s2)), inScope(s2) ? '<button type="button" class="gg-add" onclick="fcSubEdit(\''+id+'\')">편집</button>' : ''); }).join('')
+                  + subs.map(function(s2){ return subBlock(s2, 0); }).join('')
                   + '</div>';
             }).join('') + (unM.length ? block(UN, '미배정', '') : '');
         }
@@ -8082,8 +8098,10 @@ window.fcGroupSaveMerged = function(mutate, cb) {
 };
 // 하위 그룹 만들기·이름 바꾸기·삭제 (바로 저장)
 window.fcSubAdd = function(parent) {
-    if (window.fcMyScope().indexOf(parent) < 0) return;
-    Swal.fire({ title: parent + ' 안에 그룹 만들기', input: 'text', inputPlaceholder: '그룹 이름 (예: A팀, 세미나팀)', inputAttributes: { maxlength: 20, autocomplete: 'off' },
+    var sc = window.fcMyScope(), ok = sc.indexOf(parent) >= 0 || window.fcAncestors(parent).some(function(a){ return sc.indexOf(a) >= 0; });
+    if (!ok) return;
+    var pName = String(parent).indexOf('sub:') === 0 ? window.fcNodePath(parent).join(' › ') : parent;
+    Swal.fire({ title: pName + ' 안에 그룹 만들기', input: 'text', inputPlaceholder: '그룹 이름 (예: A팀, 세미나팀)', inputAttributes: { maxlength: 20, autocomplete: 'off' },
         showCancelButton: true, confirmButtonText: '만들기', cancelButtonText: '취소', confirmButtonColor: '#4f46e5',
         preConfirm: function(v){ v = String(v || '').trim(); if (!v) { Swal.showValidationMessage('그룹 이름을 입력해 주세요'); return false; }
             if (window.fcSubs(parent).some(function(x){ return x.name === v; })) { Swal.showValidationMessage('같은 이름의 그룹이 있어요'); return false; } return v; }
@@ -8096,10 +8114,10 @@ window.fcSubAdd = function(parent) {
     });
 };
 window.fcSubEdit = function(id) {
-    var x = window.fcSubs().filter(function(y){ return y.id === id; })[0]; if (!x) return; var _sc = window.fcMyScope(); if (_sc.indexOf(x.parent) < 0 && _sc.indexOf('sub:' + id) < 0) return;
+    var x = window.fcSubs().filter(function(y){ return y.id === id; })[0]; if (!x) return; var _sc = window.fcMyScope(); if (_sc.indexOf('sub:' + id) < 0 && !window.fcAncestors('sub:' + id).some(function(a){ return _sc.indexOf(a) >= 0; })) return;
     Swal.fire({ title: '그룹 편집', input: 'text', inputValue: x.name, inputAttributes: { maxlength: 20, autocomplete: 'off' },
         showCancelButton: true, showDenyButton: true, confirmButtonText: '이름 저장', denyButtonText: '그룹 삭제', cancelButtonText: '취소', confirmButtonColor: '#4f46e5', denyButtonColor: '#E5484D',
-        html: '<span style="font-size:13px;color:#6B7684">삭제하면 이 그룹의 FC는 ' + x.parent + ' 직속으로 돌아가요.</span>',
+        html: '<span style="font-size:13px;color:#6B7684">삭제하면 이 그룹의 FC와 안의 그룹은 ' + (String(x.parent).indexOf('sub:') === 0 ? window.fcNodeName(x.parent) : x.parent + ' 직속') + '(으)로 옮겨져요.</span>',
         preConfirm: function(v){ v = String(v || '').trim(); if (!v) { Swal.showValidationMessage('그룹 이름을 입력해 주세요'); return false; } return v; }
     }).then(function(r){
         if (r.isConfirmed) {
@@ -8111,6 +8129,7 @@ window.fcSubEdit = function(id) {
             window.fcGroupSaveMerged(function(cfg){
                 var mem = cfg['sub:' + id] || []; delete cfg['sub:' + id];
                 cfg.__sub = (cfg.__sub || []).filter(function(y){ return y.id !== id; });
+                cfg.__sub.forEach(function(y){ if (y.parent === 'sub:' + id) y.parent = x.parent; });
                 cfg[x.parent] = (cfg[x.parent] || []).concat(mem.filter(function(n){ return (cfg[x.parent] || []).indexOf(n) < 0; }));
             }, function(ok){ Swal.close(); if (typeof shToast==='function') shToast(ok ? x.name + ' 그룹을 삭제했어요' : '삭제하지 못했어요', ok ? '' : 'error'); window.renderGoalAchievementPage(); });
         }
@@ -17453,7 +17472,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611231148';
+var HP_BUILD = '202611231154';
 (function () {
     var asked = false;
     function check() {

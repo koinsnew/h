@@ -7205,7 +7205,8 @@ userDB.forEach(u => {
             branchGoal: BRANCH_GOAL,
             ranking: ranking.slice(),
             fcActuals: (function(){ var o={}; for (var _k in fcGrossP){ if(_k!=='옥영훈' && _k!=='박동준') o[_k]=fcGrossP[_k]; } return o; })(),
-            fcBrief: fcBriefP
+            fcBrief: fcBriefP,
+            fcActualsAll: Object.assign({}, fcGrossP)
         };
     } catch (e) {}
 }
@@ -7750,6 +7751,7 @@ window.fcRecalcGroups = function() {
     var cfg = window.__fcGroupCfg || {}, tops = ['마스터사업단'];
     Object.keys(cfg).forEach(function(k){ if (k.indexOf('sub:') === 0 || k.indexOf('__') === 0 || k === window.FC_UNASSIGNED) return; if (tops.indexOf(k) < 0) tops.push(k); });
     window.fcSubs().forEach(function(x){ if (x.parent && String(x.parent).indexOf('sub:') !== 0 && tops.indexOf(x.parent) < 0) tops.push(x.parent); });
+    tops.sort(function(a, b){ return (/^지사\s*직할$/.test(b) ? 1 : 0) - (/^지사\s*직할$/.test(a) ? 1 : 0); });
     window.FC_GROUPS = tops;
     window.FC_DISPLAY_GROUPS = tops.concat([window.FC_UNASSIGNED]);
 };
@@ -7772,7 +7774,7 @@ window.fcSpecialNode = function() { var x = window.fcSubs().filter(function(y){ 
 window.fcLabel = function(g) {
     if (String(g).indexOf('sub:') === 0) return window.fcNodeName(g);
     if (g === '마스터사업단' && window.fcSpecialNode() === '마스터사업단') return '특수영업팀';
-    if (g === '마스터사업단') return '마스터사업단 직속';
+    if (g === '마스터사업단') return '마스터사업단 직할';
     return g;
 };
 // 사용자 정보의 소속(아너스·리더스 …) → 일반 계약이 잡히는 노드
@@ -7828,7 +7830,7 @@ window.renderGoalAchievementPage = function() {
     if (!listEl || !summary) return;
     if (typeof updateDashboard === 'function') { try { updateDashboard(); } catch (e) {} }
     var d = window.__goalData || {};
-    var actuals = d.fcActuals || {};
+    var actuals = d.fcActualsAll || d.fcActuals || {};
     var branch = d.branch || '지사';
     var month = (typeof currentMonth !== 'undefined') ? currentMonth : '';
     summary.innerHTML = '<div class="text-center text-gray-500 py-6"><div class="loader mx-auto mb-2"></div>목표 불러오는 중...</div>';
@@ -7847,14 +7849,14 @@ window.renderGoalAchievementPage = function() {
         try {
             userDB.forEach(function(u){
                 if (!isValidUser(u)) return;
-                if (u.name === '옥영훈' || u.name === '박동준') return;   // 기존 집계 제외 대상 유지
-                var _r = (u.role || '');
-                if (_r.indexOf('지사장') >= 0 || _r.indexOf('총무') >= 0) return;
+                // 지사장·본부장·총무는 그룹에 배정된 경우에만 표시 (미배정 목록에는 넣지 않음)
+                var _r = (u.role || ''), _assigned = window.fcNodeOf(u.name) !== window.FC_UNASSIGNED;
+                if (!_assigned && (u.name === '옥영훈' || u.name === '박동준' || _r.indexOf('지사장') >= 0 || _r.indexOf('총무') >= 0)) return;
                 if (typeof isUserActiveInMonth === 'function' && !isUserActiveInMonth(u.name, month)) return;
                 if (names.indexOf(u.name) < 0) names.push(u.name);
             });
         } catch (e) { names = []; }
-        Object.keys(actuals).forEach(function(n){ if (names.indexOf(n) < 0) names.push(n); });
+        Object.keys(actuals).forEach(function(n){ if (names.indexOf(n) >= 0) return; if ((n === '옥영훈' || n === '박동준') && window.fcNodeOf(n) === window.FC_UNASSIGNED) return; names.push(n); });
         names.sort(function(a, b) { var d2 = (Number(actuals[b])||0) - (Number(actuals[a])||0); return d2 !== 0 ? d2 : a.localeCompare(b, 'ko'); });
         if (!_canEdit) {
             var _mine = {}; _mine[loggedInUser] = true;
@@ -7917,7 +7919,7 @@ window.renderGoalAchievementPage = function() {
             var subs = subsOf(r), out = '';
             if (!subs.length) return gCard(bdEsc(r), stat(r, true), '');
             out += gCard(bdEsc(r) + ' 전체', stat(r, true), 'is-total');
-            if (membersOf(r).length || credit[r]) out += gCard(prefixOf(r) + shortName(r), stat(r, false), 'is-sub');
+            if (membersOf(r).length || credit[r]) out += gCard(prefixOf(r) + '직할', stat(r, false), 'is-sub');
             subs.forEach(function(s2){
                 out += gCard(prefixOf(r) + shortName(s2), stat(s2, true), 'is-sub');
                 window.fcDescendants(s2).forEach(function(s3){ out += gCard(prefixOf(r) + window.fcNodePath(s3).slice(1).map(function(v, i){ return i === 0 ? bdEsc(v).replace(/지점$/, '') : bdEsc(v); }).join(' › '), stat(s3, true), 'is-sub2'); });
@@ -17472,7 +17474,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611231154';
+var HP_BUILD = '202611231200';
 (function () {
     var asked = false;
     function check() {

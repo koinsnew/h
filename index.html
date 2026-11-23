@@ -1777,14 +1777,14 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
                 <!-- [본부장 수수료] 지사 총 환산P 기준: 미달성 0원 / 달성 10% / 3천만 달성 15% -->
                 <div id="hqManagerCard" class="bg-white rounded-xl shadow-sm border border-teal-100 p-4 sm:p-6 hidden">
                     <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center">
-                        <span class="w-1.5 h-5 sm:h-6 bg-teal-500 rounded-full mr-2 shrink-0"></span>본부장 수수료
+                        <span class="w-1.5 h-5 sm:h-6 bg-teal-500 rounded-full mr-2 shrink-0"></span>사업단장 수수료
                     </h2>
                     <div class="mb-2 flex justify-between items-end">
                         <span class="text-xs text-gray-600 font-bold">지사 총 환산P</span>
                         <span class="text-sm font-extrabold text-gray-800" id="hqBranchTotalP">0</span>
                     </div>
                     <div class="mb-1 flex justify-between items-end">
-                        <span class="text-xs text-gray-600 font-bold" id="hqPayLabel">본부장 수수료</span>
+                        <span class="text-xs text-gray-600 font-bold" id="hqPayLabel">사업단장 수수료</span>
                         <span class="text-lg font-extrabold text-teal-600" id="hqPayAmount">0원</span>
                     </div>
                     <div id="hqPayNote" class="text-right text-xs text-gray-500 mt-1"></div>
@@ -3351,7 +3351,7 @@ function applyBranchGoalForMonth() {
     let cachedMonthlyRates = null;
 
 
-    const ADMIN_ROLES = ["지사장", "총무", "본부장", "지점장", "CM"];
+    const ADMIN_ROLES = ["지사장", "총무", "본부장", "사업단장", "지점장", "CM"];
 
     function showAlert(icon, title, text) { Swal.fire({ icon: icon, title: title, text: text, confirmButtonColor: '#4f46e5', confirmButtonText: '확인' }); }
 
@@ -3783,14 +3783,14 @@ if (rankingSectionEl) {
         const userSelect = document.getElementById('userSelect');
         userSelect.innerHTML = ''; 
 
-        let canViewOthers = ADMIN_ROLES.includes(role) || role.includes("지사장") || role.includes("본부장") || role.includes("지점장"); 
+        let canViewOthers = ADMIN_ROLES.includes(role) || role.includes("지사장") || (role.includes("본부장") || role.includes("사업단장")) || role.includes("지점장"); 
 
         if (canViewOthers) {
             userSelectWrapper.classList.remove('hidden');
             let visibleUsers = [];
 
             // 1. 권한에 따라 명단 가져오기 (지점장 권한 분리 수정)
-            if ((ADMIN_ROLES.includes(role) && !role.includes("지점장")) || role.includes("지사장") || role.includes("본부장")) {
+            if ((ADMIN_ROLES.includes(role) && !role.includes("지점장")) || role.includes("지사장") || (role.includes("본부장") || role.includes("사업단장"))) {
                 visibleUsers = userDB.map(u => u.name);
             } 
             else if (role.includes("지점장")) {
@@ -3811,7 +3811,7 @@ if (rankingSectionEl) {
         }
         
         // ★ [신규] 지사장/본부장이 아니면 직책·지점이 없는 사용자 드롭다운 제외
-        if (!role.includes('지사장') && !role.includes('본부장') && !role.includes('총무')) {
+        if (!role.includes('지사장') && !(role.includes('본부장') || role.includes('사업단장')) && !role.includes('총무')) {
     visibleUsers = visibleUsers.filter(name => {
         const u = findUser(name);
         return isValidUser(u);
@@ -3912,7 +3912,7 @@ function changeMonth() {
         let visibleUsers = [];
 
         // 권한에 따른 전체 명단 추출
-        if (role.includes("지사장") || role.includes("본부장") || (ADMIN_ROLES.includes(role) && !role.includes("지점장"))) {
+        if (role.includes("지사장") || (role.includes("본부장") || role.includes("사업단장")) || (ADMIN_ROLES.includes(role) && !role.includes("지점장"))) {
             visibleUsers = userDB.map(u => u.name);
         } else if (role.includes("지점장")) {
             const myBranch = findUser(loggedInUser)?.branch;
@@ -3926,7 +3926,7 @@ function changeMonth() {
 
         // ★ [신규] 지사장/본부장이 아니면 직책·지점이 없는 사용자 제외
         const roleForMonth = getRole(loggedInUser);
-        if (!roleForMonth.includes('지사장') && !roleForMonth.includes('본부장') && !roleForMonth.includes('총무')) {
+        if (!roleForMonth.includes('지사장') && !(roleForMonth.includes('본부장') || roleForMonth.includes('사업단장')) && !roleForMonth.includes('총무')) {
         visibleUsers = visibleUsers.filter(name => {
         const u = findUser(name);
         return isValidUser(u);
@@ -4907,7 +4907,7 @@ function calculateOverriding() {
     // ===== [본부장 수수료] 지사 총 환산P 기준 =====
     // 미달성(지사목표 미만): 0원 / 달성(지사목표 이상): 지사 총 환산P의 10% / 3천만 이상: 15%
     // 미달성이어도 '달성 시 예상 금액'을 함께 보여준다.
-    if (me.role && me.role.includes('본부장')) {
+    if (me.role && (me.role.includes('본부장') || me.role.includes('사업단장'))) {
         const _hqCard = document.getElementById('hqManagerCard');
         const _hqBranchP = getBranchTotalGrossP(uniqueDataMap);   // 지사 총 환산P(일시납 제외)
         const HQ_TIER_HIGH = 30000000;   // 3천만 이상 -> 15%
@@ -5103,7 +5103,7 @@ function calculateOverriding() {
         const _gmHqPay = _orDeduct.hqTotal || 0;
         const _gmSumTotal = (gmOAPremTotal + gmORTotal + gmRecruitTotal) - _gmMgrOR - _gmHqPay;
         if(gmOAPremTotal > 0 || gmORTotal > 0 || gmRecruitTotal > 0) {
-            orDetails.push({ from: "합계", money: _gmSumTotal, type: [(_gmMgrOR ? '지점장OR -' + _gmMgrOR.toLocaleString() : ''), (_gmHqPay ? '본부장 수수료 -' + _gmHqPay.toLocaleString() : '')].filter(Boolean).join('<br>'), _displayOnly: true });
+            orDetails.push({ from: "합계", money: _gmSumTotal, type: [(_gmMgrOR ? '지점장OR -' + _gmMgrOR.toLocaleString() : ''), (_gmHqPay ? '사업단장 수수료 -' + _gmHqPay.toLocaleString() : '')].filter(Boolean).join('<br>'), _displayOnly: true });
         }
     }
     else if (me.role.includes("지점장")) {
@@ -7359,7 +7359,7 @@ window.calcPromoProgressForUser = function(userName) {
 // [특별 프로모션] 페이지 렌더 (편집=지사장·총무만, 달성자 명단, FC별 그룹·회사 직관 표시)
 // ============================================================
 window.PROMO_EDIT_ROLES = ['지사장', '총무'];        // 프로모션 수정 권한
-window.PROMO_VIEW_ALL_ROLES = ['지사장', '본부장', '지점장', 'CM', '총무']; // 전체 FC 열람
+window.PROMO_VIEW_ALL_ROLES = ['지사장', '본부장', '사업단장', '지점장', 'CM', '총무']; // 전체 FC 열람
 window.__promoConfig = null;
 
 window.renderPromotionPage = function() {
@@ -7734,7 +7734,7 @@ window.FC_UNASSIGNED = '미배정';   // 어느 그룹에도 배정되지 않은
 // 화면 표시용 전체 그룹(배정 그룹 + 미배정). 요약카드·섹션은 이 목록으로 그린다.
 window.FC_DISPLAY_GROUPS = window.FC_GROUPS.concat([window.FC_UNASSIGNED]);
 // [목표달성률] 목표·그룹 저장/수정 권한 (그 외 직책은 조회만, 본인 것만 표시)
-window.GOAL_EDIT_ROLES = ['지사장', '본부장', '총무', 'CM', '지점장'];
+window.GOAL_EDIT_ROLES = ['지사장', '본부장', '사업단장', '총무', 'CM', '지점장'];
 window.canEditFcGoals = function() {
     var r = '';
     try { r = getRole(loggedInUser) || ''; } catch (e) { r = ''; }
@@ -8041,7 +8041,7 @@ window.renderGoalAchievementPage = function() {
           + (names.length ? sections : '<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4"><div class="text-center text-gray-500 py-8">'+_emptyMsg+'</div></div>')
           + (_briefOn ? '<div class="text-xs text-gray-500 text-center mt-1">※ 2026년 11월부터 브리핑 체크 계약은 ' + window.fcLabel(SPECIAL) + ' 실적으로, 그 외 계약은 소속 지점 그룹 실적으로 잡습니다.</div>' : '')
           + (_canGroup ? '<div class="text-xs text-gray-500 text-center mt-1">※ FC 옆 그룹을 바꾸고 저장하면 그대로 유지됩니다. ' + (_isAll ? '' : '내가 맡은 ' + _scopeNames.join('·') + '만 바꿀 수 있어요. ') + '배정 안 된 FC는 미배정 그룹으로 표시됩니다.</div>'
-                       : (_canEdit ? '<div class="text-xs text-gray-500 text-center mt-1">※ 그룹 지정은 지사장·총무·사업단장(본부장)·지점장만 변경할 수 있습니다.</div>' : ''));
+                       : (_canEdit ? '<div class="text-xs text-gray-500 text-center mt-1">※ 그룹 지정은 지사장·총무·사업단장·지점장만 변경할 수 있습니다.</div>' : ''));
     };
 
     // 조직 구조(누가 어느 사업단·지점 책임자인지)가 아직 없으면 먼저 불러온다
@@ -8823,7 +8823,7 @@ function openTrendReportView(title, html) {
 function canViewSeminarTab() {
     var r = '';
     try { r = getRole(loggedInUser) || ''; } catch (e) { r = ''; }
-    return ['지사장', '총무', '본부장'].some(function(x) { return r === x || r.indexOf(x) >= 0; });
+    return ['지사장', '총무', '본부장', '사업단장'].some(function(x) { return r === x || r.indexOf(x) >= 0; });
 }
 
 function switchTrendScope(scope) {
@@ -10148,7 +10148,7 @@ function renderHeritageContacts() {
 
         // 직책에 따른 뱃지 스타일
         let roleBadgeClass = "bg-gray-100 text-gray-600 border-gray-200"; // 기본 (FC 등)
-        if (u.role.includes('지사장') || u.role.includes('본부장')) {
+        if (u.role.includes('지사장') || (u.role.includes('본부장') || u.role.includes('사업단장'))) {
             roleBadgeClass = "bg-purple-100 text-purple-700 border-purple-200";
         } else if (u.role.includes('지점장')) {
             roleBadgeClass = "bg-indigo-100 text-indigo-700 border-indigo-200";
@@ -13215,7 +13215,7 @@ function checkIncomeMenuPermission() {
 }
 
 // [목표달성률] 지사장·본부장·지점장·CM·총무만 메뉴 표시
-const GOAL_ALLOWED_ROLES = ['지사장', '본부장', '지점장', 'CM', '총무'];
+const GOAL_ALLOWED_ROLES = ['지사장', '본부장', '사업단장', '지점장', 'CM', '총무'];
 // [데이터 정리] 지사장·총무만 카드 표시
 function checkMaintCardPermission() {
     const card = document.getElementById('dataMaintCard');
@@ -13551,7 +13551,7 @@ function calcBranchManagerCmOR(uniqueDataMap) {
             // [지사운영 차감 제외] CM의 리크루팅 보너스(도입자 20%)는 지사운영 합계 차감에서 제외
             cmTotal += (_cmOR.total - _cmOR.recruit);
             cmRecruitBonus += _cmOR.recruit;
-        } else if (u.role.includes('본부장')) {
+        } else if ((u.role.includes('본부장') || u.role.includes('사업단장'))) {
             hqCount++;   // 본부장 수 (수수료는 아래에서 지사 총 환산P 기준으로 일괄 계산)
         }
     });
@@ -14955,7 +14955,7 @@ function openRecruitModal(id = null) {
     const myRole = getRole(loggedInUser);
     const myBranch = findUser(loggedInUser)?.branch;
     let visibleUsers = [];
-    if (myRole.includes('지사장') || myRole.includes('본부장') || myRole.includes('총무') || myRole.includes('CM')) {
+    if (myRole.includes('지사장') || (myRole.includes('본부장') || myRole.includes('사업단장')) || myRole.includes('총무') || myRole.includes('CM')) {
         visibleUsers = userDB.map(u => u.name);
     } else if (myRole.includes('지점장')) {
         visibleUsers = userDB.filter(u => u.branch === myBranch).map(u => u.name);
@@ -15347,7 +15347,7 @@ function ogCanEdit() { try { return /지사장|총무/.test(getRole(loggedInUser
 var OG_TYPES = ['본부', '사업단', '지점'];
 var OG_NEW_TITLES = ['사업단장', '수석지점장', '부지점장'];   // 조직도 표시용 직함
 // 직함 → 권한·수수료 계산에 쓰는 시트 직급 (사업단장=본부장, 수석지점장=지점장과 동일). 부지점장은 기존 직급 유지.
-var OG_TITLE_BASE = { '사업단장': '본부장', '수석지점장': '지점장' };
+var OG_TITLE_BASE = { '수석지점장': '지점장' };   // 사업단장은 시트 직급 그대로(본부장과 같은 권한)
 function ogUnit(key) { return ((OGE.cfg && OGE.cfg.units) || []).find(function (u) { return u.key === key; }) || null; }
 function ogUnitType(key) { var u = ogUnit(key); if (u) return u.type; key = String(key || ''); return /본부$/.test(key) ? '본부' : (/사업단$/.test(key) ? '사업단' : (/(팀|그룹|센터)$/.test(key) ? '' : '지점')); }
 function ogBranchLabel(b) {
@@ -15461,7 +15461,7 @@ function ogOpen(mode, arg) {
     $('ogEdJoin').classList.toggle('hidden', mode !== 'cand-edit');
     $('ogEdSave').textContent = { edit: '적용', add: '추가하기', 'cand-add': '추가하기', 'cand-edit': '저장하기' }[mode];
     $('ogEdSave').disabled = false; $('ogEdDel').disabled = false;
-    $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요. 소속은 사용자 정보의 <b>지점(C)·본부(M)·사업단(N)</b> 칸에 함께 저장돼요 (사업단·본부 직할은 지점 칸에 사업단직할·본부직할). <b>사업단장</b>은 본부장과, <b>수석지점장</b>은 지점장과 같은 권한·수수료 기준으로 저장돼요. 부지점장은 조직도 표시용 직함이라 기존 직급 그대로예요.'
+    $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요. 소속은 사용자 정보의 <b>지점(C)·본부(M)·사업단(N)</b> 칸에 함께 저장돼요 (사업단·본부 직할은 지점 칸에 사업단직할·본부직할). <b>사업단장</b>은 시트에 사업단장으로 저장되고 본부장과 같은 권한·수수료를 받아요. <b>수석지점장</b>은 지점장과 같은 권한·수수료 기준으로 저장돼요. 부지점장은 조직도 표시용 직함이라 기존 직급 그대로예요.'
         : mode === 'add' ? '추가하면 사용자 정보 시트에 바로 저장돼요. 로그인 비밀번호 같은 나머지 정보는 시트에서 따로 넣어 주세요.'
         : '후보자는 총 재적과 수수료 계산에 들어가지 않고, 조직도에만 보여요.' + (mode === 'cand-edit' ? ' 정식 입사하면 소속을 고른 뒤 <b>입사 처리</b>를 눌러 주세요.' : '');
     if (u) { $('ogEdName').textContent = u.name; $('ogEdNow').textContent = [ogTitle(u), ogBranchLabel(u.branch)].filter(Boolean).join(' · '); }
@@ -15909,7 +15909,7 @@ function renderOrgChart() {
     var isHead = function (u) { return /지사장/.test(role(u)); };
     var isLead = function (u) { return /지점장|팀장|사업단장/.test(role(u)); };
     var rank = function (u) { var r = role(u); return /사업단장/.test(r) ? 0 : /수석지점장/.test(r) ? 1 : /부지점장/.test(r) ? 3 : /지점장/.test(r) ? 2 : 4; };
-    var isHq = function (u) { return /본부장/.test(role(u)); };
+    var isHq = function (u) { return /본부장|사업단장/.test(role(u)); };
     // 조직 트리: 본부 > 사업단 > 지점. 책임자로 지정된 사람은 사용자 정보의 소속과 상관없이 그 조직 맨 위에 둔다.
     var units = ogAllUnits(list), headOf = {};
     units.forEach(function (u) { if (u.head && list.some(function (x) { return x.name === u.head; }) && !headOf[u.head]) headOf[u.head] = u.key; });
@@ -16208,7 +16208,7 @@ function briefBrokerRate(bf, month) {
 function briefIsAdmin() {
     var role = '';
     try { role = getRole(loggedInUser) || ''; } catch (e) { }
-    return /지사장|총무|본부장/.test(role);
+    return /지사장|총무|본부장|사업단장/.test(role);
 }
 // 지사장·총무·본부장 외에는 브리핑 체크 자체를 막는다
 function briefApplyPerm() {
@@ -16317,7 +16317,7 @@ function briefCollect() {
     function canSee() {
         var role = '';
         try { role = getRole(loggedInUser) || ''; } catch (e) { }
-        return /지사장|총무|본부장/.test(role) ? 'all' : '';
+        return /지사장|총무|본부장|사업단장/.test(role) ? 'all' : '';
     }
 
     // 브리핑 계약 수집 (원청자 DB의 원본만, 쉐어 사본 제외)
@@ -17560,7 +17560,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611231650';
+var HP_BUILD = '202611231700';
 (function () {
     var asked = false;
     function check() {

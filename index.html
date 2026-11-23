@@ -1195,6 +1195,7 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   @media (max-width:560px){ #goalFcList .goal-row > div:first-child{flex-wrap:wrap;row-gap:6px} #goalFcList .goal-row > div:first-child > span:first-child{flex:1 1 100%} #goalFcList .goal-row select.fc-group-select{flex:1;min-width:0} }
   .gg-org{border-radius:16px;padding:14px 14px 12px;border:1.5px solid transparent}
   .gg-org.is-jisa{background:#EAF6F2;border-color:#BFE6D8}
+  .gg-reply{display:inline-block;vertical-align:-3px;margin-right:4px;color:#8B95A1}
   .gg-org.is-unit{background:#EEF3FB;border-color:#CFDDF5}
   .gg-org-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
   .gg-org-head b{font-size:15px;font-weight:900;letter-spacing:-.02em}
@@ -7770,7 +7771,7 @@ window.fcRecalcGroups = function() {
     var cfg = window.__fcGroupCfg || {}, tops = ['마스터사업단'];
     Object.keys(cfg).forEach(function(k){ if (k.indexOf('sub:') === 0 || k.indexOf('__') === 0 || k === window.FC_UNASSIGNED) return; if (tops.indexOf(k) < 0) tops.push(k); });
     window.fcSubs().forEach(function(x){ if (x.parent && String(x.parent).indexOf('sub:') !== 0 && tops.indexOf(x.parent) < 0) tops.push(x.parent); });
-    tops.sort(function(a, b){ return (/^지사\s*직할$/.test(b) ? 1 : 0) - (/^지사\s*직할$/.test(a) ? 1 : 0); });
+    tops.sort(function(a, b){ return (/^지사\s*직할$/.test(a) ? 1 : 0) - (/^지사\s*직할$/.test(b) ? 1 : 0); });   // 지사 직할은 맨 아래
     window.FC_GROUPS = tops;
     window.FC_DISPLAY_GROUPS = tops.concat([window.FC_UNASSIGNED]);
 };
@@ -8011,7 +8012,8 @@ window.renderGoalAchievementPage = function() {
         var subBlock = function(s2, _d){
             var id = s2.slice(4), btns = '';
             if (inScope(s2)) btns = '<button type="button" class="gg-add" onclick="fcSubAdd(\''+s2+'\')">+ 그룹</button><button type="button" class="gg-add" onclick="fcSubEdit(\''+id+'\')">편집</button>';
-            return block(s2, bdEsc(window.fcNodeName(s2)), btns, _d);
+            var reply = _d > 0 ? '<svg class="gg-reply" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4v7a4 4 0 0 0 4 4h11"/><path d="m15 10 5 5-5 5"/></svg>' : '';   // 지점 안 그룹: 댓글처럼 ↳
+            return block(s2, reply + bdEsc(window.fcNodeName(s2)), btns, _d);
         };
         var sections;
         if (!_canEdit) {
@@ -14495,7 +14497,7 @@ function ceSyncKrw() {
 function ceToggle(k) {
     if (k === 'brief' && !CE.brief && currentShareData && currentShareData.length) {
         var who = currentShareData.map(function (x) { return x.user + ' ' + Math.round((parseFloat(x.rate) || 0) * 100) + '%'; }).join(', ');
-        Swal.fire({ icon: 'question', title: '브리핑 계약으로 바꿀까요?', html: '지금 쉐어: <b>' + bdEsc(who) + '</b><br><br><b>쉐어 유지</b>: 쉐어는 바꾸지 않고 브리핑 계약으로만 표시해요 (목표달성률은 브리핑 실적).<br><b>쉐어 변경</b>: 지금 쉐어를 풀고 ' + BRIEF_RECEIVER + ' 본부장 ' + Math.round(BRIEF_RECV_RATE * 100) + '% + 섭외자 쉐어로 바꿔요.',
+        Swal.fire({ icon: 'question', title: '브리핑 계약으로 바꿀까요?', html: '지금 쉐어: <b>' + bdEsc(who) + '</b><br><br><b>쉐어 유지</b>: 쉐어는 바꾸지 않고 브리핑 계약으로만 표시해요 (목표달성률은 브리핑 실적).<br><b>쉐어 변경</b>: 지금 쉐어를 풀고 ' + BRIEF_RECEIVER + ' 단장 ' + Math.round(BRIEF_RECV_RATE * 100) + '% + 섭외자 쉐어로 바꿔요.',
             showCancelButton: true, showDenyButton: true, confirmButtonText: '쉐어 유지', denyButtonText: '쉐어 변경', cancelButtonText: '취소', confirmButtonColor: '#3182F6', denyButtonColor: '#d97706' })
             .then(function (r) {
                 if (r.isConfirmed) { CE.brief = true; CE.briefKeep = true; ceRender(); }
@@ -14607,12 +14609,12 @@ function ctrEditSave() {
     var brief = null;
     if (CE.brief && CE.briefKeep) brief = { on: true, keepShare: true, receiver: BRIEF_RECEIVER, recvRate: 0, briefer: '', brieferRate: 0 };
     else if (CE.brief) {
-        if (currentUser === BRIEF_RECEIVER) { Swal.fire(BRIEF_RECEIVER + ' 본부장 본인 계약은 브리핑 계약으로 등록할 수 없어요', '', 'warning'); return; }
+        if (currentUser === BRIEF_RECEIVER) { Swal.fire(BRIEF_RECEIVER + ' 단장 본인 계약은 브리핑 계약으로 등록할 수 없어요', '', 'warning'); return; }
         var adm = false; try { adm = briefIsAdmin(); } catch (e) { }
         var bn = adm ? document.getElementById('ceBriefBroker').value : (CE.broker || '');
         if (adm && !bn) { Swal.fire('브리핑 섭외자를 골라 주세요', '', 'warning'); return; }
         var bRate = bn ? (briefRateAt(bn, date.slice(0, 7)) || 0) : 0;
-        if (bn && bRate > BRIEF_RECV_RATE) { Swal.fire('쉐어율을 확인해 주세요', bdEsc(bn) + ' 쉐어율(' + Math.round(bRate * 100) + '%)이 본부장 쉐어(' + Math.round(BRIEF_RECV_RATE * 100) + '%)보다 커요.', 'warning'); return; }
+        if (bn && bRate > BRIEF_RECV_RATE) { Swal.fire('쉐어율을 확인해 주세요', bdEsc(bn) + ' 쉐어율(' + Math.round(bRate * 100) + '%)이 단장 쉐어(' + Math.round(BRIEF_RECV_RATE * 100) + '%)보다 커요.', 'warning'); return; }
         brief = { on: true, receiver: BRIEF_RECEIVER, recvRate: BRIEF_RECV_RATE, briefer: bn, brieferRate: bRate };
     }
     // 상품 요율을 다시 만들고 옵션을 반영 (리스트 추가와 같은 규칙)
@@ -16215,13 +16217,13 @@ function briefApplyPerm() {
     var ok = briefIsAdmin();
     c.disabled = !ok;
     var w = document.getElementById('briefCheckWrap');
-    if (w) { w.style.opacity = ok ? '' : '0.4'; w.style.cursor = ok ? '' : 'not-allowed'; w.title = ok ? '' : '지사장·총무·본부장만 사용할 수 있습니다.'; }
+    if (w) { w.style.opacity = ok ? '' : '0.4'; w.style.cursor = ok ? '' : 'not-allowed'; w.title = ok ? '' : '지사장·총무·사업단장만 사용할 수 있습니다.'; }
     if (!ok && c.checked) { c.checked = false; document.getElementById('briefFields').classList.add('hidden'); }
 }
 // 권한 없는 사용자가 비활성 체크박스를 눌렀을 때 이유를 알려준다(터치 화면은 툴팁이 안 보임)
 function briefDeniedTap(ev) {
     var c = document.getElementById('brief_contract');
-    if (c && c.disabled) { if (ev) ev.preventDefault(); showAlert('info', '브리핑 계약', '브리핑 계약은 지사장·총무·본부장만 등록할 수 있습니다.'); }
+    if (c && c.disabled) { if (ev) ev.preventDefault(); showAlert('info', '브리핑 계약', '브리핑 계약은 지사장·총무·사업단장만 등록할 수 있습니다.'); }
 }
 function briefToggle() {
     briefApplyPerm();
@@ -16230,7 +16232,7 @@ function briefToggle() {
     if (_c.checked && currentShareData && currentShareData.length > 0 && !_c.dataset.shareOk) {
         _c.checked = false;
         var who = currentShareData.map(function (s) { return s.user + ' ' + Math.round((parseFloat(s.rate) || 0) * 100) + '%'; }).join(', ');
-        Swal.fire({ icon: 'warning', title: '쉐어 설정이 해제됩니다', html: '현재 쉐어(' + who + ')가 해제되고<br>' + BRIEF_RECEIVER + ' 본부장 ' + Math.round(BRIEF_RECV_RATE * 100) + '% 브리핑 계약으로 바뀝니다.',
+        Swal.fire({ icon: 'warning', title: '쉐어 설정이 해제됩니다', html: '현재 쉐어(' + who + ')가 해제되고<br>' + BRIEF_RECEIVER + ' 단장 ' + Math.round(BRIEF_RECV_RATE * 100) + '% 브리핑 계약으로 바뀝니다.',
             showCancelButton: true, confirmButtonText: '브리핑으로 변경', cancelButtonText: '취소', confirmButtonColor: '#d97706' })
             .then(function (r) {
                 if (!r.isConfirmed) return;
@@ -16291,14 +16293,14 @@ function briefCollect() {
     briefApplyPerm();
     var c = document.getElementById('brief_contract');
     if (!c || !c.checked) return null;
-    if (currentUser === BRIEF_RECEIVER) { showAlert('warning', '알림', BRIEF_RECEIVER + ' 본부장 본인 계약은 브리핑 계약으로 등록할 수 없습니다.'); return false; }
+    if (currentUser === BRIEF_RECEIVER) { showAlert('warning', '알림', BRIEF_RECEIVER + ' 단장 본인 계약은 브리핑 계약으로 등록할 수 없습니다.'); return false; }
     var adm = briefIsAdmin();
     var name = adm ? document.getElementById('briefBroker').value : '';
     if (adm && !name) { showAlert('warning', '알림', '섭외자를 선택해주세요.'); return false; }
     var recv = BRIEF_RECV_RATE;
     var _dv = (document.getElementById('dateInput') || {}).value || '';
     var br = name ? (briefRateAt(name, _dv.length >= 7 ? _dv.substring(0, 7) : currentMonth) || 0) : 0;
-    if (name && br > recv) { showAlert('warning', '알림', name + ' 쉐어율(' + Math.round(br * 100) + '%)이 본부장 쉐어(' + Math.round(recv * 100) + '%)보다 큽니다. 마스터본부 시트의 쉐어율을 확인해주세요.'); return false; }
+    if (name && br > recv) { showAlert('warning', '알림', name + ' 쉐어율(' + Math.round(br * 100) + '%)이 단장 쉐어(' + Math.round(recv * 100) + '%)보다 큽니다. 마스터본부 탭(시트)의 쉐어율을 확인해주세요.'); return false; }
     if (currentShareData && currentShareData.length > 0) {
         // 체크 후 쉐어를 다시 설정한 경우에도 조용히 지우지 않는다
         showAlert('warning', '쉐어 설정 확인', '브리핑 계약에는 별도 쉐어를 함께 넣을 수 없습니다. 쉐어 설정을 해제하거나 브리핑 체크를 풀어주세요.');
@@ -16432,7 +16434,7 @@ function briefCollect() {
             var bar = document.getElementById('mhqTotalBar');
             if (!scope) {
                 showAlertBox('');
-                setHTML('mhqSummary', '<div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6 text-center"><div class="text-sm font-bold text-gray-800 mb-1">열람 권한이 없습니다</div><div class="text-sm text-gray-600">마스터본부는 지사장·총무·본부장만 볼 수 있습니다.</div></div>');
+                setHTML('mhqSummary', '<div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6 text-center"><div class="text-sm font-bold text-gray-800 mb-1">열람 권한이 없습니다</div><div class="text-sm text-gray-600">마스터사업단은 지사장·총무·사업단장만 볼 수 있습니다.</div></div>');
                 setHTML('mhqBrokers', ''); setHTML('mhqList', ''); bar.classList.add('hidden');
                 return;
             }
@@ -16444,13 +16446,13 @@ function briefCollect() {
             var share40 = Math.round(sTN * BRIEF_RECV_RATE);
             if (!rows.length) setHTML('mhqSummary', '<div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm p-6 text-center">'
                 + '<div class="text-base font-bold text-gray-800 mb-1">' + (month ? month.replace('-', '년 ') + '월 ' : '') + '브리핑 계약이 아직 없습니다</div>'
-                + '<div class="text-sm text-gray-600 mb-4">청약 입력에서 \'브리핑\'을 체크해 추가하면 수수료와 본부장·섭외자 소득이 여기에 자동으로 모입니다.</div>'
+                + '<div class="text-sm text-gray-600 mb-4">청약 입력에서 \'브리핑\'을 체크해 추가하면 수수료와 단장·섭외자 소득이 여기에 자동으로 모입니다.</div>'
                 + '<button type="button" onclick="navigateTo(\'home\'); setTimeout(function(){ try{ openEntryPanel(); }catch(e){} }, 150);" class="h-11 px-5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold">청약 입력으로 가기</button></div>');
             else setHTML('mhqSummary',
                 summaryCard('① 브리핑 계약 총 수수료',
                     [stat('총 소득', sT, 'text-indigo-700'), stat('익월소득', sTN, 'text-gray-800'), stat('익월소득의 ' + pct(BRIEF_RECV_RATE), share40, 'text-gray-600', true)],
                     rows.length + '건 · 쉐어 전 전체 수수료') +
-                summaryCard('② ' + BRIEF_RECEIVER + ' 본부장 소득',
+                summaryCard('② ' + BRIEF_RECEIVER + ' 단장 소득',
                     [stat('총 소득', sR, 'text-amber-700'), stat('익월소득', sRN, 'text-gray-800')],
                     '익월 ' + pct(BRIEF_RECV_RATE) + ' ' + money(share40) + ' − 섭외자 ' + money(sB) + ' = <b class="text-gray-800">' + money(share40 - sB) + '</b>'));
             document.getElementById('mhqBrokerTotal').innerHTML = money(sB);
@@ -17558,7 +17560,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611231610';
+var HP_BUILD = '202611231650';
 (function () {
     var asked = false;
     function check() {

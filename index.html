@@ -7942,7 +7942,7 @@ window.renderGoalAchievementPage = function() {
                 if (membersOf(r).length || credit[r]) inner += gCard(prefixOf(r) + '직할', stat(r, false), 'is-sub');
                 subs.forEach(function(s2){
                     inner += gCard(prefixOf(r) + shortName(s2), stat(s2, true), 'is-sub');
-                    window.fcDescendants(s2).forEach(function(s3){ inner += gCard(prefixOf(r) + window.fcNodePath(s3).slice(1).map(function(v, i){ return i === 0 ? bdEsc(v).replace(/지점$/, '') : bdEsc(v); }).join(' › '), stat(s3, true), 'is-sub2'); });
+                    // 하위 그룹(투잡 등)은 지점 카드에 합산 — 별도 카드 없음
                 });
             }
             return '<section class="gg-org ' + orgTone(r) + '">'
@@ -15349,20 +15349,67 @@ function ogBranchLabel(b) {
 function ogNormBranch(v) { v = String(v || '').trim().replace(/\s+/g, ' '); if (/본부$/.test(v)) return v.replace(/\s+본부$/, '본부'); if (/사업단$/.test(v)) return v.replace(/\s+사업단$/, '사업단'); return v.replace(/\s*지점$/, ''); }
 function ogTitle(u) { return ((OGE.cfg && OGE.cfg.titles) || {})[u.name] || String(u.role || '').trim() || 'FC'; }
 // 등록된 조직 + 사용자 정보에만 있는 소속(자동으로 지점 취급)
-function ogAllUnits(list) {
+function ogAllUnits(list, noSheet) {
     var units = ((OGE.cfg && OGE.cfg.units) || []).map(function (u) { return { key: u.key, type: u.type, parent: u.parent || '', head: u.head || '' }; });
     var has = function (k) { return units.some(function (u) { return u.key === k; }); };
+    // 사용자 정보의 본부(M)·사업단(N) 칸이 조직 구조를 정한다 (본부가 비어 있으면 본부 없음)
+    if (!noSheet) {
+        var sp = {};
+        (list || []).forEach(function (u) {
+            var S = String(u.saeopdan || '').trim(), B = String(u.bonbu || '').trim(), raw = String(u.branchRaw || '').trim();
+            if (!S && !B) return;
+            if (B && !sp[B]) sp[B] = { type: '본부', parent: '' };
+            if (S && !sp[S]) sp[S] = { type: '사업단', parent: B };
+            if (raw && !/직할$/.test(raw.replace(/\s+/g, '')) && raw !== S && raw !== B && !sp[raw]) sp[raw] = { type: '지점', parent: S || B };
+        });
+        Object.keys(sp).forEach(function (k) {
+            var x = units.find(function (u) { return u.key === k; });
+            if (x) { x.type = sp[k].type; x.parent = sp[k].parent; } else units.push({ key: k, type: sp[k].type, parent: sp[k].parent, head: '', implicit: true });
+        });
+    }
     var add = function (k) { k = String(k || '').trim(); if (k && k !== '직할' && !has(k)) units.push({ key: k, type: ogUnitType(k), parent: '', head: '', implicit: true }); };
     (list || []).forEach(function (u) { add(u.branch); });
     if (!(OGE.cfg && OGE.cfg.migrated)) (OGE.groups || []).forEach(add);
     units.forEach(function (u) { if (u.parent && (!has(u.parent) || u.parent === u.key)) u.parent = ''; });
     return units;
 }
+// 화면 소속 키 → 사용자 정보 칸 (C=지점 또는 사업단직할·본부직할·지사직할, L=본부, M=사업단)
+function ogSheetFields(key, units) {
+    key = String(key || '').trim(); units = units || ogAllUnits(ogActive());
+    var by = {}; units.forEach(function (u) { by[u.key] = u; });
+    var anc = function (k, t) { var seen = {}, cur = by[k] && by[k].parent; while (cur && by[cur] && !seen[cur]) { seen[cur] = 1; if (by[cur].type === t) return cur; cur = by[cur].parent; } return ''; };
+    if (!key || key === '직할') return { branch: '지사직할', bonbu: '', saeopdan: '' };
+    var t = (by[key] && by[key].type) || ogUnitType(key);
+    if (t === '사업단') return { branch: '사업단직할', bonbu: anc(key, '본부'), saeopdan: key };
+    if (t === '본부') return { branch: '본부직할', bonbu: key, saeopdan: '' };
+    return { branch: key, bonbu: anc(key, '본부'), saeopdan: anc(key, '사업단') };
+}
+function ogSheetArgs(p, units) { var f = ogSheetFields(p.branch, units); p.branch = f.branch; p.bonbu = f.bonbu; p.saeopdan = f.saeopdan; return p; }
+function ogApplyFields(u, key, f) { u.branch = key; u.branchRaw = f.branch; u.bonbu = f.bonbu; u.saeopdan = f.saeopdan; }
+// 조직 구조(상위 조직)를 바꾼 뒤 사용자 정보의 본부·사업단 칸을 맞춘다
+function ogSyncSheet() {
+    var act = ogActive(), units = ogAllUnits(act, true), heads = {}, rows = [], keys = {};
+    units.forEach(function (u) { if (u.head) heads[u.head] = u.key; });
+    act.forEach(function (u) {
+        var key = String(u.branch || '').trim(); if (key === '직할' && heads[u.name]) key = heads[u.name];
+        var f = ogSheetFields(key, units);
+        if (f.branch === String(u.branchRaw || '').trim() && f.bonbu === String(u.bonbu || '').trim() && f.saeopdan === String(u.saeopdan || '').trim()) return;
+        rows.push({ name: u.name, branch: f.branch, bonbu: f.bonbu, saeopdan: f.saeopdan }); keys[u.name] = [key, f];
+    });
+    if (!rows.length) return Promise.resolve(0);
+    return ogCall('orgSyncMembers', [loggedInUser, JSON.stringify(rows)]).then(function (x) {
+        if (x && x.ok === false) throw new Error(x.error || '실패');
+        act.forEach(function (u) { var k = keys[u.name]; if (k) ogApplyFields(u, k[0], k[1]); });
+        return rows.length;
+    });
+}
 function ogSaveCfg(okMsg) {
     OGE.cfg.migrated = true;
     ogSaveUi('저장하는 중…', 'is-busy');
     return ogCall('orgSaveConfig', [loggedInUser, JSON.stringify(OGE.cfg)]).then(function (x) {
         if (x && x.ok === false) throw new Error(x.error || '실패');
+        return ogSyncSheet();
+    }).then(function () {
         OGE.last = ogHm() + ' 저장 완료 · ' + okMsg; renderOrgChart(); shToast(okMsg);
     }).catch(function (e) { renderOrgChart(); ogSaveUi('저장 실패 · ' + String((e && e.message) || e).slice(0, 70), 'is-err'); shToast('저장하지 못했어요', 'error'); });
 }
@@ -15405,7 +15452,7 @@ function ogOpen(mode, arg) {
     $('ogEdJoin').classList.toggle('hidden', mode !== 'cand-edit');
     $('ogEdSave').textContent = { edit: '적용', add: '추가하기', 'cand-add': '추가하기', 'cand-edit': '저장하기' }[mode];
     $('ogEdSave').disabled = false; $('ogEdDel').disabled = false;
-    $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요. <b>사업단장</b>은 본부장과, <b>수석지점장</b>은 지점장과 같은 권한·수수료 기준으로 저장돼요. 부지점장은 조직도 표시용 직함이라 기존 직급 그대로예요.'
+    $('ogEdNote').innerHTML = mode === 'edit' ? '적용한 뒤 조직도 위의 <b>저장</b> 버튼을 눌러야 시트에 저장돼요. 직급·소속·도입자는 수수료 계산에도 쓰이고, 저장하면 2026년 9월 이후 계산에 함께 반영돼요. 소속은 사용자 정보의 <b>지점(C)·본부(M)·사업단(N)</b> 칸에 함께 저장돼요 (사업단·본부 직할은 지점 칸에 사업단직할·본부직할). <b>사업단장</b>은 본부장과, <b>수석지점장</b>은 지점장과 같은 권한·수수료 기준으로 저장돼요. 부지점장은 조직도 표시용 직함이라 기존 직급 그대로예요.'
         : mode === 'add' ? '추가하면 사용자 정보 시트에 바로 저장돼요. 로그인 비밀번호 같은 나머지 정보는 시트에서 따로 넣어 주세요.'
         : '후보자는 총 재적과 수수료 계산에 들어가지 않고, 조직도에만 보여요.' + (mode === 'cand-edit' ? ' 정식 입사하면 소속을 고른 뒤 <b>입사 처리</b>를 눌러 주세요.' : '');
     if (u) { $('ogEdName').textContent = u.name; $('ogEdNow').textContent = [ogTitle(u), ogBranchLabel(u.branch)].filter(Boolean).join(' · '); }
@@ -15415,7 +15462,7 @@ function ogOpen(mode, arg) {
     var roles = mode === 'add' ? ['지사장', '본부장', '사업단장', '수석지점장', '지점장', '팀장', '총무', 'FC'] : uniq(['지사장', '본부장', '사업단장', '수석지점장', '지점장', '부지점장', '팀장', '총무', 'FC'].concat([role]));
     var branches = uniq(['직할'].concat(ogAllUnits(act).map(function (x) { return x.key; })).concat(act.map(function (x) { return String(x.branch || '').trim(); })).concat((OGE.cands || []).map(function (x) { return x.branch; })).concat([branch]));
     ogChips('ogEdRoles', roles, role, 'role', 'ogEdRoleNew', '');
-    ogChips('ogEdBranches', branches, branch || (isCand ? '아너스' : '직할'), 'branch', 'ogEdBranchNew', '+ 새 지점·본부', ogBranchLabel);
+    ogChips('ogEdBranches', branches, branch || (isCand ? '아너스' : '직할'), 'branch', 'ogEdBranchNew', '+ 새 지점·본부', function (k) { if (k === '직할') return '지사 직할'; var t = ogUnitType(k); return ogBranchLabel(k) + (t === '본부' || t === '사업단' ? ' 직할' : ''); });
     var d = $('ogEdDate'), t = new Date(), ymd = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
     $('lbOgDate').textContent = isCand ? '입사예정' : '입사일';
     d.type = isCand ? 'month' : 'date';
@@ -15447,10 +15494,11 @@ function ogEditSave() {
         if (!date) { shToast('입사일을 골라 주세요', 'error'); return; }
         ogBusy(true);
         var addRole = OG_TITLE_BASE[role] || role, addTitle = OG_TITLE_BASE[role] ? role : '';
-        ogCall('orgAddMember', [loggedInUser, { name: nameIn, role: addRole, branch: branch, joinDate: date, recruiter: rec }]).then(function (r) {
+        var _af = ogSheetFields(branch);
+        ogCall('orgAddMember', [loggedInUser, { name: nameIn, role: addRole, branch: _af.branch, bonbu: _af.bonbu, saeopdan: _af.saeopdan, joinDate: date, recruiter: rec }]).then(function (r) {
             if (!r || !r.ok) throw new Error((r && r.error) || '실패');
             if (addTitle) { OGE.cfg.titles = OGE.cfg.titles || {}; OGE.cfg.titles[nameIn] = addTitle; OGE.cfg.migrated = true; ogCall('orgSaveConfig', [loggedInUser, JSON.stringify(OGE.cfg)]).catch(function () { }); }
-            userDB.push({ name: nameIn, role: addRole, branch: branch, joinDate: date, resignDate: '', recruiter: rec, residentId: '', grade: '', phone: '', birthday: '', email: '' });
+            userDB.push({ name: nameIn, role: addRole, branch: branch, branchRaw: _af.branch, bonbu: _af.bonbu, saeopdan: _af.saeopdan, joinDate: date, resignDate: '', recruiter: rec, residentId: '', grade: '', phone: '', birthday: '', email: '' });
             ogDone(nameIn + ' 님을 추가했어요');
         }).catch(ogFail);
         return;
@@ -15628,8 +15676,9 @@ async function ogSaveAll() {
         if (!u) { delete OGE.pending[n]; continue; }
         try {
             ogSaveUi('저장 중 ' + (i + 1) + '/' + names.length + ' · ' + n, 'is-busy');
-            var r = await ogCall('orgUpdateMember', [loggedInUser, { name: n, role: String(u.role || '').trim(), branch: String(u.branch || '').trim(), recruiter: String(u.recruiter || '').trim() }]);
-            if (r && r.ok) done.push(n); else fail.push(n + ' (' + ((r && r.error) || '실패') + ')');
+            var _key = String(u.branch || '').trim(), _p = ogSheetArgs({ name: n, role: String(u.role || '').trim(), branch: _key, recruiter: String(u.recruiter || '').trim() });
+            var r = await ogCall('orgUpdateMember', [loggedInUser, _p]);
+            if (r && r.ok) { done.push(n); ogApplyFields(u, _key, _p); } else fail.push(n + ' (' + ((r && r.error) || '실패') + ')');
         } catch (e) { fail.push(n + ' (' + String(e.message || e).slice(0, 50) + ')'); }
     }
     // 시트를 다시 읽어서 실제로 반영됐는지 확인
@@ -15776,9 +15825,10 @@ function ogCandJoin(candId, branch) {
         if (!r.isConfirmed) return;
         var date = r.value;
         ogSaveUi('입사 처리하는 중…', 'is-busy');
-        ogCall('orgAddMember', [loggedInUser, { name: c.name, role: 'FC', branch: branch, joinDate: date, recruiter: rec }]).then(function (x) {
+        var _jf = ogSheetFields(branch);
+        ogCall('orgAddMember', [loggedInUser, { name: c.name, role: 'FC', branch: _jf.branch, bonbu: _jf.bonbu, saeopdan: _jf.saeopdan, joinDate: date, recruiter: rec }]).then(function (x) {
             if (!x || !x.ok) throw new Error((x && x.error) || '실패');
-            userDB.push({ name: c.name, role: 'FC', branch: branch, joinDate: date, resignDate: '', recruiter: rec, residentId: '', grade: '', phone: '', birthday: '', email: '' });
+            userDB.push({ name: c.name, role: 'FC', branch: branch, branchRaw: _jf.branch, bonbu: _jf.bonbu, saeopdan: _jf.saeopdan, joinDate: date, resignDate: '', recruiter: rec, residentId: '', grade: '', phone: '', birthday: '', email: '' });
             return ogCall('orgDeleteCandidate', [loggedInUser, c.id]).then(function () { return true; }, function () { return false; });
         }).then(function (removed) {
             if (removed) OGE.cands = OGE.cands.filter(function (y) { return y.id !== c.id; });
@@ -17501,7 +17551,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611231205';
+var HP_BUILD = '202611231500';
 (function () {
     var asked = false;
     function check() {

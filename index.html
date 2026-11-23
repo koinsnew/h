@@ -1186,7 +1186,26 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   .gg-bar{height:6px;border-radius:3px;background:#E5E8EB;overflow:hidden;margin-bottom:6px}
   .gg-bar i{display:block;height:100%;border-radius:3px;transition:width .5s ease}
   .gg-card-num{font-size:11.5px;color:#6B7684;word-break:keep-all}
-  .gg-root{background:#EEF1F5;border-radius:20px;padding:12px 10px 2px;margin-bottom:16px}
+  .gg-root{background:#EEF1F5;border-radius:20px;padding:12px 10px 2px;margin-bottom:22px;border:1.5px solid transparent}
+  .gg-root.is-jisa{background:#EAF6F2;border-color:#BFE6D8}
+  .gg-root.is-unit{background:#EEF3FB;border-color:#CFDDF5}
+  .gg-root.is-jisa .gg-root-head b{color:#0B6B57}
+  .gg-root.is-unit .gg-root-head b{color:#1B4FA8}
+  .gg-orgs{display:grid;gap:12px}
+  @media (max-width:560px){ #goalFcList .goal-row > div:first-child{flex-wrap:wrap;row-gap:6px} #goalFcList .goal-row > div:first-child > span:first-child{flex:1 1 100%} #goalFcList .goal-row select.fc-group-select{flex:1;min-width:0} }
+  .gg-org{border-radius:16px;padding:14px 14px 12px;border:1.5px solid transparent}
+  .gg-org.is-jisa{background:#EAF6F2;border-color:#BFE6D8}
+  .gg-org.is-unit{background:#EEF3FB;border-color:#CFDDF5}
+  .gg-org-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .gg-org-head b{font-size:15px;font-weight:900;letter-spacing:-.02em}
+  .gg-org.is-jisa .gg-org-head b{color:#0B6B57}
+  .gg-org.is-unit .gg-org-head b{color:#1B4FA8}
+  .gg-org-head em{font-style:normal;font-size:16px;font-weight:900}
+  .gg-org-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.9)}
+  .gg-org-num{font-size:12px;color:#4E5968;margin-bottom:2px}
+  .gg-org .gg-cards{margin-top:10px}
+  .gg-org .gg-card{background:#fff}
+  .gg-org .gg-card.is-sub2{background:rgba(255,255,255,.6)}
   .gg-root-head{display:flex;align-items:baseline;gap:8px;padding:2px 6px 12px;flex-wrap:wrap}
   .gg-root-head b{font-size:16px;font-weight:900;color:#191F28}
   .gg-root-head span{font-size:12px;color:#6B7684;flex:1;min-width:0}
@@ -7915,16 +7934,23 @@ window.renderGoalAchievementPage = function() {
         };
         var prefixOf = function(top){ return /사업단$/.test(top) ? '사업단 ' : (/본부$/.test(top) ? '본부 ' : ''); };
         var shortName = function(node){ return bdEsc(window.fcLabel(node)).replace(/지점$/, ''); };
+        // 최상위 조직마다 따로 묶은 패널 (지사 직할 / 마스터사업단 …)
+        var orgTone = function(r){ return /^지사\s*직할$/.test(r) ? 'is-jisa' : 'is-unit'; };
         var groupCards = tops.map(function(r){
-            var subs = subsOf(r), out = '';
-            if (!subs.length) return gCard(bdEsc(r), stat(r, true), '');
-            out += gCard(bdEsc(r) + ' 전체', stat(r, true), 'is-total');
-            if (membersOf(r).length || credit[r]) out += gCard(prefixOf(r) + '직할', stat(r, false), 'is-sub');
-            subs.forEach(function(s2){
-                out += gCard(prefixOf(r) + shortName(s2), stat(s2, true), 'is-sub');
-                window.fcDescendants(s2).forEach(function(s3){ out += gCard(prefixOf(r) + window.fcNodePath(s3).slice(1).map(function(v, i){ return i === 0 ? bdEsc(v).replace(/지점$/, '') : bdEsc(v); }).join(' › '), stat(s3, true), 'is-sub2'); });
-            });
-            return out;
+            var subs = subsOf(r), st = stat(r, true), gc = gCol(st.p), inner = '';
+            if (subs.length) {
+                if (membersOf(r).length || credit[r]) inner += gCard(prefixOf(r) + '직할', stat(r, false), 'is-sub');
+                subs.forEach(function(s2){
+                    inner += gCard(prefixOf(r) + shortName(s2), stat(s2, true), 'is-sub');
+                    window.fcDescendants(s2).forEach(function(s3){ inner += gCard(prefixOf(r) + window.fcNodePath(s3).slice(1).map(function(v, i){ return i === 0 ? bdEsc(v).replace(/지점$/, '') : bdEsc(v); }).join(' › '), stat(s3, true), 'is-sub2'); });
+                });
+            }
+            return '<section class="gg-org ' + orgTone(r) + '">'
+              + '<div class="gg-org-head"><b>' + bdEsc(r) + (subs.length ? ' 전체' : '') + '</b><em style="color:' + gc + '">' + st.p.toFixed(0) + '%</em></div>'
+              + '<div class="gg-bar gg-org-bar"><i style="width:' + Math.min(st.p, 100) + '%;background:' + gc + '"></i></div>'
+              + '<div class="gg-org-num">실적 ' + st.a.toLocaleString() + ' / 목표 ' + st.t.toLocaleString() + ' · ' + st.n + '명</div>'
+              + (inner ? '<div class="gg-cards">' + inner + '</div>' : '')
+              + '</section>';
         }).join('');
         var _hasTeam = (!_canEdit && names.length > 1);
         var unM = membersOf(UN), unA = 0; unM.forEach(function(n){ unA += Number(actuals[n])||0; });
@@ -7939,7 +7965,7 @@ window.renderGoalAchievementPage = function() {
           + '<div class="bg-gray-50 rounded-xl p-3 text-center"><div class="text-xs text-gray-500">'+(_canEdit?'총 목표 환산P':(_hasTeam?'합산 목표 환산P':'내 목표 환산P'))+'</div><div class="text-base font-bold text-gray-800">'+totalTarget.toLocaleString()+'</div></div>'
           + '<div class="bg-indigo-50 rounded-xl p-3 text-center"><div class="text-xs text-indigo-700">'+(_canEdit?'현재 지사 환산P':(_hasTeam?'합산 환산P':'내 환산P'))+'</div><div class="text-base font-bold text-indigo-700">'+totalActual.toLocaleString()+'</div></div>'
           + '</div>'
-          + (_canEdit ? ('<div class="gg-cards">' + groupCards + '</div>') : '')
+          + (_canEdit ? ('<div class="gg-orgs">' + groupCards + '</div>') : '')
           + ((_canEdit && unM.length) ? '<div class="mt-2 text-sm text-gray-600">미배정 '+unM.length+'명'+(unA?' (실적 '+unA.toLocaleString()+')':'')+'은 달성률에 빠져 있습니다 · 아래에서 그룹을 정하면 반영됩니다</div>' : '')
           + (totalTarget===0?('<div class="mt-2 text-sm text-gray-600">'+(_canEdit?'아래에서 FC별 목표 환산P를 입력하고 저장하세요.':'아직 목표가 입력되지 않았습니다.')+'</div>'):'') + '</div></div>';
 
@@ -7995,9 +8021,10 @@ window.renderGoalAchievementPage = function() {
         } else {
             sections = tops.map(function(r){
                 var subs = subsOf(r), addBtn = inScope(r) ? '<button type="button" class="gg-add" onclick="fcSubAdd(\''+bdEsc(r)+'\')">+ 그룹</button>' : '';
-                if (!subs.length) return block(r, bdEsc(r), addBtn);
                 var st = stat(r, true), gc = gCol(st.p);
-                return '<div class="gg-root"><div class="gg-root-head"><b>'+bdEsc(r)+' 전체</b><span>'+st.n+'명 · 실적 '+st.a.toLocaleString()+' / 목표 '+st.t.toLocaleString()+'</span><em style="color:'+gc+'">'+st.p.toFixed(0)+'%</em>'+addBtn+'</div>'
+                if (!subs.length) return '<div class="gg-root ' + orgTone(r) + '"><div class="gg-root-head"><b>'+bdEsc(r)+'</b><span>'+st.n+'명 · 실적 '+st.a.toLocaleString()+' / 목표 '+st.t.toLocaleString()+'</span><em style="color:'+gc+'">'+st.p.toFixed(0)+'%</em>'+addBtn+'</div>'
+                  + block(r, bdEsc(r) + ' 인원', '') + '</div>';
+                return '<div class="gg-root ' + orgTone(r) + '"><div class="gg-root-head"><b>'+bdEsc(r)+' 전체</b><span>'+st.n+'명 · 실적 '+st.a.toLocaleString()+' / 목표 '+st.t.toLocaleString()+'</span><em style="color:'+gc+'">'+st.p.toFixed(0)+'%</em>'+addBtn+'</div>'
                   + ((membersOf(r).length || credit[r]) ? block(r, bdEsc(window.fcLabel(r)), '') : '')
                   + subs.map(function(s2){ return subBlock(s2, 0); }).join('')
                   + '</div>';
@@ -17474,7 +17501,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611231200';
+var HP_BUILD = '202611231205';
 (function () {
     var asked = false;
     function check() {

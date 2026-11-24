@@ -1162,6 +1162,9 @@ window.HERITAGE_API_URL = 'https://script.google.com/macros/s/AKfycbyMe3UYDXKK5g
   #ogPrintRoot .og-branches{flex-direction:row;flex-wrap:nowrap;gap:12px}
   #ogPrintRoot .og-branch{width:auto;flex:var(--f,10) 1 0!important;padding:14px 14px 14px}
   #ogPrintRoot .og-branch h3{padding-bottom:10px}
+  #ogPrintRoot .og-branches > .og-unit{flex:4 1 0!important;min-width:0}
+  #ogPrintRoot .og-branches > .og-cand{flex:0 0 190px!important;min-width:0}
+  #ogPrintRoot .og-cand .og-fcs{grid-template-columns:minmax(0,1fr)}
   #ogPrintRoot .og-leads{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
   #ogPrintRoot .og-lead{padding:10px 10px 9px}
   #ogPrintRoot .og-fcs{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px}
@@ -17560,7 +17563,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611231700';
+var HP_BUILD = '202611241410';
 (function () {
     var asked = false;
     function check() {

@@ -5795,7 +5795,11 @@ function updateSummary(premium, p, next, bonus, total) {
             if(item.isWithdrawn) return; 
 
             if(item.shares && item.shares.length > 0 && !item.isSharedView) {
-                item.shares.forEach(s => {
+                // [브리핑 계약] 익월시책: 단장 rv-br + 섭외자 br / 13회·장기근속: 단장 rv-br만 (섭외자 몫은 메인에게)
+                const _bsp = briefSplit(item);
+                let _rcv = item.shares.map(s => ({ user: s.user, rate: (_bsp && s.user === _bsp.receiver) ? (_bsp.rv - _bsp.br) : s.rate }));
+                if (_bsp && _bsp.briefer && _bsp.br > 0) _rcv.push({ user: _bsp.briefer, rate: _bsp.br, bonusOnly: true });
+                _rcv.forEach(s => {
                     const receiver = s.user;
                     const rate = s.rate;
                     const isMyPerspective = (currentUser === giver); 
@@ -5846,6 +5850,8 @@ function updateSummary(premium, p, next, bonus, total) {
                             existing.isPaid = isBonusPaid;
                         }
                     }
+
+                    if (s.bonusOnly) return;   // 섭외자: 익월시책만
 
                     // 2. 장기근속 성장지원금 알림 (Y2, Y3)
                     let oneYearLaterY = pY + 1;
@@ -6965,9 +6971,13 @@ function renderList() {
             shareDetails.push(`<strong class="font-black">M${ownerName}</strong> ${ownerPercent}%`);
             
             // 파트너들 비율 계산 (일반 굵기)
+            const _bsp = briefSplit(item);
             shares.forEach(s => {
-                shareDetails.push(`${s.user} ${Math.round((parseFloat(s.rate)||0) * 100)}%`);
+                let r = parseFloat(s.rate) || 0;
+                if (_bsp && s.user === _bsp.receiver) r = _bsp.rv - _bsp.br;   // 브리핑: 단장 몫에서 섭외자 몫을 뺀 실제 분배
+                shareDetails.push(`${s.user} ${Math.round(r * 100)}%`);
             });
+            if (_bsp && _bsp.briefer && _bsp.br > 0) shareDetails.push(`${_bsp.briefer} ${Math.round(_bsp.br * 100)}%`);
             const _bfb = (item.attributes && item.attributes.briefing && item.attributes.briefing.on) ? item.attributes.briefing : null;
             const shareText = (_bfb ? '📣브리핑 ' : '') + shareDetails.join(', ');
             
@@ -16207,6 +16217,15 @@ function briefBrokerRate(bf, month) {
     if (r !== null) return r;
     return parseFloat(bf.brieferRate) || 0;
 }
+// 브리핑 계약의 실제 분배(익월수수료·익월시책): 메인 1-rv / 단장 rv-br / 섭외자 br. 쉐어 유지형·일반 계약은 null
+function briefSplit(item) {
+    var bf = item && item.attributes && item.attributes.briefing;
+    if (!bf || !bf.on || bf.keepShare) return null;
+    var rv = parseFloat(bf.recvRate) || 0;
+    var m = (item.date && String(item.date).length >= 7) ? String(item.date).substring(0, 7) : (typeof currentMonth !== 'undefined' ? currentMonth : '');
+    var br = bf.briefer ? Math.min(rv, briefBrokerRate(bf, m)) : 0;
+    return { receiver: bf.receiver, rv: rv, briefer: bf.briefer || '', br: br };
+}
 // 섭외자 선택 드롭다운은 지사장·총무에게만 보인다
 function briefIsAdmin() {
     var role = '';
@@ -16582,7 +16601,11 @@ function briefCollect() {
         var u = (typeof loggedInUser !== 'undefined') ? loggedInUser : null;
         if (u && u !== _lastUser && (typeof userDB !== 'undefined') && userDB && userDB.length) {
             _lastUser = u;
-            if (window.briefBrokers === null) briefLoadBrokers(applyMenu); else applyMenu();
+            // 섭외자 쉐어율(시트)이 늦게 오면 이미 계산된 브리핑 계약 금액·쉐어 알림을 다시 계산한다
+            if (window.briefBrokers === null) briefLoadBrokers(function () {
+                applyMenu();
+                try { if (typeof savedList !== 'undefined' && savedList.some(function (x) { return x.attributes && x.attributes.briefing; }) && typeof loadMyDataFromMemory === 'function') loadMyDataFromMemory(); } catch (e) { }
+            }); else applyMenu();
             setTimeout(applyMenu, 1500);
         }
         if (!u) _lastUser = null;
@@ -17563,7 +17586,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611241410';
+var HP_BUILD = '202611251120';
 (function () {
     var asked = false;
     function check() {

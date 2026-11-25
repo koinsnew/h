@@ -4234,7 +4234,7 @@ function calculateItemMetrics(item, ownerName) {
     let myPrem = Math.round(basePrem * myShareRate);
 
     // [브리핑 계약] 실제 소득 분배: 익월수수료·익월시책만 쉐어(메인 60 / 본부장 40-브리퍼 / 브리퍼),
-    // 13회·유지(y2,y3)는 브리퍼 몫만 메인에게 가산(박동준은 본인 몫 그대로 수령). (환산P·월초P는 표시 쉐어율 그대로)
+    // 13회·유지(y2,y3) 등 그 외는 입력한 쉐어 그대로(메인 60 / 단장 40), 섭외자는 없음. (환산P·월초P는 표시 쉐어율 그대로)
     let nextPrem = myPrem, othPrem = myPrem;
     const _bf = (item.attributes && item.attributes.briefing && item.attributes.briefing.on && !item.attributes.briefing.keepShare) ? item.attributes.briefing : null;
     if (_bf) {
@@ -4244,9 +4244,9 @@ function calculateItemMetrics(item, ownerName) {
         if (item.isBriefView) {                       // 브리퍼 본인 화면
             nextPrem = Math.round(basePrem * _br); othPrem = 0;
         } else if (item.isSharedView) {               // 본부장(쉐어 받은 사람)
-            nextPrem = Math.round(basePrem * (_rv - _br)); othPrem = nextPrem;
+            nextPrem = Math.round(basePrem * (_rv - _br)); othPrem = myPrem;   // 13회·유지는 입력 쉐어(40%) 그대로
         } else {                                      // 메인(원청자)
-            nextPrem = myPrem; othPrem = Math.round(basePrem * (1 - _rv + _br));
+            nextPrem = myPrem; othPrem = myPrem;      // 13회·유지는 입력 쉐어(60%) 그대로
         }
     }
 
@@ -5795,10 +5795,10 @@ function updateSummary(premium, p, next, bonus, total) {
             if(item.isWithdrawn) return; 
 
             if(item.shares && item.shares.length > 0 && !item.isSharedView) {
-                // [브리핑 계약] 익월시책: 단장 rv-br + 섭외자 br / 13회·장기근속: 단장 rv-br만 (섭외자 몫은 메인에게)
+                // [브리핑 계약] 익월시책: 단장 rv-br + 섭외자 br / 13회·장기근속: 입력 쉐어 그대로(단장 40%), 섭외자 없음
                 const _bsp = briefSplit(item);
-                let _rcv = item.shares.map(s => ({ user: s.user, rate: (_bsp && s.user === _bsp.receiver) ? (_bsp.rv - _bsp.br) : s.rate }));
-                if (_bsp && _bsp.briefer && _bsp.br > 0) _rcv.push({ user: _bsp.briefer, rate: _bsp.br, bonusOnly: true });
+                let _rcv = item.shares.map(s => ({ user: s.user, rate: s.rate, bonusRate: (_bsp && s.user === _bsp.receiver) ? (_bsp.rv - _bsp.br) : s.rate }));
+                if (_bsp && _bsp.briefer && _bsp.br > 0) _rcv.push({ user: _bsp.briefer, rate: 0, bonusRate: _bsp.br, bonusOnly: true });
                 _rcv.forEach(s => {
                     const receiver = s.user;
                     const rate = s.rate;
@@ -5839,7 +5839,7 @@ function updateSummary(premium, p, next, bonus, total) {
                     let rawBonus = (item.productKey === 'etc_money') ? item.premium : Math.round(bonusBasePrem * finalRate);
                     
                     // 13회 시책 금액 (알림용에는 합산 X, 별도 분리)
-                    let amount = Math.round(rawBonus * rate);
+                    let amount = Math.round(rawBonus * s.bonusRate);
 
                     if(amount > 0) {
                         let existing = notifications.find(n => n.id === bonusSig);
@@ -6971,13 +6971,10 @@ function renderList() {
             shareDetails.push(`<strong class="font-black">M${ownerName}</strong> ${ownerPercent}%`);
             
             // 파트너들 비율 계산 (일반 굵기)
-            const _bsp = briefSplit(item);
+            // 계약 목록에는 입력한 쉐어(예: 메인 60 / 단장 40)만 보여준다 — 섭외자 비율은 노출하지 않음
             shares.forEach(s => {
-                let r = parseFloat(s.rate) || 0;
-                if (_bsp && s.user === _bsp.receiver) r = _bsp.rv - _bsp.br;   // 브리핑: 단장 몫에서 섭외자 몫을 뺀 실제 분배
-                shareDetails.push(`${s.user} ${Math.round(r * 100)}%`);
+                shareDetails.push(`${s.user} ${Math.round((parseFloat(s.rate)||0) * 100)}%`);
             });
-            if (_bsp && _bsp.briefer && _bsp.br > 0) shareDetails.push(`${_bsp.briefer} ${Math.round(_bsp.br * 100)}%`);
             const _bfb = (item.attributes && item.attributes.briefing && item.attributes.briefing.on) ? item.attributes.briefing : null;
             const shareText = (_bfb ? '📣브리핑 ' : '') + shareDetails.join(', ');
             
@@ -17586,7 +17583,7 @@ window.openMoreTools=function(){ toggleMoreTools(true); }; window.closeMoreTools
 </script>
 <script>
 // [새 버전 알림] 화면이 예전 버전으로 남아 있으면(브라우저·홈화면 앱 캐시) 새로고침을 안내한다
-var HP_BUILD = '202611251120';
+var HP_BUILD = '202611251145';
 (function () {
     var asked = false;
     function check() {
